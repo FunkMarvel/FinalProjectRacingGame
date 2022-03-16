@@ -2,19 +2,10 @@
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudio,c++,unrealengine,windows,jetbrains
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudio,c++,unrealengine,windows,jetbrains
 
-# Default ignored files
-/shelf/
-/workspace.xml
-# Rider ignored files
-/contentModel.xml
-/.idea.RacingUnrealProject.iml
-/modules.xml
-/projectSettingsUpdater.xml
-# Editor-based HTTP Client requests
-/httpRequests/
-# Datasource local storage ignored files
-/dataSources/
-/dataSources.local.xml
+SpaceInvader/.vs
+SpaceInvader/Binaries
+SpaceInvader/Intermediate
+SpaceInvader/Saved
 
 ### C++ ###
 # Prerequisites
