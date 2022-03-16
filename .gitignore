@@ -7,6 +7,9 @@ SpaceInvader/Binaries
 SpaceInvader/Intermediate
 SpaceInvader/Saved
 
+*.ini
+*.json
+
 ### C++ ###
 # Prerequisites
 *.d
@@ -411,7 +414,6 @@ artifacts/
 
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
-
 # StyleCop
 StyleCopReport.xml
 
