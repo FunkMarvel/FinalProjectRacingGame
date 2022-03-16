@@ -746,3 +746,4 @@ RacingUnrealProject/Saved/Config/CrashReportClient/UE4CC-Windows-02AA6A234F7EA45
 RacingUnrealProject/Saved/Config/Windows/EditorPerProjectUserSettings.ini
 RacingUnrealProject/Saved/Config/Windows/EditorPerProjectUserSettings.ini
 RacingUnrealProject/Saved/Autosaves/PackageRestoreData.json
+*.json
