@@ -166,13 +166,24 @@ void UNeckComponent::UpdateSplineMesh(float StartLength, float EndLength)
 	//clamps input
 	if (StartLength < 0.f || StartLength > Spline->GetSplineLength()) StartLength = 0.f;
 	if (EndLength > Spline->GetSplineLength() || EndLength < 0.f) EndLength = Spline->GetSplineLength();
+
+	
+
+	
 	//adds or removes segments to the array
 	//int32 segments = CalculateNumberOfSegments();
 	float Length = EndLength - StartLength;
 	float segmentsf = Length / TargetSegmentsLength;
 	int32 segments = (int)truncf(segmentsf) + 1;
+
+	// if length is really short, have zero splinemesh segments
+	if (Length < 10.f)
+		segments  = 0;	
+	
 	int32 SegmentsToCreate = segments - SplineMeshComponents.Num();
 	
+	
+
 	
 	if (SegmentsToCreate > 0)
 	{

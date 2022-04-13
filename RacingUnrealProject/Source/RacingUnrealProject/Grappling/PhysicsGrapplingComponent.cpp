@@ -340,7 +340,7 @@ void UPhysicsGrapplingComponent::HookedState()
 	// updates spline
 	CarPawn->NeckComponent->UpdateSplineEndPosition(GetTargetComponent()->GetComponentLocation());
 	FVector StartTangent = GetOnHookedVelocitySize() * CarPawn->SphereComp->GetForwardVector();
-	FVector EndTangent = TargetGrappableComponent->GetForwardVector() * 10000.f;
+	FVector EndTangent = TargetGrappableComponent->GetForwardVector() * 5000.f;
 	CarPawn->NeckComponent->UpdateSplinePointsTangents(StartTangent, EndTangent, true);
 	
 	float Lerp = CurrentHookedTime / TargetReturningTime; // 0 to 1
