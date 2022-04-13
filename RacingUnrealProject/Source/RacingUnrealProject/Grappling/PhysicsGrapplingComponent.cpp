@@ -286,7 +286,12 @@ void UPhysicsGrapplingComponent::TravelingState()
 		{
 			Vel = Vel.RotateAngleAxis(UGameplayStatics::GetWorldDeltaSeconds(this) * GrappleRotationSpeed, Cross);
 			CarPawn->GrappleHookSphereComponent->SetPhysicsLinearVelocity(Vel);
-			
+		}
+		else
+		{
+			const float speed = Vel.Size();
+			Vel = ToTarget.GetSafeNormal() * speed;
+			CarPawn->GrappleHookSphereComponent->SetPhysicsLinearVelocity(Vel);
 		}
 		
 		//sets the shark head

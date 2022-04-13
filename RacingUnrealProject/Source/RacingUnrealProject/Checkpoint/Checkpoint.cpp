@@ -56,11 +56,14 @@ void ACheckpoint::Tick(float DeltaTime)
 void ACheckpoint::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Overlap!"))
 	if (OtherActor->IsA(ACarPawn::StaticClass()))
 	{
+			UE_LOG(LogTemp, Warning, TEXT("Overlap!"))
 		 if (GameModee)
-			GameModee->SetLastCheckpoint(this);
+		 {
+		 	GameModee->SetLastCheckpoint(this);
+			 
+		 }
 	}
 	
 }

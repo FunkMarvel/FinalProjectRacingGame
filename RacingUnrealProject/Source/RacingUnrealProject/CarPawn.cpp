@@ -47,7 +47,7 @@ ACarPawn::ACarPawn()
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("Camera Boom"));
 	CameraBoom->SetupAttachment(GetRootComponent());
 	CameraBoom->bEnableCameraLag = true;
-	CameraBoom->CameraLagSpeed = 10.f;
+	CameraBoom->CameraLagSpeed = 17.f;
 	CameraBoom->bEnableCameraRotationLag = true;
 	CameraBoom->CameraRotationLagSpeed = 20.f;
 
@@ -220,6 +220,8 @@ void ACarPawn::Tick(float DeltaTime)
 		
 	}
 
+
+	SphereComp->SetPhysicsAngularVelocity(FVector::ZeroVector);
 	//sets bEnterstate to false so it wont run until we enter a new state
 	//bEnterState = false;
 	
