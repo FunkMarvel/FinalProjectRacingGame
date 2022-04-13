@@ -12,11 +12,13 @@ ABasicEatableActor::ABasicEatableActor()
 	PrimaryActorTick.bCanEverTick = true;
 
 	MainMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	MainMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SetRootComponent(MainMesh);
-
+	
 	GrappleSphereComponent = CreateDefaultSubobject<UGrappleSphereComponent>(TEXT("GrappleSphereComponent"));
 	GrappleSphereComponent->SetupAttachment(GetRootComponent());
 	GrappleSphereComponent->SetIsEatable(true);
+	
 	
 		
 }

@@ -62,7 +62,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Grappable")
 		bool bEatable = false;
 	UPROPERTY(EditAnywhere, Category = "Grappable")
-		bool bOverrideReleaseVelocity = false;
+		bool bOverrideReleaseVelocity = true;
 	UPROPERTY(EditAnywhere, Category = "Grappable")
 		bool bEnabled = true;
 
