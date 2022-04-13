@@ -13,5 +13,13 @@ UCLASS()
 class RACINGUNREALPROJECT_API ARacingUnrealProjectGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
+private:
+	UPROPERTY()
+	class ACheckpoint* LastCheckpoint{};
+public:
+	UFUNCTION()
+		class ACheckpoint* GetLastCheckpoint() const {return LastCheckpoint; }
+	UFUNCTION()
+		void SetLastCheckpoint(class ACheckpoint* NewLastCheckpoint) {LastCheckpoint = NewLastCheckpoint; }
 };
