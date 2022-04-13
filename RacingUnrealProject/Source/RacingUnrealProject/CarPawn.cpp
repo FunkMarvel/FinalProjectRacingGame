@@ -60,6 +60,7 @@ ACarPawn::ACarPawn()
 	GrappleHookSphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("GrappleHookSphereComp"));
 	GrappleHookSphereComponent->SetupAttachment(GetRootComponent());
 	GrappleHookSphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GrappleHookSphereComponent->SetNotifyRigidBodyCollision(true);
 	
 	GrappleHookMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GrapplingHookMesh"));
 	GrappleHookMesh->SetupAttachment(GrappleHookSphereComponent);

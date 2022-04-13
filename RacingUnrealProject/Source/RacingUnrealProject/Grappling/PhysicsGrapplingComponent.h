@@ -66,7 +66,7 @@ private:
 
 	//caps how slow or fast Player shoudl move
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere ,Category = "Grapp|OnHooked")
-		float LowestOnHookedSpeed = 4000.f;
+		float LowestOnHookedSpeed = 1000.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere ,Category = "Grapp|OnHooked")
 		float HighestOnHookedSpeed = 9000.f;
 
