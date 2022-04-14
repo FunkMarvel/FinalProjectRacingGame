@@ -13,6 +13,7 @@
 #include "RacingUnrealProject/Grappling/GrappableWidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "RacingUnrealProject/PrintDebug.h"
 
 // Sets default values for this component's properties
 UPhysicsGrapplingComponent::UPhysicsGrapplingComponent()
@@ -30,6 +31,9 @@ void UPhysicsGrapplingComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	
+	
+	
 	if (GetOwner()->IsA(ACarPawn::StaticClass()))
 	{
 		CarPawn = Cast<ACarPawn>(GetOwner());
@@ -159,6 +163,7 @@ void UPhysicsGrapplingComponent::ResetTemporalVariables()
 void UPhysicsGrapplingComponent::OnGrappleHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	return;
 	UE_LOG(LogTemp, Warning, TEXT("HIT"))
 	if (CurrentGrappleState != EGrappleStates::Traveling)
 		return;
@@ -268,6 +273,8 @@ void UPhysicsGrapplingComponent::TravelingState()
 	
 	//updates spline mesh
 	CarPawn->NeckComponent->UpdateSplineMesh();
+
+	HandleRayTraceLogic();
 	
 	if (!IsGrappleInsideOfRange())
 	{
@@ -488,6 +495,59 @@ bool UPhysicsGrapplingComponent::ValidGrappleState()
 		return true;
 	}
 	return false;
+}
+
+void UPhysicsGrapplingComponent::HandleRayTraceLogic()
+{
+	
+
+	
+	FVector StartLoc = CarPawn->GrappleHookSphereComponent->GetComponentLocation();
+	FVector EndLoc = StartLoc + CarPawn->GrappleHookSphereComponent->GetPhysicsLinearVelocity().GetSafeNormal() * RaycastRange;
+
+	/*FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
+	FHitResult hit{};
+	GetWorld()->LineTraceSingleByObjectType(
+		hit,
+		StartLoc,
+		EndLoc,
+		FCollisionObjectQueryParams(ECollisionChannel::ECC_GameTraceChannel1),
+		TraceParams
+	);*/
+
+	FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
+	FHitResult hit{};
+	GetWorld()->LineTraceSingleByChannel(hit,
+		StartLoc, EndLoc,
+		ECollisionChannel::ECC_GameTraceChannel1,
+		TraceParams
+		);
+	
+	
+
+	
+	//UE_LOG(LogTemp, Warning, TEXT("HIT"))
+	if (!hit.IsValidBlockingHit())
+		return;
+
+	if (!hit.Component->IsA(UGrappleSphereComponent::StaticClass()))
+		return;
+
+	UGrappleSphereComponent* GrappleSphereComponent = hit.Actor->FindComponentByClass<UGrappleSphereComponent>(); // better? Better
+
+	if (GrappleSphereComponent->IsEnabled())
+	{
+		GrappleSphereComponent->OnGrapple();
+		TargetGrappableComponent = GrappleSphereComponent;
+
+		//eatable v grappable logic
+		if (GrappleSphereComponent->IsEatable())
+			EnterState(EGrappleStates::HookedEatable);
+		else
+			EnterState(EGrappleStates::Hooked);
+	}
+	
+	
 }
 
 

@@ -86,9 +86,12 @@ private:
 	UPROPERTY()
 		float CurrentHookedTime = 0.f; 
 
+	//traveling
 	UPROPERTY(/*meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple"*/)
 		UGrappleSphereComponent* TargetGrappableComponent = nullptr;
-
+	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple")
+		float RaycastRange = 1000.f;
+	
 	// OnHooked eatable
 	UPROPERTY()
 		class UGrappleSphereComponent* EatableGrappleSphereComponent = nullptr;
@@ -143,6 +146,8 @@ public:
 		void MoveTowardsGrapple(float LengthAtSpline);
 	UFUNCTION()
 		bool ValidGrappleState();
+	UFUNCTION()
+		void HandleRayTraceLogic();
 
 	//debug
 public:
