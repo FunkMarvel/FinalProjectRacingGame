@@ -54,7 +54,15 @@ private:
 		EGrappleStates CurrentGrappleState = EGrappleStates::InActive;
 	UPROPERTY()
 		bool bEnterState = false;
+
+	//state machine
+
+		// global state variables
+	UPROPERTY()
+		float CurrentStateTime = 0.f;
+
 	
+	//inactive state
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple")
 		float FireGrappleSpeed = 19000.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple")
@@ -89,8 +97,16 @@ private:
 	//traveling
 	UPROPERTY(/*meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple"*/)
 		UGrappleSphereComponent* TargetGrappableComponent = nullptr;
-	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple")
+	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Travelling")
 		float RaycastRange = 1000.f;
+
+	// knockoff
+	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Knockoff")
+		float knockoffDuration = 0.2f;
+	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Knockoff")
+		float KnockoffForce = 1000.f;
+	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Knockoff")
+		float KnockoffMaxAngle = 45.f;
 	
 	// OnHooked eatable
 	UPROPERTY()
@@ -135,6 +151,8 @@ public:
 		void InActiveState();
 	UFUNCTION()
 		void TravelingState();
+	UFUNCTION()
+		void KnockoffState();
 	UFUNCTION()
 		void HookedState();
 	UFUNCTION()

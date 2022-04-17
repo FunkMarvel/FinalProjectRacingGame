@@ -13,7 +13,7 @@
 #include "RacingUnrealProject/Grappling/GrappableWidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "RacingUnrealProject/PrintDebug.h"
+#include "RacingUnrealProject/DebugLog.h"
 
 // Sets default values for this component's properties
 UPhysicsGrapplingComponent::UPhysicsGrapplingComponent()
@@ -85,6 +85,7 @@ void UPhysicsGrapplingComponent::TickComponent(float DeltaTime, ELevelTick TickT
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	CurrentStateTime += GetWorld()->GetDeltaSeconds();
 	
 	switch (CurrentGrappleState)
 	{
@@ -93,6 +94,9 @@ void UPhysicsGrapplingComponent::TickComponent(float DeltaTime, ELevelTick TickT
 		break;
 	case EGrappleStates::Traveling:
 		TravelingState();
+		break;
+	case EGrappleStates::Knockoff:
+		KnockoffState();
 		break;
 	case EGrappleStates::Hooked:
 		HookedState();
@@ -192,6 +196,8 @@ void UPhysicsGrapplingComponent::OnGrappleHit(UPrimitiveComponent* HitComp, AAct
 void UPhysicsGrapplingComponent::EnterState(EGrappleStates NewState)
 {
 	bEnterState = true;
+	CurrentStateTime = 0.f;
+
 	CurrentGrappleState = NewState;
 }
 
@@ -274,6 +280,7 @@ void UPhysicsGrapplingComponent::TravelingState()
 	//updates spline mesh
 	CarPawn->NeckComponent->UpdateSplineMesh();
 
+	//this also handles the entering of states
 	HandleRayTraceLogic();
 	
 	if (!IsGrappleInsideOfRange())
@@ -305,6 +312,43 @@ void UPhysicsGrapplingComponent::TravelingState()
 		FRotator NewHeadRot = UKismetMathLibrary::MakeRotFromXZ(Vel.GetSafeNormal(), CarPawn->LocalUpVector);
 		CarPawn->GrappleHookMesh->SetWorldRotation(NewHeadRot);
 		
+	}
+}
+
+void UPhysicsGrapplingComponent::KnockoffState()
+{
+	if (bDebugGrappleState) UE_LOG(LogTemp, Warning, TEXT("Knockoff State"))
+	if (bEnterState)
+	{
+		bEnterState = false;
+
+		USphereComponent* GHSComponent = CarPawn->GrappleHookSphereComponent;
+		GHSComponent->SetSimulatePhysics(true);
+		FVector Direction = FVector::UpVector; //TODO this needs to be the normal of the raycast hit
+		Direction += FMath::VRand();
+		Direction *= KnockoffForce;
+		GHSComponent->SetPhysicsLinearVelocity(Direction);
+	}
+
+	//setting the spline points
+	FVector StartLocation, EndLocation, StartTangent, EndTangent;
+
+	StartLocation = CarPawn->SphereComp->GetComponentLocation();
+	EndLocation = CarPawn->GrappleHookSphereComponent->GetComponentLocation();
+	float Distance = (StartLocation - EndLocation).Size();
+	
+	StartTangent = CarPawn->SphereComp->GetForwardVector() * Distance;
+	EndTangent = CarPawn->GrappleHookSphereComponent->GetForwardVector() * Distance;
+	
+	CarPawn->NeckComponent->UpdateSplinePointsLocations(StartLocation, EndLocation, false);
+	CarPawn->NeckComponent->UpdateSplinePointsTangents(StartTangent, EndTangent, true);
+	
+	//updates spline mesh
+	CarPawn->NeckComponent->UpdateSplineMesh();
+	
+	if (CurrentStateTime > knockoffDuration)
+	{
+		EnterState(EGrappleStates::Returning);
 	}
 }
 
@@ -499,39 +543,37 @@ bool UPhysicsGrapplingComponent::ValidGrappleState()
 
 void UPhysicsGrapplingComponent::HandleRayTraceLogic()
 {
-	
-
-	
 	FVector StartLoc = CarPawn->GrappleHookSphereComponent->GetComponentLocation();
 	FVector EndLoc = StartLoc + CarPawn->GrappleHookSphereComponent->GetPhysicsLinearVelocity().GetSafeNormal() * RaycastRange;
 
-	/*FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
-	FHitResult hit{};
-	GetWorld()->LineTraceSingleByObjectType(
-		hit,
-		StartLoc,
-		EndLoc,
-		FCollisionObjectQueryParams(ECollisionChannel::ECC_GameTraceChannel1),
-		TraceParams
-	);*/
-
 	FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
 	FHitResult hit{};
+	
 	GetWorld()->LineTraceSingleByChannel(hit,
 		StartLoc, EndLoc,
 		ECollisionChannel::ECC_GameTraceChannel1,
 		TraceParams
 		);
 	
-	
+	// this is super ugly, but could not find another way
+	if (!hit.IsValidBlockingHit())
+	{
+		GetWorld()->LineTraceSingleByChannel(hit,
+		StartLoc, EndLoc,
+		ECollisionChannel::ECC_MAX,
+		TraceParams
+		);
+	}
 
-	
-	//UE_LOG(LogTemp, Warning, TEXT("HIT"))
 	if (!hit.IsValidBlockingHit())
 		return;
-
+	
 	if (!hit.Component->IsA(UGrappleSphereComponent::StaticClass()))
+	{
+		DebugLog::DebugNormal(this, "Entered knockoffstate!");
+		EnterState(EGrappleStates::Knockoff);
 		return;
+	}
 
 	UGrappleSphereComponent* GrappleSphereComponent = hit.Actor->FindComponentByClass<UGrappleSphereComponent>(); // better? Better
 
