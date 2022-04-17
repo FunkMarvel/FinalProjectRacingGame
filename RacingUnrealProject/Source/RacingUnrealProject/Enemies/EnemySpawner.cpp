@@ -17,12 +17,21 @@ AEnemySpawner::AEnemySpawner()
 void AEnemySpawner::OnSpawnerOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (EnemyClassToSpawn && OtherActor->IsA<APawn>())
+	if (EnemyClassToSpawn && OtherActor->IsA<APawn>() && NumberOfSpawnedEnemies <= NumberOfEnemiesToSpawn)
 	{
+		int8 Alternator{1};
+		FVector SidewaysOffset{(--NumberOfEnemiesToSpawn)*200.f*OtherActor->GetActorRightVector()};
 		FRotator SpawnOrientation{OtherActor->GetActorRotation()};
-		for (int i{}; i < NumberOfEnemiesToSpawn; i++)
+		FVector SpawnLocation{OtherActor->GetActorLocation() + OtherActor->GetActorUpVector()*SpawnHeight
+		+ OtherActor->GetActorForwardVector()*SpawnHeight};
+		for (int i{}; NumberOfSpawnedEnemies <= NumberOfEnemiesToSpawn; i++)
 		{
-			EnemyActors[i] = GetWorld()->SpawnActor<ABaseEnemyActor>(EnemyClassToSpawn, FVector(0.f), SpawnOrientation);
+			EnemyActors[i] = GetWorld()->SpawnActor<ABaseEnemyActor>(
+				EnemyClassToSpawn, SpawnLocation + Alternator*SidewaysOffset,
+				SpawnOrientation
+				);
+			NumberOfSpawnedEnemies++;
+			Alternator *= -1;
 		}
 	}
 }

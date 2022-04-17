@@ -24,7 +24,15 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Spawning")
 		int32 NumberOfEnemiesToSpawn{1};
+	int32 NumberOfSpawnedEnemies{0};
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Spawning")
+		float SpawnForwardOffset{10000.f};
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Spawning")
+		float SpawnHeight{0.5f*SpawnForwardOffset};
+
+	
 	UFUNCTION()
 	void OnSpawnerOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
