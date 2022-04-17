@@ -9,13 +9,13 @@
 
 
 //Current Class Name + Function Name where this is called!
-#define JOYSTR_CUR_CLASS_FUNC (FString(__FUNCTION__))
+#define DEBUG_CLASS_FUNC (FString(__FUNCTION__))
 
 //Current Class where this is called!
 #define DEBUG_CLASS (FString(__FUNCTION__).Left(FString(__FUNCTION__).Find(TEXT(":"))) )
 
 //Current Function Name where this is called!
-#define JOYSTR_CUR_FUNC (FString(__FUNCTION__).Right(FString(__FUNCTION__).Len() - FString(__FUNCTION__).Find(TEXT("::")) - 2 ))
+#define DEBUG_FUNCTION (FString(__FUNCTION__).Right(FString(__FUNCTION__).Len() - FString(__FUNCTION__).Find(TEXT("::")) - 2 ))
 
 //Current line number where this macro was called
 #define DEBUG_LINE (FString::FromInt(__LINE__))
@@ -36,10 +36,15 @@
  */
 
 
-//Messages
+//Messages via UE_LOG
 
+//DL = DebugLog
 #define DL_NORMAL(Message) UE_LOG(LogTemp, Warning, TEXT("%s<%s> %s"), *DEBUG_CLASS, *DEBUG_LINE , *FString(Message))
 // example DL_NORMAL("Hello world!!")
+
+#define DL_ERROR(Message) UE_LOG(LogTemp, Error, TEXT("%s<%s> %s"), *DEBUG_CLASS, *DEBUG_LINE , *FString(Message))
+
+#define DL_Grey(Message) UE_LOG(LogTemp, Display, TEXT("%s<%s> %s"), *DEBUG_CLASS, *DEBUG_LINE , *FString(Message))
 
 /**
  * 
