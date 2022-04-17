@@ -39,8 +39,7 @@
 //Messages
 
 #define DL_NORMAL(Message) UE_LOG(LogTemp, Warning, TEXT("%s<%s> %s"), *DEBUG_CLASS, *DEBUG_LINE , *FString(Message))
-
-
+// example DL_NORMAL("Hello world!!")
 
 /**
  * 
