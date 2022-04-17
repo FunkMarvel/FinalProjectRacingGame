@@ -59,6 +59,12 @@ void ASpikyBallEnemyActor::OnBeginOverLap(UPrimitiveComponent* OverlappedCompone
                                           const FHitResult& SweepResult)
 {
 	Super::OnBeginOverLap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
+
+	if (OtherActor->IsA<ASpikyBallEnemyActor>())
+	{
+		SphereComp->AddImpulse(SweepResult.ImpactNormal*FVector::DotProduct(SphereComp->GetPhysicsLinearVelocity(),
+			SweepResult.ImpactNormal));
+	}
 }
 
 void ASpikyBallEnemyActor::SetUpVectorAsSplineUpAxis()
