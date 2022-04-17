@@ -60,14 +60,15 @@ private:
 		// global state variables
 	UPROPERTY()
 		float CurrentStateTime = 0.f;
-
+	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Gravity")
+		float GrappleGravityForce = 9000.f;
 	
 	//inactive state
-	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple")
+	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Inactive")
 		float FireGrappleSpeed = 19000.f;
-	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple")
+	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Inactive")
 		float GrappleRotationSpeed = 500.f;
-	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple")
+	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Inactive")
 		float MaxGrappleDistance = 15000.f; 
 	
 	//hooked
@@ -107,6 +108,8 @@ private:
 		float KnockoffForce = 1000.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Knockoff")
 		float KnockoffMaxAngle = 45.f;
+	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Knockoff")
+		class UParticleSystem* KnockOffParticleSystem = nullptr;
 	
 	// OnHooked eatable
 	UPROPERTY()
@@ -114,14 +117,18 @@ private:
 
 	//returning
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere ,Category = "Grapple|Returning")
-		float ReturnTime = 1.f;
-	UPROPERTY()
-		float  CurrentReturnTime = 0.f;
+		float ReturnStateTime = 0.2f;
+	
 
 	// returning with eatable
 	UPROPERTY(meta = (AllowPrivateAccess = "ture"), EditAnywhere, Category = "Grapple|Eatable")
 		float ReturnEatableTime = 0.4f;
 public:
+
+	UFUNCTION()
+		void HandleGravity();
+
+	
 	UFUNCTION()
 		EGrappleStates GetCurrentGrappleState(){return CurrentGrappleState; }
 	UFUNCTION()
@@ -167,6 +174,8 @@ public:
 	UFUNCTION()
 		void HandleRayTraceLogic();
 
+	
+	
 	//debug
 public:
 	UPROPERTY(EditAnywhere, Category = "Grapple|Debug")

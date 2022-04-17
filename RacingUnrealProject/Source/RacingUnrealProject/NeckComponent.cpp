@@ -177,8 +177,8 @@ void UNeckComponent::UpdateSplineMesh(float StartLength, float EndLength)
 	int32 segments = (int)truncf(segmentsf) + 1;
 
 	// if length is really short, have zero splinemesh segments
-	// if (Length < 10.f)
-	// 	segments  = 0;	
+	if (Length < 10.f)
+	segments  = 0;	
 	
 	int32 SegmentsToCreate = segments - SplineMeshComponents.Num();
 	
