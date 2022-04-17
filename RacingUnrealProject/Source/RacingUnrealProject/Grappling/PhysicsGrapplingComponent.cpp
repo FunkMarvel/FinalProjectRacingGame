@@ -570,7 +570,6 @@ void UPhysicsGrapplingComponent::HandleRayTraceLogic()
 	
 	if (!hit.Component->IsA(UGrappleSphereComponent::StaticClass()))
 	{
-		DebugLog::DebugNormal(this, "Entered knockoffstate!");
 		EnterState(EGrappleStates::Knockoff);
 		return;
 	}

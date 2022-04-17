@@ -102,7 +102,7 @@ private:
 
 	// knockoff
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Knockoff")
-		float knockoffDuration = 0.2f;
+		float knockoffDuration = 0.4f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Knockoff")
 		float KnockoffForce = 1000.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Knockoff")
