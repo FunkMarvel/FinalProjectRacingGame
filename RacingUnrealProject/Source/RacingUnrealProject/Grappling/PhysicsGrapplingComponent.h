@@ -105,11 +105,13 @@ private:
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Knockoff")
 		float knockoffDuration = 0.4f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Knockoff")
-		float KnockoffForce = 1000.f;
+		float KnockoffForce = 4000.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Knockoff")
 		float KnockoffMaxAngle = 45.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Knockoff")
 		class UParticleSystem* KnockOffParticleSystem = nullptr;
+	UPROPERTY()
+		FHitResult KnockOffHitResult;
 	
 	// OnHooked eatable
 	UPROPERTY()

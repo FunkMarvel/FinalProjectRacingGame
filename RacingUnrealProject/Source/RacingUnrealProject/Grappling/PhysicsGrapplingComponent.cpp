@@ -162,6 +162,9 @@ void UPhysicsGrapplingComponent::ResetTemporalVariables()
 	TargetGrappableComponent = nullptr;
 	MoveToTargetModifier = 1.f;
 	CurrentHookedTime = 0.f;
+	KnockOffHitResult =	FHitResult();
+
+	CarPawn->GrappleHookMesh->SetRelativeScale3D(FVector(1.f));
 	
 }
 
@@ -238,7 +241,7 @@ void UPhysicsGrapplingComponent::InActiveState()
 	CarPawn->GrappleSensor->SetWorldRotation(NewSensorRot);
 	
 	HandleTargetHomingComp();
-	DL_NORMAL("Finn denne meldingen og slett den Anders! >:)")
+	//DL_NORMAL("Finn denne meldingen og slett den Anders! >:)")
 }
 
 void UPhysicsGrapplingComponent::TravelingState()
@@ -255,6 +258,8 @@ void UPhysicsGrapplingComponent::TravelingState()
 		CarPawn->GrappleHookSphereComponent->SetPhysicsLinearVelocity(CarPawn->MainCamera->GetForwardVector() * FireGrappleSpeed);
 		//CarPawn->GrappleHookSphereComponent->AddImpulse(CarPawn->MainCamera->GetForwardVector() * FireGrappleSpeed, NAME_None, true);
 		CarPawn->GrappleSensor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+
+		CarPawn->GrappleHookMesh->SetRelativeScale3D(FVector(10.f));
 
 		//event
 		if (TargetGrappableComponent)
@@ -341,17 +346,27 @@ void UPhysicsGrapplingComponent::KnockoffState()
 
 		USphereComponent* GHSComponent = CarPawn->GrappleHookSphereComponent;
 		GHSComponent->SetSimulatePhysics(true);
-		FVector Direction = FVector::UpVector; //TODO this needs to be the normal of the raycast hit
-		Direction += FMath::VRand();
+		FVector Direction = KnockOffHitResult.ImpactNormal;
+		Direction += ((CarPawn->GrappleHookSphereComponent->GetComponentLocation() - CarPawn->SphereComp->GetComponentLocation())).GetSafeNormal();
+		Direction += FMath::VRand() * 0.3f;
 		Direction *= KnockoffForce;
 		GHSComponent->SetPhysicsLinearVelocity(Direction);
 
 		if (KnockOffParticleSystem)
-			UGameplayStatics::SpawnEmitterAtLocation(this, KnockOffParticleSystem, CarPawn->GrappleHookSphereComponent->GetComponentLocation());
+		{
+			FRotator NewRotation = UKismetMathLibrary::MakeRotFromZX(KnockOffHitResult.ImpactNormal,
+				(CarPawn->GrappleHookSphereComponent->GetComponentLocation() - CarPawn->SphereComp->GetComponentLocation()));
+			UGameplayStatics::SpawnEmitterAtLocation(this, KnockOffParticleSystem, CarPawn->GrappleHookSphereComponent->GetComponentLocation(),
+				NewRotation);
+		}
 		else
 			DL_ERROR("NoParticleSystem assigned! (Knockoff State)")
 	}
 
+	// appling gravity
+	HandleGravity();
+
+	
 	//setting the spline points
 	FVector StartLocation, EndLocation, StartTangent, EndTangent;
 
@@ -364,6 +379,7 @@ void UPhysicsGrapplingComponent::KnockoffState()
 	
 	CarPawn->NeckComponent->UpdateSplinePointsLocations(StartLocation, EndLocation, false);
 	CarPawn->NeckComponent->UpdateSplinePointsTangents(StartTangent, EndTangent, true);
+
 	
 	//updates spline mesh
 	CarPawn->NeckComponent->UpdateSplineMesh();
@@ -571,36 +587,34 @@ void UPhysicsGrapplingComponent::HandleRayTraceLogic()
 	FVector EndLoc = StartLoc + CarPawn->GrappleHookSphereComponent->GetPhysicsLinearVelocity().GetSafeNormal() * RaycastRange;
 
 	FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
-	FHitResult hit{};
+	//FHitResult hit{};
 	
-	GetWorld()->LineTraceSingleByChannel(hit,
+	GetWorld()->LineTraceSingleByChannel(KnockOffHitResult,
 		StartLoc, EndLoc,
 		ECollisionChannel::ECC_GameTraceChannel1,
 		TraceParams
 		);
 	
 	// this is super ugly, but could not find another way
-	if (!hit.IsValidBlockingHit())
+	if (!KnockOffHitResult.IsValidBlockingHit())
 	{
-		GetWorld()->LineTraceSingleByChannel(hit,
+		GetWorld()->LineTraceSingleByChannel(KnockOffHitResult,
 		StartLoc, EndLoc,
 		ECollisionChannel::ECC_MAX,
 		TraceParams
 		);
 	}
  
-	if (!hit.IsValidBlockingHit())
+	if (!KnockOffHitResult.IsValidBlockingHit())
 		return;
 	
-	if (!hit.Component->IsA(UGrappleSphereComponent::StaticClass()))
+	if (!KnockOffHitResult.Component->IsA(UGrappleSphereComponent::StaticClass()))
 	{
-		
-		
 		EnterState(EGrappleStates::Knockoff);
 		return;
 	}
 
-	UGrappleSphereComponent* GrappleSphereComponent = hit.Actor->FindComponentByClass<UGrappleSphereComponent>(); // better? Better
+	UGrappleSphereComponent* GrappleSphereComponent = KnockOffHitResult.Actor->FindComponentByClass<UGrappleSphereComponent>(); // better? Better
 
 	if (GrappleSphereComponent->IsEnabled())
 	{
