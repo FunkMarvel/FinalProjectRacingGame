@@ -87,7 +87,7 @@ void ADroneActor::Grappled(FTransform SphereCompTransform)
 void ADroneActor::Reached(float AddSpeedAmount)
 {
 	//TODO: Add animation for destruction.
-	Destroy();
+	HandleDeath();
 }
 
 void ADroneActor::Move(FVector Target)
