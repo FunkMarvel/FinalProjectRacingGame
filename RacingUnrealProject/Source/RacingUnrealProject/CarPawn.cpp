@@ -169,17 +169,14 @@ void ACarPawn::TiltCarMesh(FVector AsymVector)
 	//clamps the roll rotation
 	float ClampValue = 45.f;
 	FRotator LocalRot = CarMesh->GetRelativeRotation();
-	/*if (LocalRot.Roll > ClampValue)
-	{
-		LocalRot.Roll = ClampValue;
-	}
-	else if (LocalRot.Roll < -ClampValue)
-	{
-		LocalRot.Roll = -ClampValue;
-	}*/
 	LocalRot.Roll = FMath::Clamp(LocalRot.Roll, -ClampValue, ClampValue);
+
 	CarMesh->SetRelativeRotation(LocalRot);
-	
+
+	if (abs(LocalRot.Roll) > 43.f)
+	{
+		MaxTurnBpEvent();
+	}
 }
 
 void ACarPawn::HandleAsymFriction(FVector& AsymVector)
@@ -216,7 +213,7 @@ void ACarPawn::Tick(float DeltaTime)
 	}
 
 
-	SphereComp->SetPhysicsAngularVelocity(FVector::ZeroVector);
+	SphereComp->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
 	//sets bEnterstate to false so it wont run until we enter a new state
 	//bEnterState = false;
 	

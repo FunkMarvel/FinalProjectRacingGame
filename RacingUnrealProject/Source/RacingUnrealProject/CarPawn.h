@@ -118,7 +118,7 @@ private:
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Movment")
 		float MaxCar_SplineAngleCorrectionSpeed = 100.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Movment")
-		float AsymForce = 100000.f;
+		float AsymForce = 300000.f;
 
 	//Camera
 private:
@@ -223,6 +223,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Car|Debug")
 	bool bDebugCarState = false;
 	
-	
+	//bp events
+	UFUNCTION(BlueprintImplementableEvent)
+		void MaxTurnBpEvent();
 
 };

@@ -151,11 +151,11 @@ FVector AGravitySplineActor::GetAdjustedUpVectorFromLocation(FVector Loc)
 
 FVector AGravitySplineActor::GetFixedUpVector(FVector OrgPos)
 {
-	int closest = GetClosestSplinePoint(SplineComp, OrgPos);
-	float PointDistance = SplineComp->GetDistanceAlongSplineAtSplinePoint(closest);
+	const int closest = GetClosestSplinePoint(SplineComp, OrgPos);
+	const float PointDistance = SplineComp->GetDistanceAlongSplineAtSplinePoint(closest);
 
-	float OrgPosInputKey = SplineComp->FindInputKeyClosestToWorldLocation(OrgPos);
-	float OrgPosDistance = SplineComp->GetDistanceAlongSplineAtSplineInputKey(OrgPosInputKey);
+	const float OrgPosInputKey = SplineComp->FindInputKeyClosestToWorldLocation(OrgPos);
+	const float OrgPosDistance = SplineComp->GetDistanceAlongSplineAtSplineInputKey(OrgPosInputKey);
 
 	int SecClosest = 0;
 	if (OrgPosDistance > PointDistance) // OrgPoint is further along spline
@@ -166,13 +166,13 @@ FVector AGravitySplineActor::GetFixedUpVector(FVector OrgPos)
 	{
 		SecClosest = closest - 1;
 		if (SecClosest == -1)
-			SecClosest = 0;
+			return SplineComp->GetUpVectorAtSplinePoint(0, ESplineCoordinateSpace::World);
 	}
 
-	float SecPointDistance = SplineComp->GetDistanceAlongSplineAtSplinePoint(SecClosest);
+	const float SecPointDistance = SplineComp->GetDistanceAlongSplineAtSplinePoint(SecClosest);
 
-	float SegmentDistance = PointDistance - SecPointDistance;
-	float p1 = abs(PointDistance - OrgPosDistance);
+	const float SegmentDistance = PointDistance - SecPointDistance;
+	const float p1 = abs(PointDistance - OrgPosDistance);
 	//float p2 = abs(SecPointDistance - OrgPosDistance);
 
 	float lerp = p1/SegmentDistance;
