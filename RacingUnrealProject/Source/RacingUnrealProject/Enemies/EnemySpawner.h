@@ -16,8 +16,11 @@ public:
 	AEnemySpawner();
 	
 
-	UPROPERTY(EditAnywhere, Category="Trigger")
+	UPROPERTY(EditAnywhere, Category="Trigger|Start Volume")
 		class UBoxComponent* TriggerVolume;
+
+	UPROPERTY(EditAnywhere, Category="Trigger|End Volume")
+		class UBoxComponent* ExitVolume;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Spawning")
 		TSubclassOf<class ABaseEnemyActor> EnemyClassToSpawn;
@@ -25,6 +28,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Spawning")
 		int32 NumberOfEnemiesToSpawn{1};
 	int32 NumberOfSpawnedEnemies{0};
+	int32 NumberOfDestroyedEnemies{0};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Spawning")
 		float SpawnForwardOffset{10000.f};
@@ -32,12 +36,22 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Spawning")
 		float SpawnHeight{0.5f*SpawnForwardOffset};
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Spawning")
+		float SpawnSpacing{1000.f};
+
 	
 	UFUNCTION()
-	void OnSpawnerOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	void OnTriggerOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
-	void OnSpawnerOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+	void OnTriggerOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	UFUNCTION()
+	void OnExitOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void OnExitOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	
 protected:
@@ -50,5 +64,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION()
+	void OnEnemyDeath(int32 EnemyIndex);
 
 };
