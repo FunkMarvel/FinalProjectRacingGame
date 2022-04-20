@@ -60,6 +60,8 @@ public:
 	// spline up vec
 	UFUNCTION(BlueprintCallable)
 		FVector GetAdjustedUpVectorFromLocation(FVector Loc);
+	UFUNCTION(BlueprintCallable)
+		FVector GetFixedUpVector(FVector OrgPos);
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		EGravitySplineAxis EUpVectorAxis;

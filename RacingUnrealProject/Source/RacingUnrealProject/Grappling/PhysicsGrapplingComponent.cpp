@@ -210,7 +210,6 @@ void UPhysicsGrapplingComponent::EnterState(EGrappleStates NewState)
 {
 	bEnterState = true;
 	CurrentStateTime = 0.f;
-
 	CurrentGrappleState = NewState;
 }
 

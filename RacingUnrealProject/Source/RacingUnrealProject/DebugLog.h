@@ -6,7 +6,7 @@
 
 //refrence for this debugging system
 //https://nerivec.github.io/old-ue4-wiki/pages/logs-printing-class-name-function-name-line-number-of-your-calling-code.html
-
+// Based on Mathias' implemetation
 
 //Current Class Name + Function Name where this is called!
 #define DEBUG_CLASS_FUNC (FString(__FUNCTION__))

@@ -2,11 +2,16 @@
 
 
 #include "GravitySplineActor.h"
+
+#include <string>
+
+#include "DebugLog.h"
 #include "DrawDebugHelpers.h"
 #include "Components/SplineComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h" 
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 AGravitySplineActor::AGravitySplineActor()
@@ -88,7 +93,15 @@ void AGravitySplineActor::VisualiseUpVectors(int Segments, USplineComponent* Spl
 	{
 		float dist = Length * (i / (float)Segments);
 
-		FVector Up = FVector(0.f);
+
+		FVector Loc = SplineComp->GetLocationAtDistanceAlongSpline(dist, ESplineCoordinateSpace::World);
+		 
+		FVector UpVec = GetFixedUpVector(Loc);
+		
+		DrawDebugLine(GetWorld(), Loc, Loc + UpVec * 200.f, FColor::Blue, false, 0.4f, (uint8)0U, 10.f);
+		
+		
+		/*FVector Up = FVector(0.f);
 		switch (EUpVectorAxis)
 		{
 		case EGravitySplineAxis::Axis_Y:
@@ -113,6 +126,7 @@ void AGravitySplineActor::VisualiseUpVectors(int Segments, USplineComponent* Spl
 		FVector ForwardForwardVec = SplineComp->GetDirectionAtDistanceAlongSpline(SplineLength, ESplineCoordinateSpace::World);
 
 		DrawDebugLine(GetWorld(), ForwardPos, ForwardPos + ForwardForwardVec * 200.f, FColor::Blue, false, 0.4f, (uint8)0U, 40.f);
+	*/
 	}
 }
 
@@ -133,5 +147,55 @@ FVector AGravitySplineActor::GetAdjustedUpVectorFromLocation(FVector Loc)
 	
 
 	return ReturnUpVector;
+}
+
+FVector AGravitySplineActor::GetFixedUpVector(FVector OrgPos)
+{
+	int closest = GetClosestSplinePoint(SplineComp, OrgPos);
+	float PointDistance = SplineComp->GetDistanceAlongSplineAtSplinePoint(closest);
+
+	float OrgPosInputKey = SplineComp->FindInputKeyClosestToWorldLocation(OrgPos);
+	float OrgPosDistance = SplineComp->GetDistanceAlongSplineAtSplineInputKey(OrgPosInputKey);
+
+	int SecClosest = 0;
+	if (OrgPosDistance > PointDistance) // OrgPoint is further along spline
+	{
+		SecClosest = closest + 1;
+	}
+	else
+	{
+		SecClosest = closest - 1;
+		if (SecClosest == -1)
+			SecClosest = 0;
+	}
+
+	float SecPointDistance = SplineComp->GetDistanceAlongSplineAtSplinePoint(SecClosest);
+
+	float SegmentDistance = PointDistance - SecPointDistance;
+	float p1 = abs(PointDistance - OrgPosDistance);
+	//float p2 = abs(SecPointDistance - OrgPosDistance);
+
+	float lerp = p1/SegmentDistance;
+	lerp = abs(lerp);
+	DL_NORMAL(FString::SanitizeFloat(lerp))
+
+	FVector newUpVector = UKismetMathLibrary::VLerp(SplineComp->GetUpVectorAtSplinePoint(closest, ESplineCoordinateSpace::World),
+		SplineComp->GetUpVectorAtSplinePoint(SecClosest, ESplineCoordinateSpace::World),
+		lerp);
+
+
+	//debugging
+
+	/*DrawDebugSphere(GetWorld(), SplineComp->GetLocationAtSplinePoint(closest, ESplineCoordinateSpace::World), 50.f, 32, FColor::Blue,
+		false);
+	DrawDebugSphere(GetWorld(), SplineComp->GetLocationAtSplinePoint(SecClosest, ESplineCoordinateSpace::World), 50.f, 32, FColor::Blue,
+		false);
+
+	
+	FVector locc = SplineComp->GetLocationAtDistanceAlongSpline(OrgPosDistance, ESplineCoordinateSpace::World);
+	DrawDebugLine(GetWorld(), locc, locc + newUpVector * 2000.f, FColor::Red, false, 1.4f,
+		(uint8)0U, 20.f);*/
+	
+	return newUpVector.GetSafeNormal();
 }
 

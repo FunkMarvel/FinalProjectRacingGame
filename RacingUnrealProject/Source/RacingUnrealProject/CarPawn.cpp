@@ -20,6 +20,7 @@
 #include "Chaos/KinematicTargets.h"
 #include "Checkpoint/Checkpoint.h"
 #include "Components/SplineComponent.h"
+#include "EnvironmentQuery/EnvQueryTypes.h"
 #include "Grappling/GrappableWidgetComponent.h"
 
 
@@ -156,15 +157,8 @@ void ACarPawn::ApplyGravity()
 void ACarPawn::TiltCarMesh(FVector AsymVector)
 {
 	//orients the mesh
-	FRotator NewRot = UKismetMathLibrary::MakeRotFromZX(LocalUpVector + AsymVector * 0.0001f,
+	FRotator NewRot = UKismetMathLibrary::MakeRotFromZX(LocalUpVector + AsymVector * GetWorld()->GetDeltaSeconds() * 0.003f,
 	                                                    GetActorForwardVector());
-	/*
-	float sign = NewRot.Roll / abs(NewRot.Roll);
-	if (abs(NewRot.Roll) > 45.f)
-	{
-		NewRot.Roll = 45.f * sign;
-	}*/
-	
 	
 	CarMesh->SetWorldRotation( FMath::RInterpTo(CarMesh->GetComponentRotation(),
 	                                            NewRot,
@@ -175,14 +169,15 @@ void ACarPawn::TiltCarMesh(FVector AsymVector)
 	//clamps the roll rotation
 	float ClampValue = 45.f;
 	FRotator LocalRot = CarMesh->GetRelativeRotation();
-	if (LocalRot.Roll > ClampValue)
+	/*if (LocalRot.Roll > ClampValue)
 	{
 		LocalRot.Roll = ClampValue;
 	}
 	else if (LocalRot.Roll < -ClampValue)
 	{
 		LocalRot.Roll = -ClampValue;
-	}
+	}*/
+	LocalRot.Roll = FMath::Clamp(LocalRot.Roll, -ClampValue, ClampValue);
 	CarMesh->SetRelativeRotation(LocalRot);
 	
 }
@@ -419,21 +414,10 @@ void ACarPawn::ToggleGrappleHook()
 
 FVector ACarPawn::CalcAsymVector()
 {
-	float Angle = SignedAngleAxis(GetActorForwardVector(), 
-		SphereComp->GetPhysicsLinearVelocity(), 
-		GetActorUpVector());
-
-	
-
-	if (abs(Angle) > 90.f)
-	{
-		Angle = 0.f;
-	}
-	
-	// DrawDebugLine(GetWorld(), GetActorLocation(), GetActorLocation() +
-	// 	-GetActorRightVector() * Angle * 5.f , FColor::Cyan, false, 1.f);
-
-	return -GetActorRightVector() * Angle * SphereComp->GetPhysicsLinearVelocity().Size();
+	// Got help from Anders so its physics based
+	FVector FrictionForce = -SphereComp->GetPhysicsLinearVelocity().GetSafeNormal() * AsymForce; // a big number 
+	FVector CalcAsymForce = GetActorRightVector() * FVector::DotProduct(SphereComp->GetRightVector(), FrictionForce);
+	return CalcAsymForce;
 }
 
 float ACarPawn::CaltAsymForce()
@@ -487,7 +471,7 @@ void ACarPawn::MoveYAxis(float Value)
 	//guard cluase
 	if (CurrentVehicleState != EVehicleState::Driving)
 	{
-		return;
+		//return;
 	}
 	
 	FVector Forwardd = SphereComp->GetForwardVector();

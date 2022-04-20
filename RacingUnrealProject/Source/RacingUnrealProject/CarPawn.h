@@ -117,6 +117,8 @@ private:
 		float MaxCar_SplineAngle = 85.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Movment")
 		float MaxCar_SplineAngleCorrectionSpeed = 100.f;
+	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Movment")
+		float AsymForce = 100000.f;
 
 	//Camera
 private:
