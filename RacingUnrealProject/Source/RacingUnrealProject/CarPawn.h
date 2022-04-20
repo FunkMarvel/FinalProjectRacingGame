@@ -226,5 +226,7 @@ public:
 	//bp events
 	UFUNCTION(BlueprintImplementableEvent)
 		void MaxTurnBpEvent();
+	UFUNCTION(BlueprintImplementableEvent)
+	void NotMaxTurnBpEvent();
 
 };
