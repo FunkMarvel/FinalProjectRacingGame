@@ -118,3 +118,9 @@ void ABaseEnemyActor::Tick(float DeltaTime)
 	
 }
 
+void ABaseEnemyActor::HandleDeath()
+{
+	EnemyDeath.Broadcast(EnemyArrayIndex);
+	Destroy();
+}
+
