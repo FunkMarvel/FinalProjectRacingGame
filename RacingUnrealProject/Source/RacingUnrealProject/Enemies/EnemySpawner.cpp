@@ -62,12 +62,15 @@ void AEnemySpawner::OnExitOverlapBegin(UPrimitiveComponent* OverlappedComponent,
 void AEnemySpawner::OnExitOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	for (ABaseEnemyActor* Enemy : EnemyActors)
+	if (OtherActor->IsA<APawn>())
 	{
-		if (Enemy) Enemy->HandleDeath();
+		for (ABaseEnemyActor* Enemy : EnemyActors)
+		{
+			if (Enemy) Enemy->HandleDeath();
+		}
+		NumberOfSpawnedEnemies = 0;
+		NumberOfDestroyedEnemies = 0;
 	}
-	NumberOfSpawnedEnemies = 0;
-	NumberOfDestroyedEnemies = 0;
 }
 
 // Called when the game starts or when spawned
