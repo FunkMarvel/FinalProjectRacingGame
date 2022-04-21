@@ -96,8 +96,8 @@ void AGravitySplineActor::VisualiseUpVectors(int Segments, USplineComponent* Spl
 
 		FVector Loc = SplineComp->GetLocationAtDistanceAlongSpline(dist, ESplineCoordinateSpace::World);
 		 
-		FVector UpVec = GetFixedUpVector(Loc);
-		
+		FVector UpVec = AGravitySplineActor::GetFixedUpVectorFromLocation(Loc);
+		//FVector UpVec = SplineComp->FindUpVectorClosestToWorldLocation(Loc, ESplineCoordinateSpace::World);
 		DrawDebugLine(GetWorld(), Loc, Loc + UpVec * 200.f, FColor::Blue, false, 0.4f, (uint8)0U, 10.f);
 		
 		
@@ -130,26 +130,26 @@ void AGravitySplineActor::VisualiseUpVectors(int Segments, USplineComponent* Spl
 	}
 }
 
-FVector AGravitySplineActor::GetAdjustedUpVectorFromLocation(FVector Loc)
-{
-	FVector ReturnUpVector;
-	switch (EUpVectorAxis)
-	{
-	case EGravitySplineAxis::Axis_Y:
-		ReturnUpVector = SplineComp->FindRightVectorClosestToWorldLocation(Loc, ESplineCoordinateSpace::World);
-		break;
-	case EGravitySplineAxis::Axis_Z:
-		ReturnUpVector = SplineComp->FindUpVectorClosestToWorldLocation(Loc, ESplineCoordinateSpace::World);
-		break;
-	default:
-		break;
-	}
-	
+// FVector AGravitySplineActor::GetAdjustedUpVectorFromLocation(FVector Loc)
+// {
+// 	FVector ReturnUpVector;
+// 	switch (EUpVectorAxis)
+// 	{
+// 	case EGravitySplineAxis::Axis_Y:
+// 		ReturnUpVector = SplineComp->FindRightVectorClosestToWorldLocation(Loc, ESplineCoordinateSpace::World);
+// 		break;
+// 	case EGravitySplineAxis::Axis_Z:
+// 		ReturnUpVector = SplineComp->FindUpVectorClosestToWorldLocation(Loc, ESplineCoordinateSpace::World);
+// 		break;
+// 	default:
+// 		break;
+// 	}
+// 	
+//
+// 	return ReturnUpVector;
+// }
 
-	return ReturnUpVector;
-}
-
-FVector AGravitySplineActor::GetFixedUpVector(FVector OrgPos)
+FVector AGravitySplineActor::GetFixedUpVectorFromLocation(FVector OrgPos)
 {
 	const int closest = GetClosestSplinePoint(SplineComp, OrgPos);
 	const float PointDistance = SplineComp->GetDistanceAlongSplineAtSplinePoint(closest);
@@ -197,5 +197,10 @@ FVector AGravitySplineActor::GetFixedUpVector(FVector OrgPos)
 		(uint8)0U, 20.f);*/
 	
 	return newUpVector.GetSafeNormal();
+}
+
+FVector AGravitySplineActor::GetFixedUpVectorFromDistance(float Distance)
+{
+	return FVector::ZeroVector;
 }
 

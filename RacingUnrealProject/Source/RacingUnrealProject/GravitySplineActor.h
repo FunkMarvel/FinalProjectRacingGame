@@ -54,14 +54,16 @@ public:
 	UFUNCTION()
 		int32 GetClosestSplinePoint(class USplineComponent* splineEval, FVector Location);
 	UFUNCTION(BlueprintCallable)
-		void VisualiseUpVectors(int Segments, USplineComponent* SplineToUse);
+		virtual void VisualiseUpVectors(int Segments, USplineComponent* SplineToUse);
 
 
 	// spline up vec
+	// UFUNCTION(BlueprintCallable)
+	// 	FVector GetAdjustedUpVectorFromLocation(FVector Loc);
 	UFUNCTION(BlueprintCallable)
-		FVector GetAdjustedUpVectorFromLocation(FVector Loc);
+		virtual FVector GetFixedUpVectorFromLocation(FVector OrgPos);
 	UFUNCTION(BlueprintCallable)
-		FVector GetFixedUpVector(FVector OrgPos);
+		virtual FVector GetFixedUpVectorFromDistance(float Distance);
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		EGravitySplineAxis EUpVectorAxis;

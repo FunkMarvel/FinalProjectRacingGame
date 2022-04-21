@@ -121,7 +121,7 @@ void UPhysicsGrapplingComponent::HandleGravity()
 	GHSComponent = CarPawn->GrappleHookSphereComponent;
 	if (GHSComponent->IsSimulatingPhysics())
 	{
-		FVector Force = CarPawn->GravitySplineActive->GetAdjustedUpVectorFromLocation(GHSComponent->GetComponentLocation());
+		FVector Force = CarPawn->GravitySplineActive->GetFixedUpVectorFromLocation(GHSComponent->GetComponentLocation());
 		GHSComponent->AddForce(-Force * GrappleGravityForce, NAME_None, true);
 	}
 }

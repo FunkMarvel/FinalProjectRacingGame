@@ -11,6 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/ArrowComponent.h"
 #include "CameraEffecttComponent.h"
+#include "DebugLog.h"
 #include "GravitySplineActor.h"
 #include "HighGravityZone.h"
 #include "NeckComponent.h"
@@ -157,8 +158,10 @@ void ACarPawn::ApplyGravity()
 void ACarPawn::TiltCarMesh(FVector AsymVector)
 {
 	//orients the mesh
+	
 	FRotator NewRot = UKismetMathLibrary::MakeRotFromZX(LocalUpVector + AsymVector * GetWorld()->GetDeltaSeconds() * 0.003f,
-	                                                    GetActorForwardVector());
+															GetActorForwardVector());
+	
 	
 	CarMesh->SetWorldRotation( FMath::RInterpTo(CarMesh->GetComponentRotation(),
 	                                            NewRot,
@@ -412,8 +415,15 @@ void ACarPawn::ToggleGrappleHook()
 FVector ACarPawn::CalcAsymVector()
 {
 	// Got help from Anders so its physics based
-	FVector FrictionForce = -SphereComp->GetPhysicsLinearVelocity().GetSafeNormal() * AsymForce; // a big number 
+	FVector NegativeVelocity = -SphereComp->GetPhysicsLinearVelocity();
+	FVector FrictionForce = NegativeVelocity.GetSafeNormal() * AsymForce; // a big number
+
 	FVector CalcAsymForce = GetActorRightVector() * FVector::DotProduct(SphereComp->GetRightVector(), FrictionForce);
+	
+	if (NegativeVelocity.SizeSquared() < pow(120.f, 2.f))
+		CalcAsymForce = FVector::ZeroVector;
+
+		
 	return CalcAsymForce;
 }
 
@@ -551,7 +561,7 @@ bool ACarPawn::IsGrounded()
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldStatic),
 		TraceParams
 	);
-	if (hit.IsValidBlockingHit() && UnsignedAngle(GravitySplineActive->GetAdjustedUpVectorFromLocation(SphereComp->GetComponentLocation()), hit.Normal) < MaxGroundAngle) {
+	if (hit.IsValidBlockingHit() && UnsignedAngle(GravitySplineActive->GetFixedUpVectorFromLocation(SphereComp->GetComponentLocation()), hit.Normal) < MaxGroundAngle) {
 		
 	
 		
@@ -580,7 +590,7 @@ float ACarPawn::DistanceToGround()
 		TraceParams
 	);
 	// DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Blue, true);
-	if (hit.IsValidBlockingHit() && UnsignedAngle(GravitySplineActive->GetAdjustedUpVectorFromLocation(SphereComp->GetComponentLocation()), hit.Normal) < MaxGroundAngle) {
+	if (hit.IsValidBlockingHit() && UnsignedAngle(GravitySplineActive->GetFixedUpVectorFromLocation(SphereComp->GetComponentLocation()), hit.Normal) < MaxGroundAngle) {
 		
 		return hit.Distance;
 	}
@@ -619,7 +629,8 @@ FHitResult ACarPawn::ShootRayFromCenterOfScreen()
 
 void ACarPawn::SetUpVectorAsSplineUpAxis()
 {
-	LocalUpVector = GravitySplineActive->GetAdjustedUpVectorFromLocation(SphereComp->GetComponentLocation());
+	// LocalUpVector = GetUpVectorFromUnderCar();
+	LocalUpVector = GravitySplineActive->GetFixedUpVectorFromLocation(SphereComp->GetComponentLocation());
 	
 }
 
@@ -720,6 +731,30 @@ bool ACarPawn::IsUnderMaxSpeed(bool bBuffer)
 		return true;
 	}
 	return false;
+}
+
+FVector ACarPawn::GetUpVectorFromUnderCar()
+{
+	FVector Start = SphereComp->GetComponentLocation();
+	FVector End = Start -SphereComp->GetUpVector() * 1000.f;
+	FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
+
+	FHitResult hit{};
+	GetWorld()->LineTraceSingleByObjectType(
+		hit,
+		Start,
+		End,
+		FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldStatic),
+		TraceParams
+	);
+
+	DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 1.f, (uint8)0U, 10.f);
+	if (hit.IsValidBlockingHit())
+	{
+		// DL_NORMAL("LineTraceChannelHit!")
+		return hit.Normal;
+	}
+	return FVector::UpVector;
 }
 
 void ACarPawn::OnHitt(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

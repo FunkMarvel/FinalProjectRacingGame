@@ -71,7 +71,7 @@ void ASpikyBallEnemyActor::SetUpVectorAsSplineUpAxis()
 {
 	if (GravitySplineActive)
 	{
-		LocalUpVector = GravitySplineActive->GetAdjustedUpVectorFromLocation(SphereComp->GetComponentLocation());
+		LocalUpVector = GravitySplineActive->GetFixedUpVectorFromLocation(SphereComp->GetComponentLocation());
 		FRotator NewRot = UKismetMathLibrary::MakeRotFromZX(LocalUpVector, GetActorForwardVector());
 		SetActorRotation(NewRot);
 	}

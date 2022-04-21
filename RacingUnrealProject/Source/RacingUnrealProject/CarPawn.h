@@ -218,6 +218,9 @@ public:
 	
 	bool IsUnderMaxSpeed(bool bBuffer);
 
+	UFUNCTION()
+		FVector GetUpVectorFromUnderCar(); 
+	
 	//debug
 public:
 	UPROPERTY(EditAnywhere, Category = "Car|Debug")
