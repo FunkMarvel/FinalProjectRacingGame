@@ -3,3 +3,7 @@
 
 #include "MainMenuHUDWidget.h"
 
+void UMainMenuHUDWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+}

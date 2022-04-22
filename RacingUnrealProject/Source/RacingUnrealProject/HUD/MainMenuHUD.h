@@ -22,7 +22,7 @@ public:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Menu Widgets")
-		TSubclassOf<class UMainMenuHUDWidget> MainMenuClass;
+		TSubclassOf<class UUserWidget> MainMenuClass;
 
 protected:
 	UPROPERTY()
