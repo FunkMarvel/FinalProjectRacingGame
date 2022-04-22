@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BaseEnemyActor.h"
+#include "Sockets.h"
 #include "DroneActor.generated.h"
 
 /**
@@ -23,13 +24,25 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement")
 		float ForwardOffset{5000.f};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement")
+		float AvoidanceRadius{700.f};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement")
 		float InterceptTime{3.f};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collider")
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collider|Sensor")
 		class USphereComponent* SensorSphere{nullptr};
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
+		TSubclassOf<class ASpikyBallEnemyActor> DroppableEnemyClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Spawning")
+		float SpawnOffset{500.f};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
+		float DropTime{1.f};
+	float DropTimer{};
+	
 	float InterceptTimer{};
 	float InterceptSpeed{};
 
-	UPROPERTY(EditAnywhere, Category = "GrappleTarget")
+	UPROPERTY(EditAnywhere, Category = "Collider|GrappleTarget")
 		class UGrappleSphereComponent* GrappleSphereComponent{nullptr};
 
 	UFUNCTION()
@@ -44,6 +57,7 @@ public:
 	
 protected:
 	FVector TargetLocation{};
+	ASpikyBallEnemyActor* DroppedEnemyActor{nullptr};
 
 	enum EDroneState
 	{

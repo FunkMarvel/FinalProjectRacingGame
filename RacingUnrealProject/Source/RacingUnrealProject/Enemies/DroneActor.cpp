@@ -3,6 +3,7 @@
 
 #include "DroneActor.h"
 
+#include "SpikyBallEnemyActor.h"
 #include "../CarPawn.h"
 #include "../GrappleSphereComponent.h"
 #include "../GravitySplineActor.h"
@@ -21,7 +22,7 @@ ADroneActor::ADroneActor()
 	SensorSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	SensorSphere->SetCollisionResponseToChannel(ECC_GameTraceChannel3, ECR_Overlap);
 	SensorSphere->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel3);
-	SensorSphere->SetSphereRadius(500.f);
+	SensorSphere->SetSphereRadius(AvoidanceRadius);
 }
 
 void ADroneActor::BeginPlay()
@@ -30,6 +31,17 @@ void ADroneActor::BeginPlay()
 	GrappleSphereComponent->OnGrappleHitEvent.AddDynamic(this, &ADroneActor::Grappled);
 	GrappleSphereComponent->OnReachedEvent.AddDynamic(this, &ADroneActor::Reached);
 	SensorSphere->OnComponentBeginOverlap.AddDynamic(this, &ADroneActor::OnOverlap);
+
+	if (DroppableEnemyClass)
+	{
+		FAttachmentTransformRules AttachmentTransformRules(EAttachmentRule::SnapToTarget, true);
+		AttachmentTransformRules.LocationRule = EAttachmentRule::KeepWorld;
+		AttachmentTransformRules.ScaleRule = EAttachmentRule::KeepWorld;
+		FVector SpawnLocation{GetActorLocation() - SpawnOffset*GetActorUpVector()};
+		DroppedEnemyActor = GetWorld()->SpawnActor<ASpikyBallEnemyActor>(DroppableEnemyClass, SpawnLocation, GetActorRotation());
+		DroppedEnemyActor->AttachToActor(this, AttachmentTransformRules);
+		DroppedEnemyActor->ChangeState(ASpikyBallEnemyActor::Idle);
+	}
 }
 
 void ADroneActor::Tick(float DeltaSeconds)
@@ -50,14 +62,14 @@ void ADroneActor::Tick(float DeltaSeconds)
 		if (PlayerPawn && GravitySplineActive) ChangeState(Intercepting);
 		break;
 	}
-	if (!PlayerPawn)
-	{
-		PlayerPawn = Cast<ACarPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	}
-	else if (!GravitySplineActive)
-    {
-    	GravitySplineActive = PlayerPawn->GravitySplineActive;
-    }
+	// if (!PlayerPawn)
+	// {
+	// 	PlayerPawn = Cast<ACarPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	// }
+	// else if (!GravitySplineActive)
+ //    {
+ //    	GravitySplineActive = PlayerPawn->GravitySplineActive;
+ //    }
 }
 
 void ADroneActor::InterceptingState()
@@ -67,10 +79,10 @@ void ADroneActor::InterceptingState()
 		TargetLocation = PlayerPawn->GetActorLocation() + PlayerPawn->GetActorForwardVector()*ForwardOffset;
 		InterceptSpeed = (TargetLocation-GetActorLocation()).Size()/InterceptTime;
 		bEnteringState = false;
-		TargetLocation = FVector::DotProduct(TargetLocation, PlayerPawn->GetActorForwardVector())*PlayerPawn->GetActorForwardVector() +
-			FVector::DotProduct(TargetLocation, PlayerPawn->GetActorRightVector())*PlayerPawn->GetActorRightVector() +
-				FVector::DotProduct(GetActorLocation(), PlayerPawn->GetActorUpVector())*PlayerPawn->GetActorUpVector();
 	}
+	TargetLocation = FVector::DotProduct(TargetLocation, PlayerPawn->GetActorForwardVector())*PlayerPawn->GetActorForwardVector() +
+		FVector::DotProduct(TargetLocation, PlayerPawn->GetActorRightVector())*PlayerPawn->GetActorRightVector() +
+			FVector::DotProduct(GetActorLocation(), PlayerPawn->GetActorUpVector())*PlayerPawn->GetActorUpVector();
 	
 	SetActorRotation((TargetLocation - GetActorLocation()).Rotation());
 	Move(TargetLocation);
@@ -91,6 +103,19 @@ void ADroneActor::AttackingState()
 	FRotator TargetRot{(PlayerPawn->GetActorLocation()-GetActorLocation()).Rotation()};
 	FRotator NewRot{FMath::RInterpTo(CurrentRot, TargetRot, GetWorld()->GetDeltaSeconds(), 5.f)};
 	SetActorRotation(NewRot);
+	
+	if (DropTimer >= DropTime)
+	{
+		// FDetachmentTransformRules DetachmentTransformRules(EDetachmentRule::KeepWorld, false);
+		DroppedEnemyActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		DroppedEnemyActor->SphereComp->SetSimulatePhysics(true);
+		DroppedEnemyActor->SphereComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		DroppedEnemyActor->ChangeState(ASpikyBallEnemyActor::Airborne);
+	}
+	else
+	{
+		DropTimer += GetWorld()->GetDeltaSeconds();
+	}
 }
 
 void ADroneActor::Grappled(FTransform SphereCompTransform)
@@ -108,10 +133,10 @@ void ADroneActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	DL_NORMAL("Overlapping")
-	if (OtherActor->IsA<ABaseEnemyActor>())
+	if (OtherActor->IsA<ADroneActor>())
 	{
 		DL_NORMAL("Adjusting target")
-		TargetLocation += 5000.f*FVector::VectorPlaneProject(SweepResult.ImpactNormal, GravitySplineActive->GetActorUpVector());
+		TargetLocation += AvoidanceRadius*(GetActorLocation() - OtherActor->GetActorLocation()).GetSafeNormal();
 	}
 }
 
