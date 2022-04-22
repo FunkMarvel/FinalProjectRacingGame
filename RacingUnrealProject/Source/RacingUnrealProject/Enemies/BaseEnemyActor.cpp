@@ -62,6 +62,7 @@ FVector ABaseEnemyActor::GetToPlayerVector(bool bNormalized)
 void ABaseEnemyActor::BeginPlay()
 {
 	Super::BeginPlay();
+	GravitySplineActive = GetClosestGravitySpline();
 }
 
 AGravitySplineActor* ABaseEnemyActor::GetClosestGravitySpline()
@@ -97,7 +98,7 @@ bool ABaseEnemyActor::IsGrounded()
 		GetWorld()->LineTraceSingleByObjectType(
 			hit,
 			ArrowRayCastStart->GetComponentLocation(),
-			ArrowRayCastStart->GetComponentLocation() - GetActorUpVector() *1.05* SphereComp->GetScaledSphereRadius(),
+			ArrowRayCastStart->GetComponentLocation() - GravitySplineActive->GetActorUpVector() *1.5* SphereComp->GetScaledSphereRadius(),
 			FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldStatic),
 			TraceParams
 		);
@@ -105,18 +106,15 @@ bool ABaseEnemyActor::IsGrounded()
 			//UE_LOG(LogTemp, Warning, TEXT("HIT"))
 			return true;
 		}
-		else
-		{
 			//UE_LOG(LogTemp, Warning, TEXT("NO HIT"))
-			return false;
-		}
+	return false;
 }
 
 // Called every frame
 void ABaseEnemyActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (!PlayerPawn) PlayerPawn = Cast<ACarPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());;
+	if (!PlayerPawn) PlayerPawn = Cast<ACarPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	
 }
 
