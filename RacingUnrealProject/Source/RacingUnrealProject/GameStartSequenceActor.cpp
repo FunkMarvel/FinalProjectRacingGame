@@ -30,19 +30,18 @@ AGameStartSequenceActor::AGameStartSequenceActor()
 void AGameStartSequenceActor::BeginPlay()
 {
 	Super::BeginPlay();
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	PlayerController = UGameplayStatics::GetPlayerController(this, 0);
 	CarPawn = Cast<ACarPawn>(PlayerController->GetPawn());
 	
 	//sets this as the active camera!
 	PlayerController->SetViewTargetWithBlend(this, 0.f);
 
-	PlayerController->DisableInput(PlayerController);
+	CarPawn->DisableInput(PlayerController);
 	
 	//seting up timer
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AGameStartSequenceActor::OnShowoffFinshed,
 		ShowoffYawCurve->FloatCurve.GetLastKey().Time - 0.5f, false);
-	// DL_NORMAL(FString::SanitizeFloat(ShowoffYawCurve->FloatCurve.GetLastKey().Time))
 	
 }
 
@@ -50,16 +49,25 @@ void AGameStartSequenceActor::BeginPlay()
 void AGameStartSequenceActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	CurrentAnimationTime += GetWorld()->GetDeltaSeconds();
-
-	CameraSpringArm->SetRelativeRotation(FRotator(0,ShowoffYawCurve->GetFloatValue(CurrentAnimationTime),0));
+	
+	CurrentShowOffTime += GetWorld()->GetDeltaSeconds();
+	CameraSpringArm->SetRelativeRotation(FRotator(0,ShowoffYawCurve->GetFloatValue(CurrentShowOffTime),0));
 	
 }
 void AGameStartSequenceActor::OnShowoffFinshed()
 {
+	float BlendTime = 1.f;
 	APawn* PlayerPawn = UGameplayStatics::GetPlayerController(this, 0)->GetPawn();
 	UGameplayStatics::GetPlayerController(this, 0)->SetViewTargetWithBlend(PlayerPawn,
-		1.f, EViewTargetBlendFunction::VTBlend_Cubic);
-	SetLifeSpan(1.f);
+		BlendTime, EViewTargetBlendFunction::VTBlend_Cubic);
+
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AGameStartSequenceActor::BlendFinished, BlendTime, false);
+}
+
+void AGameStartSequenceActor::BlendFinished()
+{
+	CarPawn->EnableInput(PlayerController);
+	SetLifeSpan(0.1f);
 }
 

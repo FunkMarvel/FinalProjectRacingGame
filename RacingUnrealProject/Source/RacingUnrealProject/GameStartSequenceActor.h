@@ -27,8 +27,29 @@ public:
 private:
 	UPROPERTY()
 	class ACarPawn* CarPawn = nullptr;
+	UPROPERTY()
+	class APlayerController* PlayerController = nullptr;
+	
+	
+public:
+	/*enum StartSequenceState
+	{
+		Inactive,
+		Showoff,
+		BlendToPlayer,
+		Delete
+	};
+	
+	void ChangeState(StartSequenceState NewState);*/
+private:
+	// StartSequenceState CurrentState = Showoff;
+	/*UPROPERTY()
+		bool bEnterState = false;
+	UPROPERTY()
+	float CurrentStateTime = 0.f;*/
 	
 
+	
 	//camera stuff
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Camera")
 		class UCameraComponent* ShowoffCamema = nullptr;
@@ -39,10 +60,14 @@ private:
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Camera")
 		class UCurveFloat* ShowoffYawCurve = nullptr;
 	UPROPERTY()
-		float CurrentAnimationTime = 0.f;
+		float CurrentShowOffTime = 0.f;
+	
 
 	UFUNCTION()
 		void OnShowoffFinshed();
+	UFUNCTION()
+		void BlendFinished();
+	
 };
 
 
