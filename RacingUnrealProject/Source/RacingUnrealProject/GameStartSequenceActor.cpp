@@ -9,6 +9,7 @@
 #include "Components/ArrowComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Widget/GrappableWidget.h"
 
 // Sets default values
 AGameStartSequenceActor::AGameStartSequenceActor()
@@ -36,6 +37,7 @@ void AGameStartSequenceActor::BeginPlay()
 		Destroy();
 		return;
 	}
+	
 	
 	PlayerController = UGameplayStatics::GetPlayerController(this, 0);
 
@@ -78,6 +80,9 @@ void AGameStartSequenceActor::OnShowoffFinshed()
 	UGameplayStatics::GetPlayerController(this, 0)->SetViewTargetWithBlend(CarPawn,
 		BlendTime, EViewTargetBlendFunction::VTBlend_Cubic);
 
+	CountDownWidget->AddToViewport();
+	CountDownWidget->PlayCloseAnimationCpp();
+	
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AGameStartSequenceActor::BlendFinished, BlendTime, false);
 }

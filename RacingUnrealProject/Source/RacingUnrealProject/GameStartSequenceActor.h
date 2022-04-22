@@ -57,8 +57,11 @@ private:
 		class UArrowComponent* ArrowComponent = nullptr;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Camera")
 		class USpringArmComponent* CameraSpringArm = nullptr;
+	
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Camera")
 		class UCurveFloat* ShowoffYawCurve = nullptr;
+	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Camera")
+		class UGrappableWidget* CountDownWidget = nullptr;
 	
 	UPROPERTY()
 	float CurrentShowOffTime = 0.f;
