@@ -38,8 +38,7 @@ void ASpikyBallEnemyActor::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 	if (CurrentState == EBallState::Spiked && GetToPlayerVector(false).Size() > TargetDistance) { Destroy(); }
 	else if (GetToPlayerVector(false).Size() > TargetDistance) { return; }
-
-	SphereComp->AddForce(-LocalUpVector * Acceleration, NAME_None, true);
+	
 	switch (CurrentState)
 	{
 	case EBallState::Airborne:
@@ -95,7 +94,8 @@ void ASpikyBallEnemyActor::AirborneState()
 {
 	if (bEnteringState) bEnteringState = false;
 	if (IsGrounded()) ChangeState(EBallState::OnGround);
-	UE_LOG(LogTemp, Warning, TEXT("Airborne"));
+	ApplyGravity();
+	// UE_LOG(LogTemp, Warning, TEXT("Airborne"));
 }
 
 void ASpikyBallEnemyActor::GroundedState()
@@ -112,7 +112,8 @@ void ASpikyBallEnemyActor::GroundedState()
 		bEnteringState = false;
 	}
 	LookAtPlayer();
-	UE_LOG(LogTemp, Warning, TEXT("Grounded"));
+	ApplyGravity();
+	// UE_LOG(LogTemp, Warning, TEXT("Grounded"));
 }
 
 void ASpikyBallEnemyActor::SpikedState()
@@ -122,7 +123,8 @@ void ASpikyBallEnemyActor::SpikedState()
 		bEnteringState = false;
 	}
 	Move();
-	UE_LOG(LogTemp, Warning, TEXT("Spiked"));
+	ApplyGravity();
+	// UE_LOG(LogTemp, Warning, TEXT("Spiked"));
 }
 
 void ASpikyBallEnemyActor::LookAtPlayer()
@@ -142,4 +144,9 @@ void ASpikyBallEnemyActor::Move()
 	{
 		SphereComp->AddForce(MoveDir * Acceleration, NAME_None, true);
 	}
+}
+
+void ASpikyBallEnemyActor::ApplyGravity()
+{
+	SphereComp->AddForce(-LocalUpVector * Acceleration, NAME_None, true);
 }

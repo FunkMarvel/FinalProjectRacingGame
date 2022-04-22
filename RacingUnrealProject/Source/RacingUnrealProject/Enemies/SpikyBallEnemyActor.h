@@ -29,6 +29,7 @@ protected:
 	void SetUpVectorAsSplineUpAxis();
 	void RotateSphereComponentToLocalUpVector();
 
+public:
 	enum EBallState
 	{
 		Idle,
@@ -42,6 +43,7 @@ protected:
 
 	void ChangeState(EBallState NewState);
 
+protected:
 	FTimerHandle SpikeTimerHandle;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Attack")
 		float SpikeTimer{1.f};
@@ -56,6 +58,7 @@ protected:
 
 	void LookAtPlayer();
 	void Move();
+	void ApplyGravity();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement|Rolling")
 		float MaxSpeed{2000.f};
