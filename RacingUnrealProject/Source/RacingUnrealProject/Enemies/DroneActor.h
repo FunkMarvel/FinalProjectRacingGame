@@ -24,6 +24,8 @@ public:
 		float ForwardOffset{5000.f};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement")
 		float InterceptTime{3.f};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collider")
+		class USphereComponent* SensorSphere{nullptr};
 	float InterceptTimer{};
 	float InterceptSpeed{};
 
@@ -35,6 +37,10 @@ public:
 
 	UFUNCTION()
 		void Reached(float AddSpeedAmount);
+
+	UFUNCTION()
+	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
 protected:
 	FVector TargetLocation{};
