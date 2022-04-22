@@ -177,7 +177,7 @@ FVector AGravitySplineActor::GetFixedUpVectorFromLocation(FVector OrgPos)
 
 	float lerp = p1/SegmentDistance;
 	lerp = abs(lerp);
-	DL_NORMAL(FString::SanitizeFloat(lerp))
+	// DL_NORMAL(FString::SanitizeFloat(lerp))
 
 	FVector newUpVector = UKismetMathLibrary::VLerp(SplineComp->GetUpVectorAtSplinePoint(closest, ESplineCoordinateSpace::World),
 		SplineComp->GetUpVectorAtSplinePoint(SecClosest, ESplineCoordinateSpace::World),
