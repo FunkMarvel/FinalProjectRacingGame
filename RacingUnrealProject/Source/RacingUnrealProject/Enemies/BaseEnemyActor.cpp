@@ -9,6 +9,7 @@
 #include "Components/ArrowComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "RacingUnrealProject/DebugLog.h"
 
 // Sets default values
 ABaseEnemyActor::ABaseEnemyActor()
@@ -94,19 +95,19 @@ bool ABaseEnemyActor::IsGrounded()
 {
 		FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
 
-		FHitResult hit{};
+		FHitResult Hit{};
 		GetWorld()->LineTraceSingleByObjectType(
-			hit,
+			Hit,
 			ArrowRayCastStart->GetComponentLocation(),
-			ArrowRayCastStart->GetComponentLocation() - GravitySplineActive->GetActorUpVector() *1.5* SphereComp->GetScaledSphereRadius(),
+			ArrowRayCastStart->GetComponentLocation() - GetActorUpVector() *1.05* SphereComp->GetScaledSphereRadius(),
 			FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldStatic),
 			TraceParams
 		);
-		if (hit.IsValidBlockingHit()) {
-			//UE_LOG(LogTemp, Warning, TEXT("HIT"))
+		if (Hit.IsValidBlockingHit()) {
+			// DL_NORMAL("Hit Ground");
 			return true;
 		}
-			//UE_LOG(LogTemp, Warning, TEXT("NO HIT"))
+			// DL_NORMAL("Not grounded");
 	return false;
 }
 
