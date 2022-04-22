@@ -53,6 +53,11 @@ public:
 	UFUNCTION()
 	void SetCameraCurrent(class UCameraComponent* NewCamera){CameraCurrent = NewCamera; }
 
+	UPROPERTY()
+		bool bFirstCamera = true; 
+	UFUNCTION()
+	void SpaceCamera();
+
 private:
 	UFUNCTION() // this is very bad practice, but we are short on time so this was the only solution i figured out
 		void LateBeginPlay();
