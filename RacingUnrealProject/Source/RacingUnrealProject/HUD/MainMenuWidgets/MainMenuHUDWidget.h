@@ -13,5 +13,16 @@ UCLASS()
 class RACINGUNREALPROJECT_API UMainMenuHUDWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
+public:
+	virtual void NativeConstruct() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+		class UButton* PlayGameButton;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+		class UButton* SettingsButton;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+		class UButton* ExitGameButton;
 };
