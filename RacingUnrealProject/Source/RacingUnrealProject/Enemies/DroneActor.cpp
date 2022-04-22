@@ -104,15 +104,17 @@ void ADroneActor::AttackingState()
 	FRotator NewRot{FMath::RInterpTo(CurrentRot, TargetRot, GetWorld()->GetDeltaSeconds(), 5.f)};
 	SetActorRotation(NewRot);
 	
-	if (DropTimer >= DropTime)
+	if (DroppedEnemyActor && DropTimer >= DropTime)
 	{
 		// FDetachmentTransformRules DetachmentTransformRules(EDetachmentRule::KeepWorld, false);
 		DroppedEnemyActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		DroppedEnemyActor->SphereComp->SetSimulatePhysics(true);
 		DroppedEnemyActor->SphereComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		DroppedEnemyActor->RotateSphereComponentToLocalUpVector();
 		DroppedEnemyActor->ChangeState(ASpikyBallEnemyActor::Airborne);
+		DroppedEnemyActor = nullptr;
 	}
-	else
+	else if (DropTimer < DropTime)
 	{
 		DropTimer += GetWorld()->GetDeltaSeconds();
 	}
