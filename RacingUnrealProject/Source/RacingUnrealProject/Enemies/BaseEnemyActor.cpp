@@ -21,7 +21,9 @@ ABaseEnemyActor::ABaseEnemyActor()
 	SetRootComponent(SphereComp);
 	SphereComp->SetSimulatePhysics(false);
 	SphereComp->SetEnableGravity(false);
-	SphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	SphereComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
+	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECollisionResponse::ECR_Block);
 
 	// cosmetic mesh:
 	CosmeticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));

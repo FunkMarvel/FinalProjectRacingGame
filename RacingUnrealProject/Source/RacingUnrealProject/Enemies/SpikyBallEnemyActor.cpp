@@ -13,6 +13,8 @@ ASpikyBallEnemyActor::ASpikyBallEnemyActor() : ABaseEnemyActor()
 	SphereComp->SetSimulatePhysics(true);
 	SphereComp->SetEnableGravity(false);
 	SphereComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
+	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECollisionResponse::ECR_Block);
 	SphereComp->SetSphereRadius(200.f);
 }
 

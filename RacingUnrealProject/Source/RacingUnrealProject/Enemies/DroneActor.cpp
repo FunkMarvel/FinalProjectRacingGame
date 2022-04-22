@@ -6,6 +6,7 @@
 #include "../CarPawn.h"
 #include "../GrappleSphereComponent.h"
 #include "../GravitySplineActor.h"
+#include "../DebugLog.h"
 #include "Components/SphereComponent.h"
 
 ADroneActor::ADroneActor()
@@ -14,6 +15,12 @@ ADroneActor::ADroneActor()
 	GrappleSphereComponent->SetupAttachment(GetRootComponent());
 	GrappleSphereComponent->SetIsEnabled(true);
 	GrappleSphereComponent->SetIsEatable(true);
+
+	SensorSphere = CreateDefaultSubobject<USphereComponent>(TEXT("SensorSphere"));
+	SensorSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	SensorSphere->SetCollisionResponseToChannel(ECC_GameTraceChannel3, ECR_Overlap);
+	SensorSphere->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel3);
+	SensorSphere->SetSphereRadius(500.f);
 }
 
 void ADroneActor::BeginPlay()
@@ -21,10 +28,21 @@ void ADroneActor::BeginPlay()
 	Super::BeginPlay();
 	GrappleSphereComponent->OnGrappleHitEvent.AddDynamic(this, &ADroneActor::Grappled);
 	GrappleSphereComponent->OnReachedEvent.AddDynamic(this, &ADroneActor::Reached);
+	SensorSphere->OnComponentBeginOverlap.AddDynamic(this, &ADroneActor::OnOverlap);
 }
 
 void ADroneActor::Tick(float DeltaSeconds)
 {
+	TArray<AActor*> Poop;
+	SensorSphere->GetOverlappingActors(Poop);
+	for (AActor* Po : Poop)
+	{
+		DL_NORMAL("Found pee");
+		if (Po->IsA<ADroneActor>())
+		{
+			DL_NORMAL("Found poo");
+		}
+	}
 	Super::Tick(DeltaSeconds);
 
 	switch (CurrentState)
@@ -51,13 +69,16 @@ void ADroneActor::Tick(float DeltaSeconds)
 
 void ADroneActor::InterceptingState()
 {
-	TargetLocation = PlayerPawn->GetActorLocation() + PlayerPawn->GetActorForwardVector()*ForwardOffset;
 	if (bEnteringState)
 	{
+		TargetLocation = PlayerPawn->GetActorLocation() + PlayerPawn->GetActorForwardVector()*ForwardOffset;
 		InterceptSpeed = (TargetLocation-GetActorLocation()).Size()/InterceptTime;
 		bEnteringState = false;
+		TargetLocation = FVector::DotProduct(TargetLocation, PlayerPawn->GetActorForwardVector())*PlayerPawn->GetActorForwardVector() +
+			FVector::DotProduct(TargetLocation, PlayerPawn->GetActorRightVector())*PlayerPawn->GetActorRightVector() +
+				FVector::DotProduct(GetActorLocation(), PlayerPawn->GetActorUpVector())*PlayerPawn->GetActorUpVector();
 	}
-	TargetLocation.Z = GetActorLocation().Z;
+	
 	SetActorRotation((TargetLocation - GetActorLocation()).Rotation());
 	Move(TargetLocation);
 	if (GetActorLocation().Equals(TargetLocation))
@@ -88,6 +109,17 @@ void ADroneActor::Reached(float AddSpeedAmount)
 {
 	//TODO: Add animation for destruction.
 	HandleDeath();
+}
+
+void ADroneActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	DL_NORMAL("Overlapping")
+	if (OtherActor->IsA<ABaseEnemyActor>())
+	{
+		DL_NORMAL("Adjusting target")
+		TargetLocation += 5000.f*FVector::VectorPlaneProject(SweepResult.ImpactNormal, GravitySplineActive->GetActorUpVector());
+	}
 }
 
 void ADroneActor::Move(FVector Target)
