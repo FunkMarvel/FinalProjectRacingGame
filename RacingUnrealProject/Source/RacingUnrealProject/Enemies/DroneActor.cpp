@@ -17,6 +17,7 @@ ADroneActor::ADroneActor()
 	GrappleSphereComponent->SetIsEatable(true);
 
 	SensorSphere = CreateDefaultSubobject<USphereComponent>(TEXT("SensorSphere"));
+	SensorSphere->SetupAttachment(GetRootComponent());
 	SensorSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	SensorSphere->SetCollisionResponseToChannel(ECC_GameTraceChannel3, ECR_Overlap);
 	SensorSphere->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel3);
@@ -35,14 +36,6 @@ void ADroneActor::Tick(float DeltaSeconds)
 {
 	TArray<AActor*> Poop;
 	SensorSphere->GetOverlappingActors(Poop);
-	for (AActor* Po : Poop)
-	{
-		DL_NORMAL("Found pee");
-		if (Po->IsA<ADroneActor>())
-		{
-			DL_NORMAL("Found poo");
-		}
-	}
 	Super::Tick(DeltaSeconds);
 
 	switch (CurrentState)
