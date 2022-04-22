@@ -27,9 +27,10 @@ public:
 
 protected:
 	void SetUpVectorAsSplineUpAxis();
-	void RotateSphereComponentToLocalUpVector();
 
 public:
+	void RotateSphereComponentToLocalUpVector();
+
 	enum EBallState
 	{
 		Idle,
