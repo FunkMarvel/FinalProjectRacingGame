@@ -35,13 +35,25 @@ private:
 		class ACarPawn* CarPawn = nullptr;
 
 	//single run cameraModifier
-	UPROPERTY(meta = (AllowPrivateAccess = "true"),EditAnywhere, Category = "Camera")
+	UPROPERTY(meta = (AllowPrivateAccess = "true"),EditAnywhere, Category = "Camera|Boost")
 		TSubclassOf<class UCameraModifier> BoostCameraModifierClass = nullptr;
+
+	
+	UPROPERTY(meta = (AllowPrivateAccess = "true"),EditAnywhere, Category = "Camera|Speed")
+		TSubclassOf<class UCameraShakeBase> SpeedCameraShakeClass = nullptr;
+	UPROPERTY(meta = (AllowPrivateAccess = "true", ToolTip = "Higher means less shake"),EditAnywhere, Category = "Camera|Speed")
+		float SpeedShakeInverseIntensity = 10000.f;
+	UPROPERTY()
+		class UCameraShakeBase* SpeedCameraShake = nullptr;
 public:
 	UPROPERTY()
 		class UCameraModifier* BoostCameraModifier = nullptr;
+
+	
 	UFUNCTION()
 	void SetCameraCurrent(class UCameraComponent* NewCamera){CameraCurrent = NewCamera; }
 
-
+private:
+	UFUNCTION() // this is very bad practice, but we are short on time so this was the only solution i figured out
+		void LateBeginPlay();
 };

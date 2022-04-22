@@ -4,6 +4,7 @@
 #include "CameraEffecttComponent.h"
 
 #include "CarPawn.h"
+#include "DebugLog.h"
 #include "Camera/CameraComponent.h"
 #include "Camera/CameraModifier.h"
 #include "Components/SphereComponent.h"
@@ -25,7 +26,8 @@ void UCameraEffecttComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UCameraEffecttComponent::LateBeginPlay, 0.1f, false);
 	
 	if (GetOwner()->IsA(ACarPawn::StaticClass()))
 		CarPawn = Cast<ACarPawn>(GetOwner());
@@ -36,14 +38,21 @@ void UCameraEffecttComponent::BeginPlay()
 
 
 	// this is all the setup you ned for the boost modifier, it will de activate itself when being enabled
+	
 	BoostCameraModifier = UGameplayStatics::GetPlayerCameraManager(this, 0)->AddNewCameraModifier(BoostCameraModifierClass);
 	BoostCameraModifier->DisableModifier(true);
+	
+	//setting up speed camera shake
+
+	// UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraShake, CarPawn->SphereComp->GetComponentLocation(),
+	// 	 	 0.f, 1000.f, 1.f);
 }
 
 
 // Called every frame
 void UCameraEffecttComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
+	
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
 	float Speed = 0.f;
@@ -62,6 +71,20 @@ void UCameraEffecttComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	TargetFOV = FMath::FInterpTo(CameraCurrent->FieldOfView, TargetFOV, GetWorld()->GetDeltaSeconds(), 5.f);
 	
 	CameraCurrent->SetFieldOfView(TargetFOV);
+
+	//speed camera shake
+	if (CarPawn->SphereComp->IsSimulatingPhysics() && SpeedCameraShake)
+	{
+		SpeedCameraShake->ShakeScale = CarPawn->SphereComp->GetPhysicsLinearVelocity().Size() * (1.f/SpeedShakeInverseIntensity);
+	}
+}
+
+void UCameraEffecttComponent::LateBeginPlay()
+{
+	SpeedCameraShake = UGameplayStatics::GetPlayerCameraManager(this, 0)->StartCameraShake(SpeedCameraShakeClass);
+	
+	// UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraShake, GetOwner()->GetActorLocation(),
+	// 		  0.f, 1000.f, 1.f);
 }
 
 

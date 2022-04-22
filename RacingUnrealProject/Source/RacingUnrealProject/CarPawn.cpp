@@ -56,6 +56,11 @@ ACarPawn::ACarPawn()
 	MainCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	MainCamera->SetupAttachment(CameraBoom);
 
+	SecondCameraTransfrom = CreateDefaultSubobject<UArrowComponent>(TEXT("SecondCameraTransfrom"));
+	SecondCameraTransfrom->SetupAttachment(GetRootComponent());
+	SecondCameraTransfrom->ArrowColor = FColor::Blue;
+	SecondCameraTransfrom->ArrowSize = 1.f;
+
 	ArrowRayCastStart = CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow RayCastStart"));
 	ArrowRayCastStart->SetupAttachment(GetRootComponent());
 	
@@ -305,6 +310,9 @@ void ACarPawn::StateGrappling()
 		// CameraBoom->CameraRotationLagSpeed = GrapplingCameraLag.Y;
 		//UE_LOG(LogTemp, Warning, TEXT("BING!"))
 		CameraEffectComponent->BoostCameraModifier->EnableModifier();
+		// UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraEffectComponent->CameraShake, SphereComp->GetComponentLocation(),
+		// 	  0.f, 1000.f, 1.f);
+		
 	}
 
 	

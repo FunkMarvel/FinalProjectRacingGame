@@ -227,9 +227,6 @@ void UNeckComponent::UpdateSplineMesh(float StartLength, float EndLength)
 		SplineMeshComponents[i]->SetEndTangent(Spline->GetDirectionAtDistanceAlongSpline(currentLength, ESplineCoordinateSpace::World)* 4.f, true);
 		
 		lastLength = currentLength;
-
-		/*if (i == 3)
-			break;*/
 	}
 }
 
