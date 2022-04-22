@@ -30,6 +30,13 @@ AGameStartSequenceActor::AGameStartSequenceActor()
 void AGameStartSequenceActor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (bSkipSequence) // if we want to skip this, just destroy the object
+	{
+		Destroy();
+		return;
+	}
+	
 	PlayerController = UGameplayStatics::GetPlayerController(this, 0);
 
 	CarPawn = Cast<ACarPawn>(PlayerController->GetPawn());
@@ -39,14 +46,21 @@ void AGameStartSequenceActor::BeginPlay()
 
 
 	CarPawn->DisableInput(PlayerController);
-
+	
 	
 	//seting up timer
-	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AGameStartSequenceActor::OnShowoffFinshed,
+	
+	GetWorld()->GetTimerManager().SetTimer(ShowOffTimerHandle, this, &AGameStartSequenceActor::OnShowoffFinshed,
 		ShowoffYawCurve->FloatCurve.GetLastKey().Time - 0.5f, false);
 
 	
+}
+
+void AGameStartSequenceActor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	PlayerInputComponent->BindAction("Space",IE_Pressed, this, &AGameStartSequenceActor::Skip);
+	//does not work as this is not the active player controller
 }
 
 // Called every frame
@@ -56,14 +70,12 @@ void AGameStartSequenceActor::Tick(float DeltaTime)
 	
 	CurrentShowOffTime += GetWorld()->GetDeltaSeconds();
 	CameraSpringArm->SetRelativeRotation(FRotator(0,ShowoffYawCurve->GetFloatValue(CurrentShowOffTime),0));
-
-	
 }
 void AGameStartSequenceActor::OnShowoffFinshed()
 {
 	float BlendTime = 1.f;
-	APawn* PlayerPawn = UGameplayStatics::GetPlayerController(this, 0)->GetPawn();
-	UGameplayStatics::GetPlayerController(this, 0)->SetViewTargetWithBlend(PlayerPawn,
+	
+	UGameplayStatics::GetPlayerController(this, 0)->SetViewTargetWithBlend(CarPawn,
 		BlendTime, EViewTargetBlendFunction::VTBlend_Cubic);
 
 	FTimerHandle TimerHandle;
@@ -75,5 +87,14 @@ void AGameStartSequenceActor::BlendFinished()
 	CarPawn->EnableInput(PlayerController);
 	SetLifeSpan(0.1f);
 
+}
+
+void AGameStartSequenceActor::Skip()
+{
+	GetWorld()->GetTimerManager().ClearTimer(ShowOffTimerHandle);
+	UGameplayStatics::GetPlayerController(this, 0)->SetViewTargetWithBlend(CarPawn,
+		0.f, EViewTargetBlendFunction::VTBlend_Cubic);
+	BlendFinished();
+	DL_NORMAL("hehe skip!")
 }
 

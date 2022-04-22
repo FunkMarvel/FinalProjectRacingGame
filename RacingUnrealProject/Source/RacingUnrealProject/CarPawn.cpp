@@ -247,6 +247,7 @@ void ACarPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this, &ACarPawn::ToggleGrappleHook);
 	PlayerInputComponent->BindAction("Up", EInputEvent::IE_Pressed, this, &ACarPawn::SetGameSpeedUp);
 	PlayerInputComponent->BindAction("Down", EInputEvent::IE_Pressed, this, &ACarPawn::SetGameSpeedDown);
+	PlayerInputComponent->BindAction("Space", EInputEvent::IE_Pressed, CameraEffectComponent, &UCameraEffecttComponent::SpaceCamera);
 }
 
 void ACarPawn::UpdateCameraBoomLength()
@@ -767,10 +768,7 @@ FVector ACarPawn::GetUpVectorFromUnderCar()
 
 void ACarPawn::OnHitt(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	/*LocalUpVector = GetActorLocation() - Hit.Location;
-	LocalUpVector.Normalize();*/
-	//LocalUpVector = Hit.Normal;
-	//DrawDebugLine(GetWorld(), GetActorLocation(), GetActorLocation() +  LocalUpVector * 14.f, FColor::Red, false, 1.f);
+	HitGroundBpEvent(SphereComp->GetPhysicsLinearVelocity().Size());
 	
 }
 

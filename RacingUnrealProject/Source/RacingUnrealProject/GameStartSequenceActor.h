@@ -7,7 +7,7 @@
 #include "GameStartSequenceActor.generated.h"
 
 UCLASS()
-class RACINGUNREALPROJECT_API AGameStartSequenceActor : public AActor
+class RACINGUNREALPROJECT_API AGameStartSequenceActor : public APawn
 {
 	GENERATED_BODY()
 	
@@ -18,6 +18,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 public:	
 	// Called every frame
@@ -58,15 +59,21 @@ private:
 		class USpringArmComponent* CameraSpringArm = nullptr;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Camera")
 		class UCurveFloat* ShowoffYawCurve = nullptr;
+	
 	UPROPERTY()
-
-		float CurrentShowOffTime = 0.f;
+	float CurrentShowOffTime = 0.f;
+	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Camera")
+		bool bSkipSequence = false;
 	
 
+	
+	FTimerHandle ShowOffTimerHandle;
 	UFUNCTION()
 		void OnShowoffFinshed();
 	UFUNCTION()
 		void BlendFinished();
+	UFUNCTION()
+		void Skip();
 	
 
 };

@@ -7,7 +7,7 @@
 #include "GameFramework/Pawn.h"
 #include "CarPawn.generated.h"
 
-// DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReachedEvent, float, AddSpeedAmount);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHitGround, float, Speed);
 
 UCLASS(config=Game, BlueprintType, Blueprintable)
 class RACINGUNREALPROJECT_API ACarPawn : public APawn
@@ -207,13 +207,16 @@ private:
 	UFUNCTION()
 	bool IsOutOfBounds();
 	
-
-	//TODO debug remove!
 	
+	//TODO debug remove!
 	UFUNCTION()
 	void SetGameSpeedUp();
 	UFUNCTION()
 	void SetGameSpeedDown();
+	// TODO debug remove end
+	
+	
+	
 public:
 	static float SignedAngleAxis(FVector v1, FVector v2, FVector axis);
 	static float UnsignedAngle(FVector v1, FVector v2);
@@ -233,6 +236,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 		void MaxTurnBpEvent();
 	UFUNCTION(BlueprintImplementableEvent)
-	void NotMaxTurnBpEvent();
+		void NotMaxTurnBpEvent();
+	UFUNCTION(BlueprintImplementableEvent)
+		void HitGroundBpEvent(float Speed);
 
 };

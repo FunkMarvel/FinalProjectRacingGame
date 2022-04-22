@@ -9,6 +9,8 @@
 #include "Camera/CameraModifier.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/ArrowComponent.h"
+#include "GameFramework/SpringArmComponent.h" 
 
 // Sets default values for this component's properties
 UCameraEffecttComponent::UCameraEffecttComponent()
@@ -77,6 +79,20 @@ void UCameraEffecttComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	{
 		SpeedCameraShake->ShakeScale = CarPawn->SphereComp->GetPhysicsLinearVelocity().Size() * (1.f/SpeedShakeInverseIntensity);
 	}
+}
+
+void UCameraEffecttComponent::SpaceCamera()
+{
+	if (bFirstCamera)
+	{
+		CarPawn->MainCamera->AttachToComponent(CarPawn->SecondCameraTransfrom, FAttachmentTransformRules::SnapToTargetIncludingScale);
+	}
+	else
+	{
+		CarPawn->MainCamera->AttachToComponent(CarPawn->CameraBoom, FAttachmentTransformRules::SnapToTargetIncludingScale);
+	}
+	
+	bFirstCamera = !bFirstCamera;
 }
 
 void UCameraEffecttComponent::LateBeginPlay()
