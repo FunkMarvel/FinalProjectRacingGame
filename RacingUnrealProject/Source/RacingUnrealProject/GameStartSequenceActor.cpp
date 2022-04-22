@@ -31,17 +31,21 @@ void AGameStartSequenceActor::BeginPlay()
 {
 	Super::BeginPlay();
 	PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+
 	CarPawn = Cast<ACarPawn>(PlayerController->GetPawn());
 	
 	//sets this as the active camera!
 	PlayerController->SetViewTargetWithBlend(this, 0.f);
 
+
 	CarPawn->DisableInput(PlayerController);
+
 	
 	//seting up timer
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AGameStartSequenceActor::OnShowoffFinshed,
 		ShowoffYawCurve->FloatCurve.GetLastKey().Time - 0.5f, false);
+
 	
 }
 
@@ -52,6 +56,7 @@ void AGameStartSequenceActor::Tick(float DeltaTime)
 	
 	CurrentShowOffTime += GetWorld()->GetDeltaSeconds();
 	CameraSpringArm->SetRelativeRotation(FRotator(0,ShowoffYawCurve->GetFloatValue(CurrentShowOffTime),0));
+
 	
 }
 void AGameStartSequenceActor::OnShowoffFinshed()
@@ -69,5 +74,6 @@ void AGameStartSequenceActor::BlendFinished()
 {
 	CarPawn->EnableInput(PlayerController);
 	SetLifeSpan(0.1f);
+
 }
 

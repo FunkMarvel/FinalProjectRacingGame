@@ -49,7 +49,6 @@ private:
 	float CurrentStateTime = 0.f;*/
 	
 
-	
 	//camera stuff
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Camera")
 		class UCameraComponent* ShowoffCamema = nullptr;
@@ -60,6 +59,7 @@ private:
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Camera")
 		class UCurveFloat* ShowoffYawCurve = nullptr;
 	UPROPERTY()
+
 		float CurrentShowOffTime = 0.f;
 	
 
@@ -68,6 +68,7 @@ private:
 	UFUNCTION()
 		void BlendFinished();
 	
+
 };
 
 
