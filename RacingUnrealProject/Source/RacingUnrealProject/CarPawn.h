@@ -7,6 +7,7 @@
 #include "GameFramework/Pawn.h"
 #include "CarPawn.generated.h"
 
+// DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReachedEvent, float, AddSpeedAmount);
 
 UCLASS(config=Game, BlueprintType, Blueprintable)
 class RACINGUNREALPROJECT_API ACarPawn : public APawn
@@ -41,6 +42,8 @@ public:
 		class USpringArmComponent* CameraBoom{ nullptr };
 	UPROPERTY(EditDefaultsOnly, Category = "Car")
 		class UCameraComponent* MainCamera{ nullptr };
+	UPROPERTY(EditDefaultsOnly, Category = "Car")
+		class UArrowComponent* SecondCameraTransfrom = nullptr;
 	UPROPERTY(EditDefaultsOnly, Category = "Car")
 		class UArrowComponent* ArrowRayCastStart{ nullptr };
 	UPROPERTY(EditDefaultsOnly, Category = "Car")

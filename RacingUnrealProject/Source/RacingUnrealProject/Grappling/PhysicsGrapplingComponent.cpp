@@ -164,7 +164,7 @@ void UPhysicsGrapplingComponent::ResetTemporalVariables()
 	CurrentHookedTime = 0.f;
 	KnockOffHitResult =	FHitResult();
 
-	CarPawn->GrappleHookMesh->SetRelativeScale3D(FVector(1.f));
+	CarPawn->GrappleHookMesh->SetRelativeScale3D(FVector(3.f));
 	
 }
 
@@ -273,6 +273,7 @@ void UPhysicsGrapplingComponent::TravelingState()
 	//updates the sensor to match grappleSphere velocity
 	FRotator NewRot = UKismetMathLibrary::MakeRotFromXZ(CarPawn->GrappleHookSphereComponent->GetPhysicsLinearVelocity(), CarPawn->SphereComp->GetUpVector());
 	CarPawn->GrappleSensor->SetWorldRotation(NewRot);
+	CarPawn->GrappleHookMesh->SetWorldRotation(NewRot);
 
 	//applies gravity
 	HandleGravity();
