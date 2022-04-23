@@ -5,6 +5,7 @@
 
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "MainMenuWidgets/MainMenuHUDWidget.h"
 #include "RacingUnrealProject/GameModes/MainMenuGameModeBase.h"
 #include "RacingUnrealProject/GameModes/RacingGameInstance.h"
@@ -32,6 +33,8 @@ void AMainMenuHUD::BeginPlay()
 		if (MainMenuHUDWidget)
 		{
 			MainMenuHUDWidget->PlayGameButton->OnClicked.AddDynamic(this, &AMainMenuHUD::OnPressPlay);
+			MainMenuHUDWidget->SettingsButton->OnClicked.AddDynamic(this, &AMainMenuHUD::OnPressSettings);
+			MainMenuHUDWidget->ExitGameButton->OnClicked.AddDynamic(this, &AMainMenuHUD::OnPressExit);
 			MainMenuHUDWidget->AddToViewport();
 		}
 	}
@@ -51,4 +54,5 @@ void AMainMenuHUD::OnPressSettings()
 
 void AMainMenuHUD::OnPressExit()
 {
+	UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
 }

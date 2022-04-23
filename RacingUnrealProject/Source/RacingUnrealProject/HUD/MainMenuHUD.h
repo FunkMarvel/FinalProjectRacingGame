@@ -36,6 +36,8 @@ protected:
 
 	UFUNCTION()
 	void OnPressPlay();
+	UFUNCTION()
 	void OnPressSettings();
+	UFUNCTION()
 	void OnPressExit();
 };
