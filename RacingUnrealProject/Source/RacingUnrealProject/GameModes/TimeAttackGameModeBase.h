@@ -19,6 +19,19 @@ public:
 
 	virtual void BeginPlay() override;
 
+	UFUNCTION()
+	void BeginTimer();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Timer")
+		float RaceTimer{0.f};
+
 protected:
-	FTimerHandle RaceTimerHandle;
+	UPROPERTY()
+		class AGameStartSequenceActor* GameStartSequence{nullptr};
+
+	bool bIsTiming{false};
+
+public:
+	bool IsTiming() { return bIsTiming; }
+	void ToggleTiming(bool bOn) { bIsTiming = bOn; }
 };
