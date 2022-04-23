@@ -78,7 +78,7 @@ void AMainMenuHUD::OnPressTimeAttack()
 	if (GameInstance->LevelNames.Num() >= 2)
 	{
 		
-		GameModeBase->ChangeLevel(GameInstance->LevelNames[1]);
+		GameInstance->ChangeLevel(GameInstance->LevelNames[1]);
 	}
 }
 
@@ -86,7 +86,7 @@ void AMainMenuHUD::OnPressScoreAttack()
 {
 	if (GameInstance->LevelNames.Num() >= 2)
 	{
-		GameModeBase->ChangeLevel(GameInstance->LevelNames[1]);
+		GameInstance->ChangeLevel(GameInstance->LevelNames[1]);
 	}
 }
 
