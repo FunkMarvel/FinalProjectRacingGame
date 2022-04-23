@@ -13,5 +13,8 @@ UCLASS()
 class RACINGUNREALPROJECT_API URacingGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
-	
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Levels")
+		TArray<FName> LevelNames{};
 };
