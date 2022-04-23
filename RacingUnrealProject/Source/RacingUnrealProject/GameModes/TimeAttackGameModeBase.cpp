@@ -26,10 +26,4 @@ void ATimeAttackGameModeBase::BeginPlay()
 
 void ATimeAttackGameModeBase::BeginTimer()
 {
-	GetWorld()->GetTimerManager().SetTimer(RaceTimerHandle, this, &ATimeAttackGameModeBase::OnTimerLoop, 30.f, true);
-}
-
-void ATimeAttackGameModeBase::OnTimerLoop()
-{
-	
 }

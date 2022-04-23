@@ -22,12 +22,10 @@ public:
 	UFUNCTION()
 	void BeginTimer();
 
-	UFUNCTION()
-	void OnTimerLoop();
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Timer")
+		float RaceTimer{0.f};
 
 protected:
 	UPROPERTY()
 		class AGameStartSequenceActor* GameStartSequence{nullptr};
-	
-	FTimerHandle RaceTimerHandle;
 };
