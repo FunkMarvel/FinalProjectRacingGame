@@ -69,8 +69,8 @@ private:
 		bool bSkipSequence = false;
 	
 
-	
 	FTimerHandle ShowOffTimerHandle;
+	FTimerHandle BlendFinishedTimerHandle;
 	UFUNCTION()
 		void OnShowoffFinshed();
 	UFUNCTION()
