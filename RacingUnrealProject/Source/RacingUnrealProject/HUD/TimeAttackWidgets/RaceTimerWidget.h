@@ -13,5 +13,14 @@ UCLASS()
 class RACINGUNREALPROJECT_API URaceTimerWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
+public:
+	virtual void NativeConstruct() override;
+
+	UFUNCTION()
+	void UpdateTimer(float CurrentTime);
+
+protected:
+	UPROPERTY(meta=(BindWidget))
+		class UTextBlock* Timer{nullptr};
 };
