@@ -3,3 +3,9 @@
 
 #include "RacingGameInstance.h"
 
+#include "Kismet/GameplayStatics.h"
+
+void URacingGameInstance::ChangeLevel(FName LevelName)
+{
+	UGameplayStatics::OpenLevel(GetWorld(), LevelName);
+}

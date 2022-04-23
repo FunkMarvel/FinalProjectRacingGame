@@ -17,4 +17,7 @@ class RACINGUNREALPROJECT_API URacingGameInstance : public UGameInstance
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Levels")
 		TArray<FName> LevelNames{};
+
+	UFUNCTION()
+		void ChangeLevel(FName LevelName);
 };

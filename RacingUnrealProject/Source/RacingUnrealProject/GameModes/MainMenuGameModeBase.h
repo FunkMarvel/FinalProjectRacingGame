@@ -18,8 +18,4 @@ public:
 	AMainMenuGameModeBase();
 	
 	virtual void BeginPlay() override;
-
-protected:
-	UPROPERTY()
-		class URacingGameInstance* GameInstance{nullptr};
 };
