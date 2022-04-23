@@ -26,4 +26,5 @@ void ATimeAttackGameModeBase::BeginPlay()
 
 void ATimeAttackGameModeBase::BeginTimer()
 {
+	ToggleTiming(true);
 }

@@ -28,4 +28,10 @@ public:
 protected:
 	UPROPERTY()
 		class AGameStartSequenceActor* GameStartSequence{nullptr};
+
+	bool bIsTiming{false};
+
+public:
+	bool IsTiming() { return bIsTiming; }
+	void ToggleTiming(bool bOn) { bIsTiming = bOn; }
 };
