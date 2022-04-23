@@ -38,15 +38,16 @@ void AGameStartSequenceActor::BeginPlay()
 		return;
 	}
 	
-	
 	PlayerController = UGameplayStatics::GetPlayerController(this, 0);
-
 	CarPawn = Cast<ACarPawn>(PlayerController->GetPawn());
+
 	
-	//sets this as the active camera!
+	// CarPawn->SpacePressedEvent.AddDynamic(this, &AGameStartSequenceActor::Skip);
+	
+	//sets camera on this actor as the active camera
 	PlayerController->SetViewTargetWithBlend(this, 0.f);
 
-
+	
 	CarPawn->DisableInput(PlayerController);
 	
 	
@@ -61,7 +62,7 @@ void AGameStartSequenceActor::BeginPlay()
 void AGameStartSequenceActor::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	PlayerInputComponent->BindAction("Space",IE_Pressed, this, &AGameStartSequenceActor::Skip);
+	// PlayerInputComponent->BindAction("Space",IE_Pressed, this, &AGameStartSequenceActor::Skip);
 	//does not work as this is not the active player controller
 }
 
@@ -83,8 +84,8 @@ void AGameStartSequenceActor::OnShowoffFinshed()
 	CountDownWidget->AddToViewport();
 	CountDownWidget->PlayCloseAnimationCpp();
 	
-	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AGameStartSequenceActor::BlendFinished, BlendTime, false);
+	
+	GetWorld()->GetTimerManager().SetTimer(BlendFinishedTimerHandle, this, &AGameStartSequenceActor::BlendFinished, BlendTime, false);
 }
 
 void AGameStartSequenceActor::BlendFinished()
@@ -97,6 +98,7 @@ void AGameStartSequenceActor::BlendFinished()
 void AGameStartSequenceActor::Skip()
 {
 	GetWorld()->GetTimerManager().ClearTimer(ShowOffTimerHandle);
+	GetWorld()->GetTimerManager().ClearTimer(BlendFinishedTimerHandle);
 	UGameplayStatics::GetPlayerController(this, 0)->SetViewTargetWithBlend(CarPawn,
 		0.f, EViewTargetBlendFunction::VTBlend_Cubic);
 	BlendFinished();

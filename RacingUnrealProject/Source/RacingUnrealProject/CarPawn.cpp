@@ -247,7 +247,8 @@ void ACarPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this, &ACarPawn::ToggleGrappleHook);
 	PlayerInputComponent->BindAction("Up", EInputEvent::IE_Pressed, this, &ACarPawn::SetGameSpeedUp);
 	PlayerInputComponent->BindAction("Down", EInputEvent::IE_Pressed, this, &ACarPawn::SetGameSpeedDown);
-	PlayerInputComponent->BindAction("Space", EInputEvent::IE_Pressed, CameraEffectComponent, &UCameraEffecttComponent::SpaceCamera);
+	PlayerInputComponent->BindAction("Space", EInputEvent::IE_Pressed, CameraEffectComponent, &UCameraEffecttComponent::SpaceCamera).bConsumeInput = false;
+	// PlayerInputComponent->BindAction("Space", EInputEvent::IE_Pressed, this, &ACarPawn::OnSpacePressed);
 }
 
 void ACarPawn::UpdateCameraBoomLength()

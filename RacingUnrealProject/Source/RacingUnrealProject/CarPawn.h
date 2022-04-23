@@ -8,7 +8,7 @@
 #include "CarPawn.generated.h"
 
 //DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHitGround, float, Speed);
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSpacePressedEvent);
 UCLASS(config=Game, BlueprintType, Blueprintable)
 class RACINGUNREALPROJECT_API ACarPawn : public APawn
 {
@@ -206,14 +206,24 @@ private:
 	
 	UFUNCTION()
 	bool IsOutOfBounds();
-	
-	
+
+#if WITH_EDITORONLY_DATA
 	//TODO debug remove!
 	UFUNCTION()
 	void SetGameSpeedUp();
 	UFUNCTION()
 	void SetGameSpeedDown();
 	// TODO debug remove end
+#endif
+
+	//events
+// public:
+// 	FSpacePressedEvent SpacePressedEvent;
+// 	UFUNCTION()
+// 	void OnSpacePressed(){
+// 		UE_LOG(LogTemp, Warning, TEXT("SKIP!!!"))
+// 		SpacePressedEvent.Broadcast();
+// 	}
 	
 	
 	
