@@ -27,4 +27,15 @@ public:
 protected:
 	UPROPERTY()
 	class UMainMenuHUDWidget* MainMenuHUDWidget{nullptr};
+	
+	UPROPERTY()
+	class URacingGameInstance* GameInstance{nullptr};
+
+	UPROPERTY()
+	class AMainMenuGameModeBase* GameModeBase{nullptr};
+
+	UFUNCTION()
+	void OnPressPlay();
+	void OnPressSettings();
+	void OnPressExit();
 };
