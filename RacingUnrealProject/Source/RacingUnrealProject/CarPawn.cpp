@@ -429,7 +429,7 @@ FVector ACarPawn::CalcAsymVector()
 
 	FVector CalcAsymForce = GetActorRightVector() * FVector::DotProduct(SphereComp->GetRightVector(), FrictionForce);
 	
-	if (NegativeVelocity.SizeSquared() < pow(120.f, 2.f))
+	if (NegativeVelocity.SizeSquared() < pow(220.f, 2.f))
 		CalcAsymForce = FVector::ZeroVector;
 
 		

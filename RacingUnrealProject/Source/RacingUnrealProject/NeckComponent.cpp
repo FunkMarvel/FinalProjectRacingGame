@@ -182,9 +182,6 @@ void UNeckComponent::UpdateSplineMesh(float StartLength, float EndLength)
 	
 	int32 SegmentsToCreate = segments - SplineMeshComponents.Num();
 	
-	
-
-	
 	if (SegmentsToCreate > 0)
 	{
 		for (int32 i = 0; i < SegmentsToCreate; i++)
@@ -221,10 +218,10 @@ void UNeckComponent::UpdateSplineMesh(float StartLength, float EndLength)
 		currentLength += StartLength;
 
 		SplineMeshComponents[i]->SetStartPosition(Spline->GetLocationAtDistanceAlongSpline(lastLength, ESplineCoordinateSpace::World), false);
-		SplineMeshComponents[i]->SetStartTangent(Spline->GetDirectionAtDistanceAlongSpline(lastLength, ESplineCoordinateSpace::World) * 4.f,  false);
+		SplineMeshComponents[i]->SetStartTangent(Spline->GetDirectionAtDistanceAlongSpline(lastLength, ESplineCoordinateSpace::World) * SplineMeshTangentLength,  false);
 		
 		SplineMeshComponents[i]->SetEndPosition(Spline->GetLocationAtDistanceAlongSpline(currentLength, ESplineCoordinateSpace::World), false);
-		SplineMeshComponents[i]->SetEndTangent(Spline->GetDirectionAtDistanceAlongSpline(currentLength, ESplineCoordinateSpace::World)* 4.f, true);
+		SplineMeshComponents[i]->SetEndTangent(Spline->GetDirectionAtDistanceAlongSpline(currentLength, ESplineCoordinateSpace::World)* SplineMeshTangentLength, true);
 		
 		lastLength = currentLength;
 	}

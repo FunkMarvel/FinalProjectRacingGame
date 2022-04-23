@@ -46,6 +46,8 @@ private:
 	//variables
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Neck" )
 		float TargetSegmentsLength = 100.f;
+	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Neck" )
+		float SplineMeshTangentLength = 10.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Neck")
 		class UStaticMesh* StaticMeshClass = nullptr;
 	

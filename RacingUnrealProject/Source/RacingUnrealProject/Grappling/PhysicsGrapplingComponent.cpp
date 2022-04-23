@@ -282,7 +282,9 @@ void UPhysicsGrapplingComponent::TravelingState()
 	FVector StartLocation, EndLocation = FVector::ZeroVector;
 	
 	StartLocation = CarPawn->CarMesh->GetComponentLocation();
-	EndLocation = CarPawn->GrappleHookMesh->GetComponentLocation();
+	EndLocation = CarPawn->GrappleHookSphereComponent->GetComponentLocation();
+
+	// DrawDebugSphere(GetWorld(), EndLocation, 150.f, 10, FColor::Red, false,  1.f);
 
 	float Distance = (StartLocation - EndLocation).Size();
 	
