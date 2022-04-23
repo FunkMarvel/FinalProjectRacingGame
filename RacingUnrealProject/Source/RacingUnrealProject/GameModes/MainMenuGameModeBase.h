@@ -13,5 +13,13 @@ UCLASS()
 class RACINGUNREALPROJECT_API AMainMenuGameModeBase : public ARacingUnrealProjectGameModeBase
 {
 	GENERATED_BODY()
+
+public:
+	AMainMenuGameModeBase();
 	
+	virtual void BeginPlay() override;
+
+protected:
+	UPROPERTY()
+		class URacingGameInstance* GameInstance{nullptr};
 };

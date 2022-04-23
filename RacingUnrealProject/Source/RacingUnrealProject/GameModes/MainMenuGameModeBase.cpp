@@ -3,3 +3,15 @@
 
 #include "MainMenuGameModeBase.h"
 
+#include "RacingGameInstance.h"
+
+AMainMenuGameModeBase::AMainMenuGameModeBase()
+{
+}
+
+void AMainMenuGameModeBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	GameInstance = Cast<URacingGameInstance>(GetGameInstance());
+}
