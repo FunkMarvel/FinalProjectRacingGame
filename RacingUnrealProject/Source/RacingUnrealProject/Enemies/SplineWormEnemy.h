@@ -70,6 +70,9 @@ public:
 		float HeadDistanceFromBody = 500.f;
 	UPROPERTY(EditAnywhere, Category = "Spline")
 		ESplineWormHeadAxis CurrentHeadAxis = ESplineWormHeadAxis::Right;
+	UPROPERTY(meta = (ToolTip = "If the Upvector for the CarPawn is upside down at the end of the grapple, Use this to invert"),
+		EditAnywhere, Category = "Spline")
+		bool bInvertUpHeadAxis = false;
 	
 	UPROPERTY(EditAnywhere, Category = "Spline")
 		bool bPlayingAnim = false;

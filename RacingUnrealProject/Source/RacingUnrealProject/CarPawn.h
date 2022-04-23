@@ -244,7 +244,7 @@ public:
 	
 	//bp events
 	UFUNCTION(BlueprintImplementableEvent)
-		void MaxTurnBpEvent();
+		void MaxTurnBpEvent(bool bRightSide);
 	UFUNCTION(BlueprintImplementableEvent)
 		void NotMaxTurnBpEvent();
 	UFUNCTION(BlueprintImplementableEvent)

@@ -43,6 +43,8 @@ private:
 		TSubclassOf<class UCameraShakeBase> SpeedCameraShakeClass = nullptr;
 	UPROPERTY(meta = (AllowPrivateAccess = "true", ToolTip = "Higher means less shake"),EditAnywhere, Category = "Camera|Speed")
 		float SpeedShakeInverseIntensity = 10000.f;
+	UPROPERTY(meta = (AllowPrivateAccess = "true"),EditAnywhere, Category = "Camera")
+		float MaxFOV = 150.f;
 	UPROPERTY()
 		class UCameraShakeBase* SpeedCameraShake = nullptr;
 public:

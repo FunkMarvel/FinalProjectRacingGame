@@ -170,6 +170,9 @@ void ASplineWormEnemy::UpdateHeadTransfrom(float RatioOnSnake)
 	
 	Location += Forward * HeadDistanceFromBody;
 	GrappleSphereComponent->SetWorldLocation(Location);
+
+	if (bInvertUpHeadAxis)
+		Up = -Up;
 	
 	FRotator Rotation = UKismetMathLibrary::MakeRotFromXZ(-Forward, Up);
 	GrappleSphereComponent->SetWorldRotation(Rotation);

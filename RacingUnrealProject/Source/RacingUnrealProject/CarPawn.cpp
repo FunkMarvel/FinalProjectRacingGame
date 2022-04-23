@@ -182,7 +182,12 @@ void ACarPawn::TiltCarMesh(FVector AsymVector)
 	CarMesh->SetRelativeRotation(LocalRot);
 
 	if (abs(LocalRot.Roll) > 41.f)
-		MaxTurnBpEvent();
+	{
+		if (LocalRot.Roll > 0.f)
+			MaxTurnBpEvent(true);
+		else
+			MaxTurnBpEvent(false);
+	}
 	else
 		NotMaxTurnBpEvent();
 }

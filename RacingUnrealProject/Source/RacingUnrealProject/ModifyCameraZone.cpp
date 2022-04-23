@@ -5,6 +5,7 @@
 
 #include "CarPawn.h"
 #include "Components/BoxComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 
 // Sets default values
 AModifyCameraZone::AModifyCameraZone()
@@ -32,6 +33,13 @@ void AModifyCameraZone::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (CarPawn)
+	{
+		FRotator NewRot = FMath::RInterpTo(CarPawn->CameraBoom->GetRelativeRotation(),
+			FRotator(PitchAngleTarget,1.f,1.f),
+			GetWorld()->GetDeltaSeconds(), 50.f);
+		CarPawn->CameraBoom->SetRelativeRotation(NewRot);
+	}	
 }
 
 void AModifyCameraZone::OnOverLap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -39,16 +47,18 @@ void AModifyCameraZone::OnOverLap(UPrimitiveComponent* OverlappedComponent, AAct
 {
 	if (OtherActor->IsA(ACarPawn::StaticClass()))
 	{
-		ACarPawn* CarPawn = Cast<ACarPawn>(OtherActor);
+		CarPawn = Cast<ACarPawn>(OtherActor);
 		
 		if (bAddative)
 		{
-			CarPawn->SetTargetCameraBoomLength(CarPawn->GetStartCameraBoomLength() + CameraBoomLength);	
+			CarPawn->SetTargetCameraBoomLength(CarPawn->GetStartCameraBoomLength() + CameraBoomLength);
 		}
 		else
 		{
 			CarPawn->SetTargetCameraBoomLength(CameraBoomLength);
 		}
+
+		
 	}
 	
 }
@@ -58,9 +68,9 @@ void AModifyCameraZone::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, A
 {
 	if (OtherActor->IsA(ACarPawn::StaticClass()))
 	{
-		ACarPawn* CarPawn = Cast<ACarPawn>(OtherActor);
 		//resets to origninal cameraBoomLength
 		CarPawn->SetTargetCameraBoomLength(CarPawn->GetStartCameraBoomLength());
+		CarPawn = nullptr;
 	}
 }
 
