@@ -32,6 +32,8 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "Spline")
 	class UStaticMesh* NeckSegment = nullptr;
+	UPROPERTY(EditAnywhere, Category = "Spline")
+	class UCurveFloat* MovmentCurveFloat;
 	UPROPERTY()
 	TArray<class USplineMeshComponent*> SplineMeshComponents;
 
@@ -45,17 +47,15 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Spline")
 	float SplineMeshOverLap = 50.f;
 	UPROPERTY(EditAnywhere, Category = "Spline")
-	float TangetLengthModifer = 1.f;
-	
-	
-	
-	UPROPERTY(EditAnywhere, Category = "Spline")
-	float WormMoveSpeed = 2000.f;
+	float WormMoveDuration = 2000.f;
 	UPROPERTY(EditAnywhere, Category = "Spline")
 	float Offset = 0.f;
 	
 	UPROPERTY(EditAnywhere, Category = "Spline")
 	bool bPlayingAnim = true;
+
+	UPROPERTY()
+	float CurrentMoveTime = 0.f;
 private:
 	UFUNCTION()
 	void OnGrappleReaced(float Addspeed);

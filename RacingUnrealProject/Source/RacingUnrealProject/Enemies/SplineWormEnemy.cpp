@@ -47,8 +47,10 @@ void ASplineWormEnemy::Tick(float DeltaTime)
 		return;
 
 
-	Offset += +DeltaTime * WormMoveSpeed;
-	
+	//Offset += +DeltaTime * WormMoveSpeed;
+	CurrentMoveTime += DeltaTime;
+	Offset = MovmentCurveFloat->GetFloatValue(CurrentMoveTime / WormMoveDuration);
+	Offset *= Spline->GetSplineLength();
 		
     // checking if we have reached the end
     if ( Spline->GetSplineLength() < SplineMeshComponents.Num() * NeckSegmentLength + SplineMeshOverLap + Offset)
@@ -73,6 +75,8 @@ void ASplineWormEnemy::UpdateSplineMeshComponent()
 				NewSplineMesh->RegisterComponent();
 				NewSplineMesh->SetMobility(EComponentMobility::Movable);
 				NewSplineMesh->SetStaticMesh(NeckSegment);
+
+				NewSplineMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 				SplineMeshComponents.Emplace(NewSplineMesh);
 			}
 		}
