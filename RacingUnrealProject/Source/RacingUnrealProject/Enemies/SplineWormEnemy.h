@@ -25,29 +25,36 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Spline")
 	class USplineComponent* Spline = nullptr;
 	UPROPERTY(EditAnywhere, Category = "Spline")
-	class USplineMeshComponent* SplineMeshComponent = nullptr;
-	UPROPERTY(EditAnywhere, Category = "Spline")
 	class UStaticMeshComponent* WormTargetMesh = nullptr;
 	UPROPERTY(EditAnywhere, Category = "Spline", BlueprintReadOnly)
 	class UGrappleSphereComponent* GrappleSphereComponent = nullptr;
+	
+	
+	UPROPERTY(EditAnywhere, Category = "Spline")
+	class UStaticMesh* NeckSegment = nullptr;
+	UPROPERTY()
+	TArray<class USplineMeshComponent*> SplineMeshComponents;
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateSplineMeshComponent();
-
-	// UPROPERTY(EditAnywhere, Category = "SplineMesh")
-	// float StartLength = 0.f;
-	// UPROPERTY(EditAnywhere, Category = "SplineMesh")
-	// float EndLength = 100.f;
-	UPROPERTY(EditAnywhere, Category = "SplineMesh")
-	float StaticMeshLength = 3000.f;
-	UPROPERTY(EditAnywhere, Category = "SplineMesh")
-	float Offset = 0.f;
-	UPROPERTY(EditAnywhere, Category = "SplineMesh")
-	float TangetLength = 1.f;
-	UPROPERTY(EditAnywhere, Category = "SplineMesh")
-	float WormMoveSpeed = 2000.f;
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Category = "Spline")
+	float NeckSegmentLength = 500.f;
+	UPROPERTY(EditAnywhere, Category = "Spline")
+	float WormLength = 2000.f;
+	UPROPERTY(EditAnywhere, Category = "Spline")
+	float SplineMeshOverLap = 50.f;
+	UPROPERTY(EditAnywhere, Category = "Spline")
+	float TangetLengthModifer = 1.f;
+	
+	
+	
+	UPROPERTY(EditAnywhere, Category = "Spline")
+	float WormMoveSpeed = 2000.f;
+	UPROPERTY(EditAnywhere, Category = "Spline")
+	float Offset = 0.f;
+	
+	UPROPERTY(EditAnywhere, Category = "Spline")
 	bool bPlayingAnim = true;
 private:
 	UFUNCTION()

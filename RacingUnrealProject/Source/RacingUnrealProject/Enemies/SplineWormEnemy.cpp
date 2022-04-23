@@ -17,8 +17,8 @@ ASplineWormEnemy::ASplineWormEnemy()
 
 	Spline = CreateDefaultSubobject<USplineComponent>(TEXT("Spline"));
 	SetRootComponent(Spline);
-	SplineMeshComponent = CreateDefaultSubobject<USplineMeshComponent>(TEXT("SplineMesh"));
-	SplineMeshComponent->SetupAttachment(GetRootComponent());
+
+	SplineMeshComponents.Init(nullptr, 0);
 
 	WormTargetMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WormTargetMesh"));
 	WormTargetMesh->SetupAttachment(GetRootComponent());
@@ -41,50 +41,79 @@ void ASplineWormEnemy::BeginPlay()
 void ASplineWormEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	UpdateSplineMeshComponent();
+
 	if (!bPlayingAnim)
 		return;
 
 
-	Offset += -DeltaTime * WormMoveSpeed;
-	if (Offset <= 0.f)
-		Offset = 0.f;
+	Offset += +DeltaTime * WormMoveSpeed;
 	
-	UpdateSplineMeshComponent();
+		
+    // checking if we have reached the end
+    if ( Spline->GetSplineLength() < SplineMeshComponents.Num() * NeckSegmentLength + SplineMeshOverLap + Offset)
+    {
+	    bPlayingAnim = false;
+    }
+	
 }
 
 void ASplineWormEnemy::UpdateSplineMeshComponent()
 {
-	FVector StartPos;
-	FVector StartTangent;
-	FVector EndPos;
-	FVector EndTangent;
-
-	float SplineLength = Spline->GetSplineLength();
-
-	//setting and clamping locations and tangents
-	StartPos = Spline->GetLocationAtDistanceAlongSpline(Offset, ESplineCoordinateSpace::World);
-	StartTangent = Spline->GetTangentAtDistanceAlongSpline(Offset, ESplineCoordinateSpace::World);
-	StartTangent *= TangetLength;
-	EndPos = Spline->GetLocationAtDistanceAlongSpline(Offset + StaticMeshLength, ESplineCoordinateSpace::World);
-	EndTangent = Spline->GetTangentAtDistanceAlongSpline(Offset + StaticMeshLength, ESplineCoordinateSpace::World);
-	EndTangent *= TangetLength;
-
-	//sets the spline mesh values
-	SplineMeshComponent->SetStartPosition(StartPos, true);
-	SplineMeshComponent->SetStartTangent(StartTangent, true);
-	SplineMeshComponent->SetEndPosition(EndPos, true);
-	SplineMeshComponent->SetEndTangent(EndTangent, true);
-
-	//updates the WormTargetMesh
-	float WormTargetSplineLength = StaticMeshLength/2.f;
-	FVector WormTargetMeshLocation = Spline->GetLocationAtDistanceAlongSpline(Offset + WormTargetSplineLength, ESplineCoordinateSpace::World);
-	FRotator WormTargetMeshRotation = UKismetMathLibrary::MakeRotFromXZ(
-		Spline->GetDirectionAtDistanceAlongSpline(Offset + WormTargetSplineLength, ESplineCoordinateSpace::World),
-		Spline->GetUpVectorAtDistanceAlongSpline(Offset + WormTargetSplineLength, ESplineCoordinateSpace::World)
-	);
 	
-	WormTargetMesh->SetWorldLocation(WormTargetMeshLocation);
-	WormTargetMesh->SetWorldRotation(WormTargetMeshRotation);
+	int SegmentsToCreate = (WormLength / NeckSegmentLength) - SplineMeshComponents.Num();
+
+	if (SegmentsToCreate > 0)
+	{
+		for (int32 i = 0; i < SegmentsToCreate; i++)
+		{
+			USplineMeshComponent* NewSplineMesh = NewObject<USplineMeshComponent>(this);
+			if (NewSplineMesh)
+			{
+				NewSplineMesh->RegisterComponent();
+				NewSplineMesh->SetMobility(EComponentMobility::Movable);
+				NewSplineMesh->SetStaticMesh(NeckSegment);
+				SplineMeshComponents.Emplace(NewSplineMesh);
+			}
+		}
+		
+	}
+	else if (SegmentsToCreate < 0)
+	{
+		for (int32 i = 0; i < abs(SegmentsToCreate); i++)
+		{
+			int32 LastIndex = SplineMeshComponents.Num() - 1;
+			SplineMeshComponents[LastIndex]->DestroyComponent();
+			SplineMeshComponents.RemoveAt(LastIndex);
+		}
+	}
+
+	float CurrentDistance = Offset;
+	for (int i = 0; i < SplineMeshComponents.Num(); ++i)
+	{
+		FVector StartLocation, EndLocation, StartTangent, EndTangent;
+
+		StartLocation = Spline->GetLocationAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World);
+		StartTangent = Spline->GetTangentAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World);
+		EndLocation = Spline->GetLocationAtDistanceAlongSpline(CurrentDistance + NeckSegmentLength + SplineMeshOverLap, 
+		ESplineCoordinateSpace::World);
+		EndTangent = Spline->GetTangentAtDistanceAlongSpline(CurrentDistance + NeckSegmentLength + SplineMeshOverLap, 
+		ESplineCoordinateSpace::World);
+
+		//normalizing
+		StartTangent.Normalize();
+		EndTangent.Normalize();
+	
+		
+		//setting the values
+		SplineMeshComponents[i]->SetStartPosition(StartLocation, false);
+		SplineMeshComponents[i]->SetStartTangent(StartTangent, false);
+		SplineMeshComponents[i]->SetEndPosition(EndLocation, false);
+		SplineMeshComponents[i]->SetEndTangent(EndTangent, true);
+		
+		CurrentDistance += NeckSegmentLength;
+	}
+	
 }
 
 void ASplineWormEnemy::OnGrappleReaced(float Addspeed)
