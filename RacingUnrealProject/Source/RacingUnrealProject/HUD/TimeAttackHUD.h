@@ -22,9 +22,12 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets|Time")
-		TSubclassOf<class URaceTimerWidget> TimerWidgetClass;
+		TSubclassOf<class UUserWidget> TimerWidgetClass;
 
 protected:
 	UPROPERTY()
 		class URaceTimerWidget* RaceTimerWidget{nullptr};
+
+	UPROPERTY()
+		class ATimeAttackGameModeBase* GameModeBase{nullptr};
 };
