@@ -19,6 +19,15 @@ public:
 
 	virtual void BeginPlay() override;
 
+	UFUNCTION()
+	void BeginTimer();
+
+	UFUNCTION()
+	void OnTimerLoop();
+
 protected:
+	UPROPERTY()
+		class AGameStartSequenceActor* GameStartSequence{nullptr};
+	
 	FTimerHandle RaceTimerHandle;
 };
