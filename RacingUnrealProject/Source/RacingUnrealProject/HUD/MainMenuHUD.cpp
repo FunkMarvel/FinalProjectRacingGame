@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "MainMenuWidgets/LevelSelectMenuWidget.h"
 #include "MainMenuWidgets/MainMenuHUDWidget.h"
 #include "RacingUnrealProject/GameModes/MainMenuGameModeBase.h"
 #include "RacingUnrealProject/GameModes/RacingGameInstance.h"
@@ -38,13 +39,28 @@ void AMainMenuHUD::BeginPlay()
 			MainMenuHUDWidget->AddToViewport();
 		}
 	}
+
+	if (LevelMenuClass)
+	{
+		LevelSelectMenuWidget = CreateWidget<ULevelSelectMenuWidget>(GetWorld(), LevelMenuClass);
+
+		if (LevelSelectMenuWidget)
+		{
+			LevelSelectMenuWidget->TimeAttackButton->OnClicked.AddDynamic(this, &AMainMenuHUD::OnPressTimeAttack);
+			LevelSelectMenuWidget->ScoreAttackButton->OnClicked.AddDynamic(this, &AMainMenuHUD::OnPressScoreAttack);
+			LevelSelectMenuWidget->BackButton->OnClicked.AddDynamic(this, &AMainMenuHUD::OnPressBack);
+			LevelSelectMenuWidget->AddToViewport();
+			LevelSelectMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+		}
+	}
 }
 
 void AMainMenuHUD::OnPressPlay()
 {
-	if (GameInstance->LevelNames.Num() >= 2)
+	if (MainMenuHUDWidget && LevelSelectMenuWidget)
 	{
-		GameModeBase->ChangeLevel(GameInstance->LevelNames[1]);
+		MainMenuHUDWidget->SetVisibility(ESlateVisibility::Collapsed);
+		LevelSelectMenuWidget->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 
@@ -55,4 +71,30 @@ void AMainMenuHUD::OnPressSettings()
 void AMainMenuHUD::OnPressExit()
 {
 	UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
+}
+
+void AMainMenuHUD::OnPressTimeAttack()
+{
+	if (GameInstance->LevelNames.Num() >= 2)
+	{
+		
+		GameModeBase->ChangeLevel(GameInstance->LevelNames[1]);
+	}
+}
+
+void AMainMenuHUD::OnPressScoreAttack()
+{
+	if (GameInstance->LevelNames.Num() >= 2)
+	{
+		GameModeBase->ChangeLevel(GameInstance->LevelNames[1]);
+	}
+}
+
+void AMainMenuHUD::OnPressBack()
+{
+	if (MainMenuHUDWidget && LevelSelectMenuWidget)
+	{
+		LevelSelectMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+		MainMenuHUDWidget->SetVisibility(ESlateVisibility::Visible);
+	}
 }
