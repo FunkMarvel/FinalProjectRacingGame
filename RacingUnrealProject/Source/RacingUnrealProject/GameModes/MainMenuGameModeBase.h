@@ -19,6 +19,9 @@ public:
 	
 	virtual void BeginPlay() override;
 
+	UFUNCTION()
+		void ChangeLevel(FName LevelName);
+
 protected:
 	UPROPERTY()
 		class URacingGameInstance* GameInstance{nullptr};
