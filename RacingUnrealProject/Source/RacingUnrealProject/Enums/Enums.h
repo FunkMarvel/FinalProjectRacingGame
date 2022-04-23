@@ -20,4 +20,13 @@ enum class EGrappleStates : uint8{
 	Hooked					UMETA(DisplayName = "EHooked"),
 	HookedEatable			UMETA(DisplayName = "EHookedEatable"),
 	Returning				UMETA(DisplayName = "EReturning")
-	};
+};
+
+//enemies
+UENUM(BlueprintType)
+enum class ESplineWormHeadAxis : uint8{
+	Right				UMETA(DisplayName = "ERight"),
+	Left				UMETA(DisplayName = "ELeft"),
+	Up					UMETA(DisplayName = "EUp"),
+	Down				UMETA(DisplayName = "EDown")
+};

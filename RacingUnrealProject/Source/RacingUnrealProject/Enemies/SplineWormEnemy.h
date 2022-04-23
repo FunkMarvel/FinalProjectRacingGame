@@ -4,7 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+
+#include "RacingUnrealProject/Enums/Enums.h"
+
 #include "SplineWormEnemy.generated.h"
+
 
 UCLASS()
 class RACINGUNREALPROJECT_API ASplineWormEnemy : public AActor
@@ -23,40 +27,57 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	UPROPERTY(EditAnywhere, Category = "Spline")
-	class USplineComponent* Spline = nullptr;
+		class USplineComponent* Spline = nullptr;
 	UPROPERTY(EditAnywhere, Category = "Spline")
-	class UStaticMeshComponent* WormTargetMesh = nullptr;
+		class UStaticMeshComponent* WormTargetMesh = nullptr;
 	UPROPERTY(EditAnywhere, Category = "Spline", BlueprintReadOnly)
-	class UGrappleSphereComponent* GrappleSphereComponent = nullptr;
+		class UGrappleSphereComponent* GrappleSphereComponent = nullptr;
+	UPROPERTY(EditAnywhere, Category = "Spline")
+		class UBoxComponent* TriggerBox = nullptr;
 	
 	
 	UPROPERTY(EditAnywhere, Category = "Spline")
-	class UStaticMesh* NeckSegment = nullptr;
+		class UStaticMesh* NeckSegment = nullptr;
 	UPROPERTY(EditAnywhere, Category = "Spline")
-	class UCurveFloat* MovmentCurveFloat;
+		class UCurveFloat* MovmentCurveFloat;
 	UPROPERTY()
-	TArray<class USplineMeshComponent*> SplineMeshComponents;
+		TArray<class USplineMeshComponent*> SplineMeshComponents;
 
-	UFUNCTION(BlueprintCallable)
-	void UpdateSplineMeshComponent();
+	UFUNCTION()
+		void UpdateSplineMeshComponent();
+
+	UFUNCTION()
+	/**
+	 * @brief 
+	 * @param RatioOnSnake 1 means at the tip, 0 means at the end
+	 */
+		void UpdateHeadTransfrom(float RatioOnSnake);
+	UFUNCTION()
+		float GetWormRealLength() const;
 	
 	UPROPERTY(EditAnywhere, Category = "Spline")
-	float NeckSegmentLength = 500.f;
+		float NeckSegmentLength = 500.f;
 	UPROPERTY(EditAnywhere, Category = "Spline")
-	float WormLength = 2000.f;
+		float WormGoalLength = 2000.f;
 	UPROPERTY(EditAnywhere, Category = "Spline")
-	float SplineMeshOverLap = 50.f;
+		float SplineMeshOverLap = 50.f;
 	UPROPERTY(EditAnywhere, Category = "Spline")
-	float WormMoveDuration = 2000.f;
+		float WormMoveDuration = 5.f;
+	UPROPERTY(meta = (ToolTip = "Is the distance along spline the end of the worm is")
+		, EditAnywhere, Category = "Spline")
+		float CurrentWormDistance = 0.f;
 	UPROPERTY(EditAnywhere, Category = "Spline")
-	float Offset = 0.f;
+		float HeadDistanceFromBody = 500.f;
+	UPROPERTY(EditAnywhere, Category = "Spline")
+		ESplineWormHeadAxis CurrentHeadAxis = ESplineWormHeadAxis::Right;
 	
 	UPROPERTY(EditAnywhere, Category = "Spline")
-	bool bPlayingAnim = true;
-
+		bool bPlayingAnim = false;
 	UPROPERTY()
-	float CurrentMoveTime = 0.f;
+		float CurrentMoveTime = 0.f;
 private:
 	UFUNCTION()
-	void OnGrappleReaced(float Addspeed);
+		void OnGrappleReaced(float Addspeed);
+	UFUNCTION()
+		void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
 };

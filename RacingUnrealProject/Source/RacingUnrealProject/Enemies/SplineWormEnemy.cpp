@@ -4,8 +4,10 @@
 #include "SplineWormEnemy.h"
 
 #include "../GrappleSphereComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
+#include "Evaluation/IMovieSceneEvaluationHook.h"
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
@@ -19,13 +21,21 @@ ASplineWormEnemy::ASplineWormEnemy()
 	SetRootComponent(Spline);
 
 	SplineMeshComponents.Init(nullptr, 0);
+	
+	GrappleSphereComponent = CreateDefaultSubobject<UGrappleSphereComponent>(TEXT("GrappleSphereComponent"));
+	GrappleSphereComponent->SetupAttachment(GetRootComponent());
 
 	WormTargetMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WormTargetMesh"));
-	WormTargetMesh->SetupAttachment(GetRootComponent());
+	WormTargetMesh->SetupAttachment(GrappleSphereComponent);
 	WormTargetMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	GrappleSphereComponent = CreateDefaultSubobject<UGrappleSphereComponent>(TEXT("GrappleSphereComponent"));
-	GrappleSphereComponent->SetupAttachment(WormTargetMesh);
+
+	TriggerBox = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerBox"));
+	TriggerBox->SetupAttachment(GetRootComponent());
+	TriggerBox->SetBoxExtent(FVector(600.f, 150.f, 600.f));
+	TriggerBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	TriggerBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	TriggerBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
 	
 	
 }
@@ -35,25 +45,27 @@ void ASplineWormEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	GrappleSphereComponent->OnReachedEvent.AddDynamic(this, &ASplineWormEnemy::OnGrappleReaced);
+	TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &ASplineWormEnemy::OnOverlap);
 }
 
 // Called every frame
 void ASplineWormEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	UpdateSplineMeshComponent();
 
 	if (!bPlayingAnim)
 		return;
-
+	UpdateSplineMeshComponent();
+	UpdateHeadTransfrom(0.5f);
 
 	//Offset += +DeltaTime * WormMoveSpeed;
 	CurrentMoveTime += DeltaTime;
-	Offset = MovmentCurveFloat->GetFloatValue(CurrentMoveTime / WormMoveDuration);
-	Offset *= Spline->GetSplineLength();
+	CurrentWormDistance = MovmentCurveFloat->GetFloatValue(CurrentMoveTime / WormMoveDuration);
+	CurrentWormDistance *= Spline->GetSplineLength();
+	CurrentWormDistance -= GetWormRealLength(); // converts to the movment is based on the end of the worm
 		
     // checking if we have reached the end
-    if ( Spline->GetSplineLength() < SplineMeshComponents.Num() * NeckSegmentLength + SplineMeshOverLap + Offset)
+    if ( Spline->GetSplineLength() < SplineMeshComponents.Num() * NeckSegmentLength + SplineMeshOverLap + CurrentWormDistance)
     {
 	    bPlayingAnim = false;
     }
@@ -63,7 +75,7 @@ void ASplineWormEnemy::Tick(float DeltaTime)
 void ASplineWormEnemy::UpdateSplineMeshComponent()
 {
 	
-	int SegmentsToCreate = (WormLength / NeckSegmentLength) - SplineMeshComponents.Num();
+	int SegmentsToCreate = (WormGoalLength / NeckSegmentLength) - SplineMeshComponents.Num();
 
 	if (SegmentsToCreate > 0)
 	{
@@ -92,7 +104,7 @@ void ASplineWormEnemy::UpdateSplineMeshComponent()
 		}
 	}
 
-	float CurrentDistance = Offset;
+	float CurrentDistance = CurrentWormDistance;
 	for (int i = 0; i < SplineMeshComponents.Num(); ++i)
 	{
 		FVector StartLocation, EndLocation, StartTangent, EndTangent;
@@ -120,10 +132,66 @@ void ASplineWormEnemy::UpdateSplineMeshComponent()
 	
 }
 
+void ASplineWormEnemy::UpdateHeadTransfrom(float RatioOnSnake)
+{	
+	ESplineCoordinateSpace::Type CoorSpace = ESplineCoordinateSpace::World; 
+
+	//location
+	float Distance = CurrentWormDistance + GetWormRealLength() * RatioOnSnake;
+	FVector Location = Spline->GetLocationAtDistanceAlongSpline(Distance, CoorSpace);
+	
+
+	//rotation
+	FVector Up;
+	FVector Forward;
+
+	switch (CurrentHeadAxis) {
+	case ESplineWormHeadAxis::Right:
+		Up = Spline->GetUpVectorAtDistanceAlongSpline(Distance, CoorSpace);
+		Forward = -Spline->GetRightVectorAtDistanceAlongSpline(Distance, CoorSpace);
+		break;
+	case ESplineWormHeadAxis::Left:
+		Up = Spline->GetUpVectorAtDistanceAlongSpline(Distance, CoorSpace);
+		Forward = Spline->GetRightVectorAtDistanceAlongSpline(Distance, CoorSpace);
+		break;
+	case ESplineWormHeadAxis::Up:
+		Up = Spline->GetRightVectorAtDistanceAlongSpline(Distance, CoorSpace);
+		Forward = -Spline->GetUpVectorAtDistanceAlongSpline(Distance, CoorSpace);
+		break;
+	case ESplineWormHeadAxis::Down:
+		Up = -Spline->GetRightVectorAtDistanceAlongSpline(Distance, CoorSpace);
+		Forward = Spline->GetUpVectorAtDistanceAlongSpline(Distance, CoorSpace);
+		break;
+		default:
+		Up = Spline->GetUpVectorAtDistanceAlongSpline(Distance, CoorSpace);
+		Forward = -Spline->GetRightVectorAtDistanceAlongSpline(Distance, CoorSpace);
+			break;
+	}
+	
+	Location += Forward * HeadDistanceFromBody;
+	GrappleSphereComponent->SetWorldLocation(Location);
+	
+	FRotator Rotation = UKismetMathLibrary::MakeRotFromXZ(-Forward, Up);
+	GrappleSphereComponent->SetWorldRotation(Rotation);
+}
+
+float ASplineWormEnemy::GetWormRealLength() const
+{
+	float Tip = 0.f;
+	Tip += SplineMeshComponents.Num() * NeckSegmentLength + SplineMeshOverLap;
+	return Tip;
+}
+
 void ASplineWormEnemy::OnGrappleReaced(float Addspeed)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Destroyed Worm"))
 	Destroy();
+}
+
+void ASplineWormEnemy::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	bPlayingAnim = true;
 }
 
 
