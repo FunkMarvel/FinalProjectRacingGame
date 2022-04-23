@@ -76,7 +76,7 @@ void AGameStartSequenceActor::Tick(float DeltaTime)
 }
 void AGameStartSequenceActor::OnShowoffFinshed()
 {
-	float BlendTime = 1.f;
+	float BlendTime = 2.f;
 	
 	UGameplayStatics::GetPlayerController(this, 0)->SetViewTargetWithBlend(CarPawn,
 		BlendTime, EViewTargetBlendFunction::VTBlend_Cubic);
@@ -92,7 +92,7 @@ void AGameStartSequenceActor::BlendFinished()
 {
 	CarPawn->EnableInput(PlayerController);
 	SetLifeSpan(0.1f);
-
+	StartSequenceFinishedEvent.Broadcast();
 }
 
 void AGameStartSequenceActor::Skip()

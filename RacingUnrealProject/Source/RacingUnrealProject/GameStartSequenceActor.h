@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "GameStartSequenceActor.generated.h"
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStartSequenceFinishedEvent);
 
 UCLASS()
 class RACINGUNREALPROJECT_API AGameStartSequenceActor : public APawn
@@ -77,7 +78,10 @@ private:
 		void BlendFinished();
 	UFUNCTION()
 		void Skip();
-	
+
+	//events
+public:
+	FStartSequenceFinishedEvent StartSequenceFinishedEvent;
 
 };
 
