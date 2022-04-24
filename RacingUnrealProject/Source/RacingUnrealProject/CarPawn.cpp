@@ -152,7 +152,7 @@ void ACarPawn::ApplyGravity()
 			if (IsGrounded())
 			{
 				HoverForce = (-GravityForceVector * UKismetMathLibrary::Exp(ScaleHeight) -
-					HoverDampingFactor * HeightVelocity * UKismetMathLibrary::Exp(ScaleHeight)).GetClampedToMaxSize(10000.f);
+					HoverDampingFactor * HeightVelocity).GetClampedToMaxSize(10000.f); // * UKismetMathLibrary::Exp(ScaleHeight)
 			}
 			SphereComp->AddForce(GravityForceVector+HoverForce, FName(), true);
 		}

@@ -72,7 +72,7 @@ public:
 		class AGravitySplineActor* GravitySplineActive = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car|Hover")
-		float HoverHeight{50};
+		float HoverHeight{100.f};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car|Hover")
 		float HoverCutOffHeight{1.5f*HoverHeight};
