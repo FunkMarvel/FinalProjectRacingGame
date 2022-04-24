@@ -20,7 +20,13 @@ public:
 	UFUNCTION()
 	void UpdateTimer(float CurrentTime);
 
+	UFUNCTION()
+	void UpdateLapCounter(int32 CurrentNumLaps, int32 MaxNumLaps);
+
 protected:
 	UPROPERTY(meta=(BindWidget))
 		class UTextBlock* Timer{nullptr};
+
+	UPROPERTY(meta=(BindWidget))
+		class UTextBlock* LapCounter{nullptr};
 };

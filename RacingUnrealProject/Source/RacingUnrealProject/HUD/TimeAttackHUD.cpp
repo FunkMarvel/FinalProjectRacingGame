@@ -22,6 +22,7 @@ void ATimeAttackHUD::BeginPlay()
 		RaceTimerWidget = CreateWidget<URaceTimerWidget>(GetWorld(), TimerWidgetClass);
 		GameModeBase->BeginTimer();
 		RaceTimerWidget->AddToViewport();
+		RaceTimerWidget->UpdateLapCounter(GameModeBase->CurrentLap, GameModeBase->NumberOfLaps);
 	}
 }
 
@@ -30,4 +31,9 @@ void ATimeAttackHUD::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 	if (GameModeBase->IsTiming()) GameModeBase->RaceTimer += DeltaSeconds;
 	if (RaceTimerWidget) RaceTimerWidget->UpdateTimer(GameModeBase->RaceTimer);
+}
+
+void ATimeAttackHUD::SetLapCounter(int32 CurrentLap, int32 MaxNumLaps)
+{
+	RaceTimerWidget->UpdateLapCounter(CurrentLap, MaxNumLaps);
 }

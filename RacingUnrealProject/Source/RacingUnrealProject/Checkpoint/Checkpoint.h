@@ -53,4 +53,7 @@ public:
 	UFUNCTION()
 		AGravitySplineActor* GetCheckpointGravitySpline() const {return GravitySplineActor; }
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Track position")
+		bool bStartAndFinishLine{false};
+
 };

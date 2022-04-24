@@ -40,17 +40,16 @@ void ACheckpoint::BeginPlay()
 	AGameModeBase* BaseGameMode = GetWorld()->GetAuthGameMode();
 	if (BaseGameMode->IsA(ARacingUnrealProjectGameModeBase::StaticClass()))
 		GameModee = Cast<ARacingUnrealProjectGameModeBase>(BaseGameMode);
+
+	if (bStartAndFinishLine) GameModee->SetGoalCheckpoint(this);
 	
 	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &ACheckpoint::OnBeginOverlap);
-	
-	
 }
 
 // Called every frame
 void ACheckpoint::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void ACheckpoint::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -58,12 +57,12 @@ void ACheckpoint::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 {
 	if (OtherActor->IsA(ACarPawn::StaticClass()))
 	{
-			UE_LOG(LogTemp, Warning, TEXT("Overlap!"))
-		 if (GameModee)
-		 {
-		 	GameModee->SetLastCheckpoint(this);
-			 
-		 }
+		UE_LOG(LogTemp, Warning, TEXT("Overlap!"))
+		if (GameModee)
+		{
+			GameModee->SetLastCheckpoint(this);
+			if (bStartAndFinishLine) GameModee->OnCompletedLap();
+		}
 	}
 	
 }

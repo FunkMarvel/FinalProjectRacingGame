@@ -20,6 +20,8 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaSeconds) override;
+
+	void SetLapCounter(int32 CurrentLap, int32 MaxNumLaps);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets|Time")
 		TSubclassOf<class UUserWidget> TimerWidgetClass;
