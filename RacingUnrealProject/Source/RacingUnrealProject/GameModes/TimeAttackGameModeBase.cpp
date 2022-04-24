@@ -26,6 +26,12 @@ void ATimeAttackGameModeBase::BeginPlay()
 		GameStartSequence = Cast<AGameStartSequenceActor>(StartSequenceActors[0]);
 		GameStartSequence->StartSequenceFinishedEvent.AddDynamic(this, &ATimeAttackGameModeBase::BeginTimer);
 	}
+	if (PlayerController)
+	{
+		FInputModeGameOnly InputMode{};
+		InputMode.SetConsumeCaptureMouseDown(true);
+		PlayerController->SetInputMode(InputMode);
+	}
 }
 
 void ATimeAttackGameModeBase::BeginTimer()
@@ -53,5 +59,12 @@ void ATimeAttackGameModeBase::GameEndState()
 {
 	Super::GameEndState();
 	ToggleTiming(false);
+	if (PlayerController)
+	{
+		PlayerController->SetShowMouseCursor(true);
+		FInputModeUIOnly InputMode{};
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+		PlayerController->SetInputMode(InputMode);
+	}
 	RacingGameInstance->SaveTime(RaceTimer);
 }
