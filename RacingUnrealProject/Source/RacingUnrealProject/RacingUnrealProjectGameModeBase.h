@@ -14,17 +14,27 @@ class RACINGUNREALPROJECT_API ARacingUnrealProjectGameModeBase : public AGameMod
 {
 	GENERATED_BODY()
 
-private:
+protected:
 	UPROPERTY()
 		class ACheckpoint* LastCheckpoint{nullptr};
+
+	UPROPERTY()
+		class ACheckpoint* GoalCheckpoint{nullptr};
+
+	UPROPERTY()
+		class APawn* PlayerPawn{nullptr};
 	
 public:
+	virtual void BeginPlay() override;
+	
 	UFUNCTION()
 		class ACheckpoint* GetLastCheckpoint() const {return LastCheckpoint; }
 	UFUNCTION()
 		void SetLastCheckpoint(class ACheckpoint* NewLastCheckpoint) {LastCheckpoint = NewLastCheckpoint; }
-	
 
+	UFUNCTION()
+		void SetGoalCheckpoint(class ACheckpoint* NewGoal) { GoalCheckpoint = NewGoal; }
+	
 	UFUNCTION()
 		virtual void OnCompletedLap();
 };
