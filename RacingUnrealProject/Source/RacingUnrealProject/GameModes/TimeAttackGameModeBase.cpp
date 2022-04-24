@@ -28,3 +28,7 @@ void ATimeAttackGameModeBase::BeginTimer()
 {
 	ToggleTiming(true);
 }
+
+void ATimeAttackGameModeBase::OnCompletedLap()
+{
+}

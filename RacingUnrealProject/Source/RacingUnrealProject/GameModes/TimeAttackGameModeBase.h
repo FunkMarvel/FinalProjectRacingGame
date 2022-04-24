@@ -34,4 +34,6 @@ protected:
 public:
 	bool IsTiming() { return bIsTiming; }
 	void ToggleTiming(bool bOn) { bIsTiming = bOn; }
+	
+	virtual void OnCompletedLap() override;
 };
