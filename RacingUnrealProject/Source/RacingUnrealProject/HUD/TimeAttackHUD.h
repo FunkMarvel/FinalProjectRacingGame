@@ -22,9 +22,14 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	void SetLapCounter(int32 CurrentLap, int32 MaxNumLaps);
+
+	void ToggleEndMenu(bool bShowMenu);
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets|Time")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets|In Game HUD")
 		TSubclassOf<class UUserWidget> TimerWidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets|End Menu")
+		TSubclassOf<class UUserWidget> TimeAttackEndMenuClass;
 
 protected:
 	UPROPERTY()
@@ -32,4 +37,7 @@ protected:
 
 	UPROPERTY()
 		class ATimeAttackGameModeBase* GameModeBase{nullptr};
+
+	UPROPERTY()
+		class UTimeAttackEndMenuWidget* TimeAttackEndMenuWidget{nullptr};
 };
