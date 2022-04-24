@@ -313,6 +313,8 @@ void UPhysicsGrapplingComponent::TravelingState()
 	
 	if (TargetGrappableComponent)
 	{
+		
+		
 		// UE_LOG(LogTemp, Warning, TEXT("Homing"))
 		FVector Vel = CarPawn->GrappleHookSphereComponent->GetPhysicsLinearVelocity();
 		FVector ToTarget = TargetGrappableComponent->GetComponentLocation() - CarPawn->GrappleHookSphereComponent->GetComponentLocation();
@@ -334,6 +336,10 @@ void UPhysicsGrapplingComponent::TravelingState()
 		//sets the shark head
 		FRotator NewHeadRot = UKismetMathLibrary::MakeRotFromXZ(Vel.GetSafeNormal(), CarPawn->LocalUpVector);
 		CarPawn->GrappleHookMesh->SetWorldRotation(NewHeadRot);
+		
+	}
+	else
+	{
 		
 	}
 }

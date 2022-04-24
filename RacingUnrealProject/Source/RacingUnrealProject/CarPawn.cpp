@@ -164,23 +164,26 @@ void ACarPawn::TiltCarMesh(FVector AsymVector)
 {
 	//orients the mesh
 	
-	FRotator NewRot = UKismetMathLibrary::MakeRotFromZX(LocalUpVector + AsymVector * GetWorld()->GetDeltaSeconds() * 0.003f,
-															GetActorForwardVector());
+	FRotator NewRot = UKismetMathLibrary::MakeRotFromZX(
+		LocalUpVector + AsymVector * GetWorld()->GetDeltaSeconds() * 0.003f,
+		GetActorForwardVector()
+		);
 	
-	
-	CarMesh->SetWorldRotation( FMath::RInterpTo(CarMesh->GetComponentRotation(),
-	                                            NewRot,
-	                                            UGameplayStatics::GetWorldDeltaSeconds(this),
-	                                            5.f
+	CarMesh->SetWorldRotation(
+	FMath::RInterpTo(CarMesh->GetComponentRotation(),
+        NewRot,
+        UGameplayStatics::GetWorldDeltaSeconds(this),
+        5.f
 	));
-
 	//clamps the roll rotation
-	float ClampValue = 45.f;
+	const float ClampValue = 45.f;
 	FRotator LocalRot = CarMesh->GetRelativeRotation();
 	LocalRot.Roll = FMath::Clamp(LocalRot.Roll, -ClampValue, ClampValue);
 
+	
 	CarMesh->SetRelativeRotation(LocalRot);
-
+	
+	
 	if (abs(LocalRot.Roll) > 41.f)
 	{
 		if (LocalRot.Roll > 0.f)
@@ -435,9 +438,9 @@ FVector ACarPawn::CalcAsymVector()
 
 	FVector CalcAsymForce = GetActorRightVector() * FVector::DotProduct(SphereComp->GetRightVector(), FrictionForce);
 	
-	if (NegativeVelocity.SizeSquared() < pow(220.f, 2.f))
-		CalcAsymForce = FVector::ZeroVector;
-
+	if (NegativeVelocity.SizeSquared() < pow(320.f, 2.f))
+		CalcAsymForce *= NegativeVelocity.Size() / 2000.f;
+	
 		
 	return CalcAsymForce;
 }
