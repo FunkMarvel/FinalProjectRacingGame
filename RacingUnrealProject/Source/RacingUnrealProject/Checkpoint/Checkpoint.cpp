@@ -50,7 +50,6 @@ void ACheckpoint::BeginPlay()
 void ACheckpoint::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void ACheckpoint::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -58,12 +57,12 @@ void ACheckpoint::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 {
 	if (OtherActor->IsA(ACarPawn::StaticClass()))
 	{
-			UE_LOG(LogTemp, Warning, TEXT("Overlap!"))
-		 if (GameModee)
-		 {
-		 	GameModee->SetLastCheckpoint(this);
-			 
-		 }
+		UE_LOG(LogTemp, Warning, TEXT("Overlap!"))
+		if (GameModee)
+		{
+			GameModee->SetLastCheckpoint(this);
+			if (bStartAndFinishLine) GameModee->OnCompletedLap();
+		}
 	}
 	
 }
