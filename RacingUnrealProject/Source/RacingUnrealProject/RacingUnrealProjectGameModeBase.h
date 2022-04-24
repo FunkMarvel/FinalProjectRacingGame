@@ -16,10 +16,15 @@ class RACINGUNREALPROJECT_API ARacingUnrealProjectGameModeBase : public AGameMod
 
 private:
 	UPROPERTY()
-	class ACheckpoint* LastCheckpoint{};
+		class ACheckpoint* LastCheckpoint{nullptr};
+	
 public:
 	UFUNCTION()
 		class ACheckpoint* GetLastCheckpoint() const {return LastCheckpoint; }
 	UFUNCTION()
 		void SetLastCheckpoint(class ACheckpoint* NewLastCheckpoint) {LastCheckpoint = NewLastCheckpoint; }
+	
+
+	UFUNCTION()
+		virtual void OnCompletedLap();
 };
