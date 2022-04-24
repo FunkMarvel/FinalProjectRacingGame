@@ -155,7 +155,6 @@ void ACarPawn::ApplyGravity()
 					HoverDampingFactor * HeightVelocity * UKismetMathLibrary::Exp(ScaleHeight)).GetClampedToMaxSize(10000.f);
 			}
 			SphereComp->AddForce(GravityForceVector+HoverForce, FName(), true);
-			//UE_LOG(LogTemp, Warning, TEXT("Forecs G = %f, H = %f, %f"), GravityForceVector.Z, HoverForce.Z, ScaleHeight);
 		}
 	}
 }
@@ -318,7 +317,6 @@ void ACarPawn::StateGrappling()
 		
 		// CameraBoom->CameraLagSpeed = GrapplingCameraLag.X;
 		// CameraBoom->CameraRotationLagSpeed = GrapplingCameraLag.Y;
-		//UE_LOG(LogTemp, Warning, TEXT("BING!"))
 		CameraEffectComponent->BoostCameraModifier->EnableModifier();
 		// UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraEffectComponent->CameraShake, SphereComp->GetComponentLocation(),
 		// 	  0.f, 1000.f, 1.f);
@@ -392,7 +390,7 @@ void ACarPawn::StateAirBorne()
 			if (CP->GetCheckpointGravitySpline())
 				GravitySplineActive = CP->GetCheckpointGravitySpline();
 			else
-				UE_LOG(LogTemp, Error, TEXT("(%s) no gravity spline is selected"), *CP->GetName())
+				DL_NORMAL( "gravity spline is selected" + CP->GetName());
 			
 			EnterState(EVehicleState::AirBorne);
 			SphereComp->SetPhysicsLinearVelocity(FVector::ZeroVector);

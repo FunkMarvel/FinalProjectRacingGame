@@ -48,7 +48,7 @@ void UPhysicsGrapplingComponent::HandleTargetHomingComp()
 	TArray<UPrimitiveComponent*> OverlappingComponents;
 	CarPawn->GrappleSensor->GetOverlappingComponents(OverlappingComponents);
 	
-	// UE_LOG(LogTemp, Warning, TEXT("%d"), OverlappingComponents.Num())
+	
 	
 	TArray<UGrappleSphereComponent*> GrappableSphereComponents;
 	GrappableSphereComponents.Init(nullptr, 0);
@@ -60,7 +60,7 @@ void UPhysicsGrapplingComponent::HandleTargetHomingComp()
 			GrappableSphereComponents.Add(Cast<UGrappleSphereComponent>(OverlappingComponents[i]));		
 		}
 	}
-	//UE_LOG(LogTemp, Warning, TEXT("Overlapping comps %i"), OverlappingComponents.Num())
+	
 
 	if (GrappableSphereComponents.Num() > 0)
 	{
@@ -181,7 +181,7 @@ void UPhysicsGrapplingComponent::OnGrappleHit(UPrimitiveComponent* HitComp, AAct
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	return;
-	UE_LOG(LogTemp, Warning, TEXT("HIT"))
+	
 	if (CurrentGrappleState != EGrappleStates::Traveling)
 		return;
 	
@@ -268,7 +268,7 @@ void UPhysicsGrapplingComponent::TravelingState()
 		}
 		
 	}
-	// UE_LOG(LogTemp, Warning, TEXT("current GrappleSphereSpeed %f"), CarPawn->GrappleHookSphereComponent->GetPhysicsLinearVelocity().Size())
+	
 
 	//updates the sensor to match grappleSphere velocity
 	FRotator NewRot = UKismetMathLibrary::MakeRotFromXZ(CarPawn->GrappleHookSphereComponent->GetPhysicsLinearVelocity(), CarPawn->SphereComp->GetUpVector());
@@ -315,7 +315,7 @@ void UPhysicsGrapplingComponent::TravelingState()
 	{
 		
 		
-		// UE_LOG(LogTemp, Warning, TEXT("Homing"))
+		
 		FVector Vel = CarPawn->GrappleHookSphereComponent->GetPhysicsLinearVelocity();
 		FVector ToTarget = TargetGrappableComponent->GetComponentLocation() - CarPawn->GrappleHookSphereComponent->GetComponentLocation();
 		FVector Cross = FVector::CrossProduct(Vel, ToTarget);
@@ -408,7 +408,7 @@ void UPhysicsGrapplingComponent::HookedState()
 	if (bEnterState)
 	{
 		bEnterState = false;
-		//UE_LOG(LogTemp, Warning, TEXT("Disables physics"))
+		
 		CarPawn->GrappleHookSphereComponent->SetSimulatePhysics(false);
 		CarPawn->GrappleHookSphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		
