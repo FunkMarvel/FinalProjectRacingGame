@@ -26,6 +26,6 @@ void URaceTimerWidget::UpdateTimer(float CurrentTime)
 
 void URaceTimerWidget::UpdateLapCounter(int32 CurrentNumLaps, int32 MaxNumLaps)
 {
-	FString LapString{FString::Printf(TEXT("%02d/%02d"), CurrentNumLaps, MaxNumLaps)};
+	FString LapString{FString::Printf(TEXT("%01d/%01d"), CurrentNumLaps, MaxNumLaps)};
 	if (LapCounter) LapCounter->SetText(FText::FromString(LapString));
 }
