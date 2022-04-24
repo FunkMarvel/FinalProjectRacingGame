@@ -20,7 +20,7 @@ void ATimeAttackHUD::BeginPlay()
 	if (TimerWidgetClass)
 	{
 		RaceTimerWidget = CreateWidget<URaceTimerWidget>(GetWorld(), TimerWidgetClass);
-		GameModeBase->BeginTimer();
+		// GameModeBase->BeginTimer();
 		RaceTimerWidget->AddToViewport();
 		RaceTimerWidget->UpdateLapCounter(GameModeBase->CurrentLap, GameModeBase->NumberOfLaps);
 	}
