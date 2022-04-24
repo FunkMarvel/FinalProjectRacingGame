@@ -3,6 +3,7 @@
 
 #include "TimeAttackGameModeBase.h"
 
+#include "RacingGameInstance.h"
 #include "Components/ArrowComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "RacingUnrealProject/GameStartSequenceActor.h"
@@ -36,13 +37,21 @@ void ATimeAttackGameModeBase::BeginTimer()
 void ATimeAttackGameModeBase::OnCompletedLap()
 {
 	FVector PlayerToGoalDir{(GoalCheckpoint->GetActorLocation() - PlayerPawn->GetActorLocation()).GetSafeNormal()};
-	if (CurrentLap < NumberOfLaps && FVector::DotProduct(PlayerToGoalDir, GoalCheckpoint->GetSpawnArrow()->GetForwardVector()) > 0.f)
+	if (FVector::DotProduct(PlayerToGoalDir, GoalCheckpoint->GetSpawnArrow()->GetForwardVector()) > 0.f)
 	{
 		CurrentLap++;
 	}
-	else if (FVector::DotProduct(PlayerToGoalDir, GoalCheckpoint->GetSpawnArrow()->GetForwardVector()) < 0)
+	else if (FVector::DotProduct(PlayerToGoalDir, GoalCheckpoint->GetSpawnArrow()->GetForwardVector()) < 0.f)
 	{
 		CurrentLap--;
 	}
 	if (TimeAttackHUD) TimeAttackHUD->SetLapCounter(CurrentLap, NumberOfLaps);
+	if (CurrentLap >= NumberOfLaps) GameEndState();
+}
+
+void ATimeAttackGameModeBase::GameEndState()
+{
+	Super::GameEndState();
+	ToggleTiming(false);
+	RacingGameInstance->SaveTime(RaceTimer);
 }

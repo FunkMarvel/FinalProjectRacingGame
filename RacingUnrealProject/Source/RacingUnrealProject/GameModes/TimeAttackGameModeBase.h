@@ -43,4 +43,6 @@ public:
 	void ToggleTiming(bool bOn) { bIsTiming = bOn; }
 	
 	virtual void OnCompletedLap() override;
+
+	virtual void GameEndState() override;
 };
