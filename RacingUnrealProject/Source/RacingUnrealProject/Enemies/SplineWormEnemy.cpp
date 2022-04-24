@@ -9,6 +9,7 @@
 #include "Components/SplineMeshComponent.h"
 #include "Evaluation/IMovieSceneEvaluationHook.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "RacingUnrealProject/DebugLog.h"
 
 // Sets default values
 ASplineWormEnemy::ASplineWormEnemy()
@@ -46,6 +47,8 @@ void ASplineWormEnemy::BeginPlay()
 	Super::BeginPlay();
 	GrappleSphereComponent->OnReachedEvent.AddDynamic(this, &ASplineWormEnemy::OnGrappleReaced);
 	TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &ASplineWormEnemy::OnOverlap);
+	
+	
 }
 
 // Called every frame
@@ -55,6 +58,12 @@ void ASplineWormEnemy::Tick(float DeltaTime)
 
 	if (!bPlayingAnim)
 		return;
+
+	if (!bHasInitSpline) {
+		bHasInitSpline = true;
+		InitSplineSegments();
+	}
+	
 	UpdateSplineMeshComponent();
 	UpdateHeadTransfrom(0.5f);
 
@@ -65,67 +74,44 @@ void ASplineWormEnemy::Tick(float DeltaTime)
 	CurrentWormDistance -= GetWormRealLength(); // converts to the movment is based on the end of the worm
 		
     // checking if we have reached the end
-    if ( Spline->GetSplineLength() < SplineMeshComponents.Num() * NeckSegmentLength + SplineMeshOverLap + CurrentWormDistance)
+    if ( Spline->GetSplineLength() < SplineMeshComponents.Num() *
+    	NeckSegmentLength + SplineMeshOverLap + CurrentWormDistance)
     {
 	    bPlayingAnim = false;
+    	GrappleSphereComponent->SetIsEnabled(true);
     }
 	
 }
 
 void ASplineWormEnemy::UpdateSplineMeshComponent()
 {
-	
-	int SegmentsToCreate = (WormGoalLength / NeckSegmentLength) - SplineMeshComponents.Num();
-
-	if (SegmentsToCreate > 0)
-	{
-		for (int32 i = 0; i < SegmentsToCreate; i++)
-		{
-			USplineMeshComponent* NewSplineMesh = NewObject<USplineMeshComponent>(this);
-			if (NewSplineMesh)
-			{
-				NewSplineMesh->RegisterComponent();
-				NewSplineMesh->SetMobility(EComponentMobility::Movable);
-				NewSplineMesh->SetStaticMesh(NeckSegment);
-
-				NewSplineMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-				SplineMeshComponents.Emplace(NewSplineMesh);
-			}
-		}
-		
-	}
-	else if (SegmentsToCreate < 0)
-	{
-		for (int32 i = 0; i < abs(SegmentsToCreate); i++)
-		{
-			int32 LastIndex = SplineMeshComponents.Num() - 1;
-			SplineMeshComponents[LastIndex]->DestroyComponent();
-			SplineMeshComponents.RemoveAt(LastIndex);
-		}
-	}
 
 	float CurrentDistance = CurrentWormDistance;
-	for (int i = 0; i < SplineMeshComponents.Num(); ++i)
+	for (int32 i = 0; i < SplineMeshComponents.Num(); ++i)
 	{
-		FVector StartLocation, EndLocation, StartTangent, EndTangent;
+		// FVector StartLocation, EndLocation, StartTangent, EndTangent;
 
-		StartLocation = Spline->GetLocationAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World);
-		StartTangent = Spline->GetTangentAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World);
+		/*StartLocation = Spline->GetLocationAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World);
+		StartTangent = Spline->GetDirectionAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World);
 		EndLocation = Spline->GetLocationAtDistanceAlongSpline(CurrentDistance + NeckSegmentLength + SplineMeshOverLap, 
 		ESplineCoordinateSpace::World);
-		EndTangent = Spline->GetTangentAtDistanceAlongSpline(CurrentDistance + NeckSegmentLength + SplineMeshOverLap, 
-		ESplineCoordinateSpace::World);
+		EndTangent = Spline->GetDirectionAtDistanceAlongSpline(CurrentDistance + NeckSegmentLength + SplineMeshOverLap, 
+		ESplineCoordinateSpace::World);*/
 
 		//normalizing
-		StartTangent.Normalize();
-		EndTangent.Normalize();
-	
+		/*StartTangent.Normalize();
+		EndTangent.Normalize();*/
 		
 		//setting the values
-		SplineMeshComponents[i]->SetStartPosition(StartLocation, false);
-		SplineMeshComponents[i]->SetStartTangent(StartTangent, false);
-		SplineMeshComponents[i]->SetEndPosition(EndLocation, false);
-		SplineMeshComponents[i]->SetEndTangent(EndTangent, true);
+		SplineMeshComponents[i]->SetStartPosition(Spline->GetLocationAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World), false);
+		SplineMeshComponents[i]->SetStartTangent(Spline->GetDirectionAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World), false);
+
+		const float OffsetDistance = CurrentDistance+ NeckSegmentLength + SplineMeshOverLap;
+		
+		SplineMeshComponents[i]->SetEndPosition(Spline->GetLocationAtDistanceAlongSpline(OffsetDistance, 
+		ESplineCoordinateSpace::World), false);
+		SplineMeshComponents[i]->SetEndTangent(Spline->GetDirectionAtDistanceAlongSpline(OffsetDistance, 
+		ESplineCoordinateSpace::World), true);
 		
 		CurrentDistance += NeckSegmentLength;
 	}
@@ -176,6 +162,36 @@ void ASplineWormEnemy::UpdateHeadTransfrom(float RatioOnSnake)
 	
 	FRotator Rotation = UKismetMathLibrary::MakeRotFromXZ(-Forward, Up);
 	GrappleSphereComponent->SetWorldRotation(Rotation);
+}
+
+void ASplineWormEnemy::InitSplineSegments() {
+	//init spline segmensts
+	int SegmentsToCreate = (WormGoalLength / NeckSegmentLength) - SplineMeshComponents.Num();
+
+	DL_NORMAL("segments to create : " + FString::FromInt(SegmentsToCreate))
+	if (SegmentsToCreate > 0) {
+		for (int32 i = 0; i < SegmentsToCreate; i++)
+		{
+			USplineMeshComponent* NewSplineMesh = NewObject<USplineMeshComponent>(this);
+			if (NewSplineMesh)
+			{
+				NewSplineMesh->RegisterComponent();
+				NewSplineMesh->SetMobility(EComponentMobility::Movable);
+				NewSplineMesh->SetStaticMesh(NeckSegment);
+
+				NewSplineMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+				SplineMeshComponents.Emplace(NewSplineMesh);
+			}
+		}
+		
+	}
+	else if (SegmentsToCreate < 0) {
+		for (int32 i = 0; i < abs(SegmentsToCreate); i++) {
+			int32 LastIndex = SplineMeshComponents.Num() - 1;
+			SplineMeshComponents[LastIndex]->DestroyComponent();
+			SplineMeshComponents.RemoveAt(LastIndex);
+		}
+	}
 }
 
 float ASplineWormEnemy::GetWormRealLength() const

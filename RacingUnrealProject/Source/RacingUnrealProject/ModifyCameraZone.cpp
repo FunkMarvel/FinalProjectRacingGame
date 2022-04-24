@@ -15,6 +15,8 @@ AModifyCameraZone::AModifyCameraZone()
 
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxTrigger"));
 	SetRootComponent(BoxComponent);
+	BoxComponent->SetBoxExtent(FVector(800.f, 200.f, 600.f));
+	BoxComponent->ShapeColor = FColor::Green;
 
 }
 

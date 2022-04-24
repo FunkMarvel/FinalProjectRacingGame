@@ -40,9 +40,9 @@ public:
 		class UStaticMesh* NeckSegment = nullptr;
 	UPROPERTY(EditAnywhere, Category = "Spline")
 		class UCurveFloat* MovmentCurveFloat;
+private:
 	UPROPERTY()
 		TArray<class USplineMeshComponent*> SplineMeshComponents;
-
 	UFUNCTION()
 		void UpdateSplineMeshComponent();
 
@@ -52,8 +52,12 @@ public:
 	 * @param RatioOnSnake 1 means at the tip, 0 means at the end
 	 */
 		void UpdateHeadTransfrom(float RatioOnSnake);
+
+	UFUNCTION()
+		void InitSplineSegments();
 	UFUNCTION()
 		float GetWormRealLength() const;
+public:
 	
 	UPROPERTY(EditAnywhere, Category = "Spline")
 		float NeckSegmentLength = 500.f;
@@ -76,6 +80,8 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "Spline")
 		bool bPlayingAnim = false;
+	UPROPERTY(EditAnywhere, Category = "Spline")
+		bool bHasInitSpline = false;
 	UPROPERTY()
 		float CurrentMoveTime = 0.f;
 private:
@@ -84,3 +90,5 @@ private:
 	UFUNCTION()
 		void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
 };
+
+

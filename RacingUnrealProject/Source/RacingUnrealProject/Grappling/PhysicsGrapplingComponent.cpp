@@ -30,15 +30,14 @@ UPhysicsGrapplingComponent::UPhysicsGrapplingComponent()
 void UPhysicsGrapplingComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
 	
-	
-	
-	if (GetOwner()->IsA(ACarPawn::StaticClass()))
-	{
+	if (GetOwner()->IsA(ACarPawn::StaticClass())) {
 		CarPawn = Cast<ACarPawn>(GetOwner());
 		StartLocationGrappleMesh = CarPawn->GrappleHookSphereComponent->GetRelativeLocation();
 	}
+
+	//sets the max grapple distance equal to the grapplesensor length size.
+	MaxGrappleDistance = CarPawn->GrappleSensor->GetStaticMesh()->GetBoundingBox().GetSize().X;
 }
 
 
@@ -48,7 +47,7 @@ void UPhysicsGrapplingComponent::HandleTargetHomingComp()
 	TArray<UPrimitiveComponent*> OverlappingComponents;
 	CarPawn->GrappleSensor->GetOverlappingComponents(OverlappingComponents);
 	
-	// UE_LOG(LogTemp, Warning, TEXT("%d"), OverlappingComponents.Num())
+	
 	
 	TArray<UGrappleSphereComponent*> GrappableSphereComponents;
 	GrappableSphereComponents.Init(nullptr, 0);
@@ -60,7 +59,7 @@ void UPhysicsGrapplingComponent::HandleTargetHomingComp()
 			GrappableSphereComponents.Add(Cast<UGrappleSphereComponent>(OverlappingComponents[i]));		
 		}
 	}
-	//UE_LOG(LogTemp, Warning, TEXT("Overlapping comps %i"), OverlappingComponents.Num())
+	
 
 	if (GrappableSphereComponents.Num() > 0)
 	{
@@ -147,7 +146,7 @@ void UPhysicsGrapplingComponent::FireGrapplingHook()
 void UPhysicsGrapplingComponent::RetractGrapplingHook()
 {
 	//ResetTemporalVariables();
-	if (CurrentGrappleState != EGrappleStates::HookedEatable)
+	if (CurrentGrappleState != EGrappleStates::HookedEatable && CurrentGrappleState != EGrappleStates::Hooked)
 	{
 		EnterState(EGrappleStates::Returning);
 		
@@ -181,7 +180,7 @@ void UPhysicsGrapplingComponent::OnGrappleHit(UPrimitiveComponent* HitComp, AAct
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	return;
-	UE_LOG(LogTemp, Warning, TEXT("HIT"))
+	
 	if (CurrentGrappleState != EGrappleStates::Traveling)
 		return;
 	
@@ -268,7 +267,7 @@ void UPhysicsGrapplingComponent::TravelingState()
 		}
 		
 	}
-	// UE_LOG(LogTemp, Warning, TEXT("current GrappleSphereSpeed %f"), CarPawn->GrappleHookSphereComponent->GetPhysicsLinearVelocity().Size())
+	
 
 	//updates the sensor to match grappleSphere velocity
 	FRotator NewRot = UKismetMathLibrary::MakeRotFromXZ(CarPawn->GrappleHookSphereComponent->GetPhysicsLinearVelocity(), CarPawn->SphereComp->GetUpVector());
@@ -313,7 +312,9 @@ void UPhysicsGrapplingComponent::TravelingState()
 	
 	if (TargetGrappableComponent)
 	{
-		// UE_LOG(LogTemp, Warning, TEXT("Homing"))
+		
+		
+		
 		FVector Vel = CarPawn->GrappleHookSphereComponent->GetPhysicsLinearVelocity();
 		FVector ToTarget = TargetGrappableComponent->GetComponentLocation() - CarPawn->GrappleHookSphereComponent->GetComponentLocation();
 		FVector Cross = FVector::CrossProduct(Vel, ToTarget);
@@ -334,6 +335,10 @@ void UPhysicsGrapplingComponent::TravelingState()
 		//sets the shark head
 		FRotator NewHeadRot = UKismetMathLibrary::MakeRotFromXZ(Vel.GetSafeNormal(), CarPawn->LocalUpVector);
 		CarPawn->GrappleHookMesh->SetWorldRotation(NewHeadRot);
+		
+	}
+	else
+	{
 		
 	}
 }
@@ -402,7 +407,7 @@ void UPhysicsGrapplingComponent::HookedState()
 	if (bEnterState)
 	{
 		bEnterState = false;
-		//UE_LOG(LogTemp, Warning, TEXT("Disables physics"))
+		
 		CarPawn->GrappleHookSphereComponent->SetSimulatePhysics(false);
 		CarPawn->GrappleHookSphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		
@@ -586,7 +591,19 @@ bool UPhysicsGrapplingComponent::ValidGrappleState()
 void UPhysicsGrapplingComponent::HandleRayTraceLogic()
 {
 	FVector StartLoc = CarPawn->GrappleHookSphereComponent->GetComponentLocation();
-	FVector EndLoc = StartLoc + CarPawn->GrappleHookSphereComponent->GetPhysicsLinearVelocity().GetSafeNormal() * RaycastRange;
+
+	//the direction we want to raycast to look
+	FVector Direction = FVector::ZeroVector;
+	if (TargetGrappableComponent) //  fire in direction of target
+	{
+		Direction = (TargetGrappableComponent->GetComponentLocation() - CarPawn->GrappleHookSphereComponent->GetComponentLocation()).GetSafeNormal();
+	}
+	else // fire in direction of velocity if no target
+	{
+		Direction = CarPawn->GrappleHookSphereComponent->GetPhysicsLinearVelocity().GetSafeNormal();
+	}
+	
+	FVector EndLoc = StartLoc + Direction * RaycastRange;
 
 	FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
 	//FHitResult hit{};

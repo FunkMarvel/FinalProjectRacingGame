@@ -7,6 +7,7 @@
 #include "../Grappling/PhysicsGrapplingComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/SphereComponent.h"
+#include "RacingUnrealProject/DebugLog.h"
 
 // Sets default values for this component's properties
 UGrappableWidgetComponent::UGrappableWidgetComponent()
@@ -28,6 +29,10 @@ void UGrappableWidgetComponent::BeginPlay()
 
 	CarPawn = Cast<ACarPawn>(GetOwner());
 
+	if (CarPawn == nullptr) {
+		DL_ERROR("Carpawn not cast correctly, is nullptr!")
+	}
+	
 	//binding events
 	CarPawn->PhysicsGrappleComponent->FoundHomingTargetEvent.AddDynamic(this, &UGrappableWidgetComponent::PlaceWidget);
 	CarPawn->PhysicsGrappleComponent->BeginHomingEvent.AddDynamic(this, &UGrappableWidgetComponent::PlayAnimation);
