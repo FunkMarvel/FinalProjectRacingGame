@@ -25,6 +25,9 @@ protected:
 		class APawn* PlayerPawn{nullptr};
 
 	UPROPERTY()
+		class APlayerController* PlayerController{nullptr};
+
+	UPROPERTY()
 		class URacingGameInstance* RacingGameInstance{nullptr};
 	
 public:

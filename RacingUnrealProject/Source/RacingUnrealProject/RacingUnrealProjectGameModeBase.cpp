@@ -11,6 +11,7 @@ void ARacingUnrealProjectGameModeBase::BeginPlay()
 	Super::BeginPlay();
 	PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
 	RacingGameInstance = Cast<URacingGameInstance>(GetGameInstance());
+	PlayerController = GetWorld()->GetFirstPlayerController();
 }
 
 void ARacingUnrealProjectGameModeBase::OnCompletedLap()
