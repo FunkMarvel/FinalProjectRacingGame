@@ -25,11 +25,18 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Timer")
 		float RaceTimer{0.f};
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Laps")
+		int32 NumberOfLaps{3};
+	int32 CurrentLap{};
+
 protected:
 	UPROPERTY()
 		class AGameStartSequenceActor* GameStartSequence{nullptr};
 
 	bool bIsTiming{false};
+
+	UPROPERTY()
+		class ATimeAttackHUD* TimeAttackHUD{nullptr};
 
 public:
 	bool IsTiming() { return bIsTiming; }

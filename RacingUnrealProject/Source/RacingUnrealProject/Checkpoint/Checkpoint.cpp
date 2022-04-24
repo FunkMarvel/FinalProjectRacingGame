@@ -40,10 +40,10 @@ void ACheckpoint::BeginPlay()
 	AGameModeBase* BaseGameMode = GetWorld()->GetAuthGameMode();
 	if (BaseGameMode->IsA(ARacingUnrealProjectGameModeBase::StaticClass()))
 		GameModee = Cast<ARacingUnrealProjectGameModeBase>(BaseGameMode);
+
+	if (bStartAndFinishLine) GameModee->SetGoalCheckpoint(this);
 	
 	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &ACheckpoint::OnBeginOverlap);
-	
-	
 }
 
 // Called every frame
