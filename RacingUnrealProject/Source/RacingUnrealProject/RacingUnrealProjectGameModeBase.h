@@ -23,6 +23,9 @@ protected:
 
 	UPROPERTY()
 		class APawn* PlayerPawn{nullptr};
+
+	UPROPERTY()
+		class URacingGameInstance* RacingGameInstance{nullptr};
 	
 public:
 	virtual void BeginPlay() override;
@@ -37,4 +40,7 @@ public:
 	
 	UFUNCTION()
 		virtual void OnCompletedLap();
+
+	UFUNCTION()
+		virtual void GameEndState();
 };
