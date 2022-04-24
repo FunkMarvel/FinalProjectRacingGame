@@ -30,15 +30,14 @@ UPhysicsGrapplingComponent::UPhysicsGrapplingComponent()
 void UPhysicsGrapplingComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
 	
-	
-	
-	if (GetOwner()->IsA(ACarPawn::StaticClass()))
-	{
+	if (GetOwner()->IsA(ACarPawn::StaticClass())) {
 		CarPawn = Cast<ACarPawn>(GetOwner());
 		StartLocationGrappleMesh = CarPawn->GrappleHookSphereComponent->GetRelativeLocation();
 	}
+
+	//sets the max grapple distance equal to the grapplesensor length size.
+	MaxGrappleDistance = CarPawn->GrappleSensor->GetStaticMesh()->GetBoundingBox().GetSize().X;
 }
 
 
@@ -147,7 +146,7 @@ void UPhysicsGrapplingComponent::FireGrapplingHook()
 void UPhysicsGrapplingComponent::RetractGrapplingHook()
 {
 	//ResetTemporalVariables();
-	if (CurrentGrappleState != EGrappleStates::HookedEatable)
+	if (CurrentGrappleState != EGrappleStates::HookedEatable && CurrentGrappleState != EGrappleStates::Hooked)
 	{
 		EnterState(EGrappleStates::Returning);
 		
@@ -592,7 +591,19 @@ bool UPhysicsGrapplingComponent::ValidGrappleState()
 void UPhysicsGrapplingComponent::HandleRayTraceLogic()
 {
 	FVector StartLoc = CarPawn->GrappleHookSphereComponent->GetComponentLocation();
-	FVector EndLoc = StartLoc + CarPawn->GrappleHookSphereComponent->GetPhysicsLinearVelocity().GetSafeNormal() * RaycastRange;
+
+	//the direction we want to raycast to look
+	FVector Direction = FVector::ZeroVector;
+	if (TargetGrappableComponent) //  fire in direction of target
+	{
+		Direction = (TargetGrappableComponent->GetComponentLocation() - CarPawn->GrappleHookSphereComponent->GetComponentLocation()).GetSafeNormal();
+	}
+	else // fire in direction of velocity if no target
+	{
+		Direction = CarPawn->GrappleHookSphereComponent->GetPhysicsLinearVelocity().GetSafeNormal();
+	}
+	
+	FVector EndLoc = StartLoc + Direction * RaycastRange;
 
 	FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
 	//FHitResult hit{};

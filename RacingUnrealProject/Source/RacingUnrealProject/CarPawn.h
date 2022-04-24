@@ -24,7 +24,7 @@ protected:
 	void RotateSphereCompToLocalUpVector();
 	void ApplyGravity();
 	void TiltCarMesh(FVector AsymVector);
-	void HandleAsymFriction(FVector& AsymVector);
+	void HandleAsymFriction(const FVector& AsymVector);
 
 public:	
 	// Called every frame
@@ -107,13 +107,15 @@ private:
 
 	//movement
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Movment")
-		float AccelerationForce = 90000.f;
+		float AccelerationForce = 1200.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Movment")
-	float DeaccelerationForce = 400000.f;
+		float DeaccelerationForce = 900.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Movment")
-		float MaxSpeed = 7500.f;
+		float DragForce = 700;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Movment")
-		float TurnSpeed = 50.f;
+		float MaxSpeed = 6900.f;
+	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Movment")
+		float TurnSpeed = 75.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Movment")
 		float MaxGroundAngle = 75.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Movment")
@@ -140,6 +142,7 @@ private:
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Car|Camera")
 	float MaxPichLookAngle = 45.f;
 public:
+	//camera boom
 	UFUNCTION()
 		float GetStartCameraBoomLength() const {return StartCameraBoomLength; }
 	UFUNCTION()
@@ -184,11 +187,15 @@ private:
 	void ToggleGrappleHook();
 	
 	//TODO orgenize these :)
+
+	
 	//other funcs
 	
 	FVector CalcAsymVector();
 	float CaltAsymForce();
-	void MoveXAxis(float Value);
+
+	//action funcs
+	void MoveXAxis(float TimeAdjustedValue);
 	void MoveYAxis(float Value);
 	void LookXAxis(float Value);
 	void LookYAxis(float Value);
@@ -200,12 +207,13 @@ private:
 	FHitResult ShootRayFromCenterOfScreen();
 	void SetUpVectorAsSplineUpAxis();
 	bool IsMovingForward();
-
+	
 	float GetSplineCarForwardAngle();
 	void HandleMaxTurnWithSpline();
-	
+	void ApplyDrag();
 	UFUNCTION()
 	bool IsOutOfBounds();
+	
 
 #if WITH_EDITORONLY_DATA
 	//TODO debug remove!

@@ -109,56 +109,7 @@ void UNeckComponent::UpdateSplinePointsTangents(FVector StartTangent, FVector En
 void UNeckComponent::UpdateSplineMesh()
 {
 	UpdateSplineMesh(0, Spline->GetSplineLength());
-
-
-	return;
-	//adds or removes segments to the array
-	int32 segments = CalculateNumberOfSegments();
-	int32 SegmentsToCreate = segments - SplineMeshComponents.Num();
-	if (SegmentsToCreate > 0)
-	{
-		for (int32 i = 0; i < SegmentsToCreate; i++)
-		{
-			USplineMeshComponent* NewSplineMesh = NewObject<USplineMeshComponent>(this);
-			if (NewSplineMesh)
-			{
-				NewSplineMesh->RegisterComponent();
-				NewSplineMesh->SetMobility(EComponentMobility::Movable);
-				NewSplineMesh->SetStaticMesh(StaticMeshClass);
-				SplineMeshComponents.Emplace(NewSplineMesh);
-			}
-		}
-		
-	}
-	else if (SegmentsToCreate < 0)
-	{
-		for (int32 i = 0; i < abs(SegmentsToCreate); i++)
-		{
-			int32 LastIndex = SplineMeshComponents.Num() - 1;
-			SplineMeshComponents[LastIndex]->DestroyComponent();
-			SplineMeshComponents.RemoveAt(LastIndex);
-		}
-	}
-
-	//UE_LOG(LogTemp, Warning, TEXT("Current number of spline meshes! %d"), SplineMeshComponents.Num())
-
-	//sets the positions and tangent of the spline mesh components
-	float truncSplineLength = TargetSegmentsLength * SplineMeshComponents.Num();
-	float lastLength = truncSplineLength;
-	for (int32 i = 0; i < SplineMeshComponents.Num(); i++)
-	{
-		float currentLength = TargetSegmentsLength * i;
-
-		currentLength = Spline->GetSplineLength() - currentLength;
-
-		SplineMeshComponents[i]->SetStartPosition(Spline->GetLocationAtDistanceAlongSpline(lastLength, ESplineCoordinateSpace::World), false);
-		SplineMeshComponents[i]->SetStartTangent(Spline->GetDirectionAtDistanceAlongSpline(lastLength, ESplineCoordinateSpace::World),  false);
-		
-		SplineMeshComponents[i]->SetEndPosition(Spline->GetLocationAtDistanceAlongSpline(currentLength, ESplineCoordinateSpace::World), false);
-		SplineMeshComponents[i]->SetEndTangent(Spline->GetDirectionAtDistanceAlongSpline(currentLength, ESplineCoordinateSpace::World), true);
-		
-		lastLength = currentLength;
-	}
+	
 }
 
 void UNeckComponent::UpdateSplineMesh(float StartLength, float EndLength)

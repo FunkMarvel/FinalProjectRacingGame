@@ -49,9 +49,13 @@ public:
 		void SetIsEatable(bool bEnable) {bEatable = bEnable; }
 	UFUNCTION()
 		bool IsEatable() const {return bEatable; }
-	
+
 	UFUNCTION()
-		void SetIsEnabled(bool _bEnable) {bEnabled = _bEnable; }
+	/**
+	 * @brief Set the GrappleSphereComponent to be grappable
+	 * @param _bEnable  
+	 */
+	void SetIsEnabled(bool _bEnable) {bEnabled = _bEnable; }
 	
 	UFUNCTION()
 		bool IsEnabled() const {return bEnabled; }
@@ -64,7 +68,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Grappable")
 		bool bOverrideReleaseVelocity = true;
 	UPROPERTY(EditAnywhere, Category = "Grappable")
-		bool bEnabled = true;
+		bool bEnabled = false;
 
 	//UI
 	UPROPERTY(EditAnywhere, Category = "Grappable|UI")

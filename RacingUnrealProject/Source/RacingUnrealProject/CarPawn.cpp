@@ -66,7 +66,7 @@ ACarPawn::ACarPawn()
 	
 	GrappleHookSphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("GrappleHookSphereComp"));
 	GrappleHookSphereComponent->SetupAttachment(GetRootComponent());
-	GrappleHookSphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GrappleHookSphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GrappleHookSphereComponent->SetNotifyRigidBodyCollision(true);
 	
 	GrappleHookMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GrapplingHookMesh"));
@@ -194,9 +194,8 @@ void ACarPawn::TiltCarMesh(FVector AsymVector)
 		NotMaxTurnBpEvent();
 }
 
-void ACarPawn::HandleAsymFriction(FVector& AsymVector)
+void ACarPawn::HandleAsymFriction(const FVector& AsymVector)
 {
-	AsymVector = CalcAsymVector();
 	if (SphereComp->IsSimulatingPhysics())
 	{
 		SphereComp->AddForce(AsymVector* 30.f);
@@ -285,7 +284,7 @@ void ACarPawn::StateDriving()
 	{
 		
 		
-		FVector AsymVector;
+		const FVector AsymVector = CalcAsymVector();
 		HandleAsymFriction(AsymVector);
 		TiltCarMesh(AsymVector);
 	
@@ -371,6 +370,8 @@ void ACarPawn::StateAirBorne()
 	SetUpVectorAsSplineUpAxis();
 	RotateSphereCompToLocalUpVector();
 	ApplyGravity();
+	TiltCarMesh(FVector::ZeroVector);
+
 	
 	if (IsGrounded())
 	{
@@ -435,9 +436,14 @@ FVector ACarPawn::CalcAsymVector()
 	FVector FrictionForce = NegativeVelocity.GetSafeNormal() * AsymForce; // a big number
 
 	FVector CalcAsymForce = GetActorRightVector() * FVector::DotProduct(SphereComp->GetRightVector(), FrictionForce);
-	
-	if (NegativeVelocity.SizeSquared() < pow(320.f, 2.f))
-		CalcAsymForce *= NegativeVelocity.Size() / 2000.f;
+
+	float cutoffspeed = 700.f;
+	if (NegativeVelocity.SizeSquared() < cutoffspeed* cutoffspeed)
+	{
+		CalcAsymForce *= NegativeVelocity.Size() / 5000.f;
+		// CalcAsymForce = FVector::ZeroVector;
+		// DL_NORMAL("UnderCutoffSpeed")
+	}
 	
 		
 	return CalcAsymForce;
@@ -448,7 +454,7 @@ float ACarPawn::CaltAsymForce()
 	return 0.0f;
 }
 
-void ACarPawn::MoveXAxis(float Value)
+void ACarPawn::MoveXAxis(const float Value)
 {
 	//guard cluase
 	if (CurrentVehicleState != EVehicleState::Driving)
@@ -456,35 +462,40 @@ void ACarPawn::MoveXAxis(float Value)
 		return;
 	}
 	
-	Value = Value * UGameplayStatics::GetWorldDeltaSeconds(this);
+	float TimeIndependentValue = Value /** UGameplayStatics::GetWorldDeltaSeconds(this)*/;
 	if (!SphereComp->IsSimulatingPhysics()) // guard cluase
 		return;
 
 	if (IsMovingForward()) // is moving forward
 	{
-		if (Value > 0.f) // accelerating
+		if (TimeIndependentValue > 0.f) // accelerating
 		{
 			if (IsUnderMaxSpeed(false))
-				SphereComp->AddForce(GetActorForwardVector() * AccelerationForce * Value, NAME_None, true);
+				SphereComp->AddForce(GetActorForwardVector() * AccelerationForce * TimeIndependentValue, NAME_None, true);
 			
 		}
 		else // deaccelerating
 		{
-			SphereComp->AddForce(GetActorForwardVector() * DeaccelerationForce * Value, NAME_None, true);
+			SphereComp->AddForce(GetActorForwardVector() * DeaccelerationForce * TimeIndependentValue, NAME_None, true);
 		}
 	}
 	else // moving bacward
 	{
-		if (Value > 0.f) // accelerating
+		if (TimeIndependentValue > 0.f) // accelerating
 		{
-			SphereComp->AddForce(GetActorForwardVector() * AccelerationForce * Value, NAME_None, true);
+			SphereComp->AddForce(GetActorForwardVector() * AccelerationForce * TimeIndependentValue, NAME_None, true);
 		}
 		else // still deaccelerating
 		{
 			if (IsUnderMaxSpeed(false))
-				SphereComp->AddForce(GetActorForwardVector() * DeaccelerationForce * 0.2f * Value, NAME_None, true);
+				SphereComp->AddForce(GetActorForwardVector() * DeaccelerationForce * 0.2f * TimeIndependentValue, NAME_None, true);
 			
 		}
+	}
+
+	//handle damping
+	if (abs(Value) < 0.05f) {
+		ApplyDrag();
 	}
 	
 }
@@ -661,10 +672,8 @@ bool ACarPawn::IsMovingForward()
 	const float Angle = UnsignedAngle(VehicleForward, VelocityDirection);
 	
 	if (Angle <= 90.f)
-	{
-		
 		return true;
-	}
+	
 	return false;
 }
 
@@ -691,6 +700,14 @@ void ACarPawn::HandleMaxTurnWithSpline()
 	else if (Angle < -MaxCar_SplineAngle)
 	{
 		AddActorLocalRotation(FRotator(0.f,MaxCar_SplineAngleCorrectionSpeed * UGameplayStatics::GetWorldDeltaSeconds(this),0.f));
+	}
+}
+
+void ACarPawn::ApplyDrag() {
+	const FVector Velocity = SphereComp->GetPhysicsLinearVelocity();
+	if (SphereComp->IsSimulatingPhysics()) {
+		FVector Direction = Velocity.GetSafeNormal();
+		SphereComp->AddForce( -Direction * DragForce, NAME_None, true);
 	}
 }
 

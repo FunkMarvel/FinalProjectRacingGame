@@ -68,8 +68,7 @@ private:
 		float FireGrappleSpeed = 19000.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Inactive")
 		float GrappleRotationSpeed = 500.f;
-	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Inactive")
-		float MaxGrappleDistance = 15000.f; 
+	
 	
 	//hooked
 
@@ -88,7 +87,7 @@ private:
 	
 	UPROPERTY()
 		float MoveToTargetModifier = 1.f;
-	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere ,Category = "Grapple")
+	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere ,Category = "Grapple|Hooked")
 		float MoveToTargetAcceleration = 10.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Hooked")
 		UCurveFloat* HookedMovementCurve = nullptr;
@@ -100,6 +99,8 @@ private:
 		UGrappleSphereComponent* TargetGrappableComponent = nullptr;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Travelling")
 		float RaycastRange = 1000.f;
+	UPROPERTY(/*meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Travveling"*/)
+	float MaxGrappleDistance = 0.f; 
 
 	// knockoff
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Knockoff")
