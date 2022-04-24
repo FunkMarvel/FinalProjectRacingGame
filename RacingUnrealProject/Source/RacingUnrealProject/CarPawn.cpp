@@ -131,7 +131,7 @@ void ACarPawn::RotateSphereCompToLocalUpVector()
 
 	FRotator TargetRot = UKismetMathLibrary::MakeRotFromZX(LocalUpVector, GetActorForwardVector());
 	FRotator NewRotation = FMath::RInterpTo(SphereComp->GetComponentRotation(), TargetRot,
-		GetWorld()->GetDeltaSeconds(), 25.f);
+		GetWorld()->GetDeltaSeconds(), 50.f);
 	SphereComp->SetWorldRotation(NewRotation);
 }
 

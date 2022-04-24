@@ -65,7 +65,7 @@ void ASplineWormEnemy::Tick(float DeltaTime)
 	}
 	
 	UpdateSplineMeshComponent();
-	UpdateHeadTransfrom(0.5f);
+	UpdateHeadTransfrom(HeadPlacement);
 
 	//Offset += +DeltaTime * WormMoveSpeed;
 	CurrentMoveTime += DeltaTime;
