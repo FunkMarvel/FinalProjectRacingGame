@@ -65,6 +65,7 @@ void ATimeAttackGameModeBase::GameEndState()
 		FInputModeUIOnly InputMode{};
 		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
 		PlayerController->SetInputMode(InputMode);
+		if (TimeAttackHUD) TimeAttackHUD->ToggleEndMenu(true);
 	}
 	RacingGameInstance->SaveTime(RaceTimer);
 }
