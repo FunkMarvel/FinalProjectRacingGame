@@ -8,7 +8,11 @@
 void URaceTimerWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	Timer->SetText(FText::FromString("00:00:00"));
+	// Timer = CreateDefaultSubobject<UTextBlock>(TEXT("LapTimer"));
+	// LapCounter = CreateDefaultSubobject<UTextBlock>(TEXT("LapCounter"));
+	
+	if (Timer) Timer->SetText(FText::FromString("00:00:00"));
+	if (LapCounter) LapCounter->SetText(FText::FromString("0/0"));
 }
 
 void URaceTimerWidget::UpdateTimer(float CurrentTime)
@@ -17,6 +21,11 @@ void URaceTimerWidget::UpdateTimer(float CurrentTime)
 	int32 Seconds = FMath::FloorToInt(FMath::Fmod(CurrentTime, 60.f));
 	int32 CentiSeconds = FMath::FloorToInt((FMath::Fmod(CurrentTime, 60.f) - Seconds)*100);
 	FString TimeString{FString::Printf(TEXT("%02d:%02d:%02d"), Minutes, Seconds, CentiSeconds)};
-	FText TimeText{FText::FromString(TimeString)};
-	Timer->SetText(TimeText);
+	if (Timer) Timer->SetText(FText::FromString(TimeString));
+}
+
+void URaceTimerWidget::UpdateLapCounter(int32 CurrentNumLaps, int32 MaxNumLaps)
+{
+	FString LapString{FString::Printf(TEXT("%02d/%02d"), CurrentNumLaps, MaxNumLaps)};
+	if (LapCounter) LapCounter->SetText(FText::FromString(LapString));
 }
