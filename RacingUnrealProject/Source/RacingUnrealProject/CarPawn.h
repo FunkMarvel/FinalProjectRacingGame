@@ -34,7 +34,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// my deseg
 public:
-	UPROPERTY(EditDefaultsOnly, Category = "Car")
+	UPROPERTY(EditDefaultsOnly, Category = "Car", BlueprintReadWrite)
 		class USphereComponent* SphereComp{ nullptr };
 	UPROPERTY(EditDefaultsOnly, Category = "Car")
 		class UStaticMeshComponent* CarMesh{ nullptr };

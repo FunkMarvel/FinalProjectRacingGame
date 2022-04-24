@@ -67,9 +67,6 @@ public:
 		float SplineMeshOverLap = 50.f;
 	UPROPERTY(EditAnywhere, Category = "Spline")
 		float WormMoveDuration = 5.f;
-	UPROPERTY(meta = (ToolTip = "Is the distance along spline the end of the worm is")
-		, EditAnywhere, Category = "Spline")
-		float CurrentWormDistance = 0.f;
 	UPROPERTY(EditAnywhere, Category = "Spline")
 		float HeadDistanceFromBody = 500.f;
 	UPROPERTY(EditAnywhere, Category = "Spline")
@@ -77,14 +74,26 @@ public:
 	UPROPERTY(meta = (ToolTip = "If the Upvector for the CarPawn is upside down at the end of the grapple, Use this to invert"),
 		EditAnywhere, Category = "Spline")
 		bool bInvertUpHeadAxis = false;
-	
+
+	//animation
 	UPROPERTY(EditAnywhere, Category = "Spline")
 		bool bPlayingAnim = false;
 	UPROPERTY(EditAnywhere, Category = "Spline")
 		bool bHasInitSpline = false;
+private:
+	UPROPERTY(meta = (AllowPrivateAccess = "true", ToolTip = "1 means at head, 0 is a back"), EditAnywhere, Category = "Spline")
+		float HeadPlacement = 0.5f;
+	
+
+	// not visible variables
+	UPROPERTY(/*meta = ( ToolTip = "Is the distance along spline the end of the worm is"), EditAnywhere, Category = "Spline"*/)
+		float CurrentWormDistance = 0.f;
 	UPROPERTY()
 		float CurrentMoveTime = 0.f;
-private:
+
+
+
+	//grapple events
 	UFUNCTION()
 		void OnGrappleReaced(float Addspeed);
 	UFUNCTION()
