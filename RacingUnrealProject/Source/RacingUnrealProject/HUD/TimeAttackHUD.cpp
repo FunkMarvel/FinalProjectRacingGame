@@ -6,7 +6,6 @@
 #include "PauseMenuWidget.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
-#include "RacingUnrealProject/DebugLog.h"
 #include "RacingUnrealProject/GameModes/TimeAttackGameModeBase.h"
 #include "TimeAttackWidgets/RaceTimerWidget.h"
 #include "TimeAttackWidgets/TimeAttackEndMenuWidget.h"
@@ -84,19 +83,15 @@ void ATimeAttackHUD::ToggleEndMenu(bool bShowMenu)
 
 void ATimeAttackHUD::TogglePauseMenu(bool bShowMenu)
 {
-	DL_NORMAL("Here");
 	if (TimeAttackEndMenuWidget && RaceTimerWidget && PauseMenuWidget && !TimeAttackEndMenuWidget->IsVisible())
 	{
-		DL_NORMAL("Here");
 		if (bShowMenu)
 		{
-			DL_NORMAL("Here");
 			RaceTimerWidget->SetVisibility(ESlateVisibility::Collapsed);
 			PauseMenuWidget->SetVisibility(ESlateVisibility::Visible);
 		}
 		else
 		{
-			DL_NORMAL("Here");
 			RaceTimerWidget->SetVisibility(ESlateVisibility::Visible);
 			PauseMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
 		}
