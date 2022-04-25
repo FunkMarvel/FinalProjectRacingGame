@@ -23,6 +23,8 @@ public:
 
 	void SetLapCounter(int32 CurrentLap, int32 MaxNumLaps);
 
+	void SetBestTime(float CurrentTime, float BestTime);
+
 	void ToggleEndMenu(bool bShowMenu);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets|In Game HUD")

@@ -46,6 +46,13 @@ void ATimeAttackHUD::SetLapCounter(int32 CurrentLap, int32 MaxNumLaps)
 	RaceTimerWidget->UpdateLapCounter(CurrentLap, MaxNumLaps);
 }
 
+void ATimeAttackHUD::SetBestTime(float CurrentTime, float BestTime)
+{
+	TimeAttackEndMenuWidget->SetTimeText(
+		TimeAttackEndMenuWidget->GetTimeTextFromFloat(CurrentTime),
+		TimeAttackEndMenuWidget->GetTimeTextFromFloat(BestTime));
+}
+
 void ATimeAttackHUD::ToggleEndMenu(bool bShowMenu)
 {
 	if (TimeAttackEndMenuWidget && RaceTimerWidget)
