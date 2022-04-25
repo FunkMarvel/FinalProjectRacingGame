@@ -16,7 +16,6 @@ struct FPlayerData
 	int32 PlayerScore{};
 
 	FPlayerData() {}
-	// FPlayerData(FString NewPlayerName) { PlayerName = NewPlayerName; }
 	FPlayerData(float NewPlayerTime) { PlayerTime = NewPlayerTime; }
 	FPlayerData(int32 NewPlayerScore) { PlayerScore = NewPlayerScore; }
 	FPlayerData(float NewPlayerTime, int32 NewPlayerScore) : FPlayerData(NewPlayerTime) { PlayerScore = NewPlayerScore; }
