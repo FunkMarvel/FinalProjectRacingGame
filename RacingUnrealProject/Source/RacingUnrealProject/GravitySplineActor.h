@@ -65,8 +65,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 		virtual FVector GetFixedUpVectorFromDistance(float Distance);
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		EGravitySplineAxis EUpVectorAxis;
+	/*UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		EGravitySplineAxis EUpVectorAxis;*/
 
 
 

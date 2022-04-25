@@ -279,6 +279,7 @@ void ACarPawn::StateDriving()
 	}
 	ApplyGravity();
 	SetUpVectorAsSplineUpAxis();
+	// LocalUpVector = GetUpVectorFromUnderCar();
 	
 	if (IsGrounded())
 	{
@@ -368,6 +369,8 @@ void ACarPawn::StateAirBorne()
 		
 	}
 	SetUpVectorAsSplineUpAxis();
+	// LocalUpVector = GetUpVectorFromUnderCar();
+	
 	RotateSphereCompToLocalUpVector();
 	ApplyGravity();
 	TiltCarMesh(FVector::ZeroVector);
@@ -588,19 +591,12 @@ bool ACarPawn::IsGrounded()
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldStatic),
 		TraceParams
 	);
-	if (hit.IsValidBlockingHit() && UnsignedAngle(GravitySplineActive->GetFixedUpVectorFromLocation(SphereComp->GetComponentLocation()), hit.Normal) < MaxGroundAngle) {
-		
 	
-		
+	if (hit.IsValidBlockingHit()/* && UnsignedAngle(GravitySplineActive->
+		GetFixedUpVectorFromLocation(SphereComp->GetComponentLocation()), hit.Normal) < MaxGroundAngle*/) {
 		return true;
 	}
-	else
-	{
-		
-		return false;
-	}
-
-	
+	return false;
 }
 
 float ACarPawn::DistanceToGround()
@@ -616,15 +612,14 @@ float ACarPawn::DistanceToGround()
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldStatic),
 		TraceParams
 	);
-	// DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Blue, true);
-	if (hit.IsValidBlockingHit() && UnsignedAngle(GravitySplineActive->GetFixedUpVectorFromLocation(SphereComp->GetComponentLocation()), hit.Normal) < MaxGroundAngle) {
+	
+	if (hit.IsValidBlockingHit()/* && UnsignedAngle(GravitySplineActive->
+		GetFixedUpVectorFromLocation(SphereComp->GetComponentLocation()), hit.Normal) < MaxGroundAngle*/) {
 		
 		return hit.Distance;
 	}
-	else
-	{
-		return 1000*HoverHeight;
-	}
+	
+	return 1000*HoverHeight;
 }
 
 FVector ACarPawn::VelocityTowardsTarget(FVector StartLocation, FVector Velocity, FVector Target)

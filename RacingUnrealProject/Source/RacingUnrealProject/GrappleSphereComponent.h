@@ -40,7 +40,7 @@ public:
 		void OnReached();
 
 	UFUNCTION()
-		float GetAddSpeed() const {return AddSpeed; }
+		float GetSpeed() const {return AddSpeed; }
 	
 	UFUNCTION()
 		bool IsOverrideReleaseVelocity() const { return bOverrideReleaseVelocity; }
@@ -59,6 +59,12 @@ public:
 	
 	UFUNCTION()
 		bool IsEnabled() const {return bEnabled; }
+
+	// speed
+	UFUNCTION()
+		bool IsOverrideSpeed() const { return bOverrideSpeed; }
+	UFUNCTION()
+		void SetOverrideSpeed(bool bOverride){ bOverrideSpeed = bOverride; }
 	
 private:
 	UPROPERTY(EditAnywhere, Category = "Grappable")
@@ -67,6 +73,8 @@ private:
 		bool bEatable = false;
 	UPROPERTY(EditAnywhere, Category = "Grappable")
 		bool bOverrideReleaseVelocity = true;
+	UPROPERTY(EditAnywhere, Category = "Grappable")
+		bool bOverrideSpeed = false;
 	UPROPERTY(EditAnywhere, Category = "Grappable")
 		bool bEnabled = false;
 

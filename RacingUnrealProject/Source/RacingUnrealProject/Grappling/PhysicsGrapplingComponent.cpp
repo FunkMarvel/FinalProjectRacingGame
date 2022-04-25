@@ -469,13 +469,22 @@ void UPhysicsGrapplingComponent::HookedState()
 		// handlig grappleSphere and its events
 		if (TargetGrappableComponent != nullptr)
 		{
+			//activates the grappleSpheres event
 			TargetGrappableComponent->OnReached();
 
+
+			//determining what speed and direction is needed
 			if (TargetGrappableComponent->IsOverrideReleaseVelocity())
 			{
 				OnHookedDirection = TargetGrappableComponent->GetForwardVector();
 			}
-			OnHookedSpeed += TargetGrappableComponent->GetAddSpeed();
+
+			if (TargetGrappableComponent->IsOverrideSpeed()) {
+				OnHookedSpeed = TargetGrappableComponent->GetSpeed();
+			}
+			else {
+				OnHookedSpeed += TargetGrappableComponent->GetSpeed();
+			}
 		}
 		
 		EnterState(EGrappleStates::Returning);
@@ -520,7 +529,7 @@ void UPhysicsGrapplingComponent::HookedEatableState()
 	if (distanceSqr < 1000.f* 1000.f) // when its at us!
 	{
 		TargetGrappableComponent->OnReached();
-		CarPawn->SphereComp->AddImpulse(CarPawn->SphereComp->GetForwardVector() * TargetGrappableComponent->GetAddSpeed(), NAME_None, true);
+		CarPawn->SphereComp->AddImpulse(CarPawn->SphereComp->GetForwardVector() * TargetGrappableComponent->GetSpeed(), NAME_None, true);
 		
 		EnterState(EGrappleStates::InActive);
 	}

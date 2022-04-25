@@ -89,7 +89,7 @@ int32 AGravitySplineActor::GetClosestSplinePoint(USplineComponent* splineEval, F
 void AGravitySplineActor::VisualiseUpVectors(int Segments, USplineComponent* SplineToUse)
 {
 	float Length = SplineComp->GetSplineLength();
-	for (int32 i = 0; i < 200; i++)
+	for (int32 i = 0; i < Segments; i++)
 	{
 		float dist = Length * (i / (float)Segments);
 
