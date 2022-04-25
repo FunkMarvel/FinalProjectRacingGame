@@ -4,6 +4,8 @@
 #include "RacingUnrealProjectGameModeBase.h"
 
 #include "DebugLog.h"
+#include "Checkpoint/Checkpoint.h"
+#include "Components/ArrowComponent.h"
 #include "GameModes/RacingGameInstance.h"
 
 void ARacingUnrealProjectGameModeBase::BeginPlay()
@@ -20,7 +22,16 @@ void ARacingUnrealProjectGameModeBase::BeginPlay()
 
 void ARacingUnrealProjectGameModeBase::OnCompletedLap()
 {
-	DL_NORMAL(TEXT("Crossed finish line!"))
+	FVector PlayerToGoalDir{(GoalCheckpoint->GetActorLocation() - PlayerPawn->GetActorLocation()).GetSafeNormal()};
+	if (FVector::DotProduct(PlayerToGoalDir, GoalCheckpoint->GetSpawnArrow()->GetForwardVector()) > 0.f)
+	{
+		CurrentLap++;
+	}
+	else if (FVector::DotProduct(PlayerToGoalDir, GoalCheckpoint->GetSpawnArrow()->GetForwardVector()) < 0.f)
+	{
+		CurrentLap--;
+	}
+	if (CurrentLap >= NumberOfLaps) GameEndState();
 }
 
 void ARacingUnrealProjectGameModeBase::GameEndState()

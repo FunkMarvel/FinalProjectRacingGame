@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "GameModes/RacingGameInstance.h"
 #include "RacingUnrealProjectGameModeBase.generated.h"
 
 /**
@@ -29,6 +30,8 @@ protected:
 
 	UPROPERTY()
 		class URacingGameInstance* RacingGameInstance{nullptr};
+
+	FPlayerData CurrentPlayerData{};
 	
 public:
 
