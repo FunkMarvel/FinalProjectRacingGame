@@ -7,8 +7,7 @@
 
 URacingGameInstance::URacingGameInstance()
 {
-	TimeAttackTimes.Reserve(1);
-	ScoreAttackScores.Reserve(1);
+	PlayerArray.Reserve(1);
 }
 
 void URacingGameInstance::ChangeLevel(FName LevelName)
@@ -16,12 +15,31 @@ void URacingGameInstance::ChangeLevel(FName LevelName)
 	UGameplayStatics::OpenLevel(GetWorld(), LevelName);
 }
 
-void URacingGameInstance::SaveTime(float TimeToSave)
+void URacingGameInstance::SavePlayerData(FPlayerData NewPlayerData)
 {
-	TimeAttackTimes.Add(TimeToSave);
+	if (PlayerArray.Contains(NewPlayerData)) return;
+	PlayerArray.Add(NewPlayerData);
 }
 
-void URacingGameInstance::SaveScore(uint32 ScoreToSave)
+FPlayerData* URacingGameInstance::GetBestTimePlayer()
 {
-	ScoreAttackScores.Add(ScoreToSave);
+	if (PlayerArray.Num() > 0)
+	{
+		Algo::Sort(PlayerArray, [](const FPlayerData A, const FPlayerData B) { return A.PlayerTime < B.PlayerTime; });
+
+		return &PlayerArray[0];
+	}
+	return nullptr;
 }
+
+FPlayerData* URacingGameInstance::GetBestScorePlayer()
+{
+	if (PlayerArray.Num() > 0)
+	{
+		Algo::Sort(PlayerArray, [](const FPlayerData A, const FPlayerData B) { return A.PlayerScore > B.PlayerScore; });
+
+		return &PlayerArray[0];
+	}
+	return nullptr;
+}
+
