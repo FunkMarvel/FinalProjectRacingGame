@@ -32,7 +32,6 @@ void ATimeAttackGameModeBase::BeginPlay()
 		FInputModeGameOnly InputMode{};
 		InputMode.SetConsumeCaptureMouseDown(true);
 		PlayerController->SetInputMode(InputMode);
-		
 	}
 }
 
@@ -66,17 +65,8 @@ void ATimeAttackGameModeBase::OnPressPause()
 
 void ATimeAttackGameModeBase::OnCompletedLap()
 {
-	FVector PlayerToGoalDir{(GoalCheckpoint->GetActorLocation() - PlayerPawn->GetActorLocation()).GetSafeNormal()};
-	if (FVector::DotProduct(PlayerToGoalDir, GoalCheckpoint->GetSpawnArrow()->GetForwardVector()) > 0.f)
-	{
-		CurrentLap++;
-	}
-	else if (FVector::DotProduct(PlayerToGoalDir, GoalCheckpoint->GetSpawnArrow()->GetForwardVector()) < 0.f)
-	{
-		CurrentLap--;
-	}
+	Super::OnCompletedLap();
 	if (TimeAttackHUD) TimeAttackHUD->SetLapCounter(CurrentLap, NumberOfLaps);
-	if (CurrentLap >= NumberOfLaps) GameEndState();
 }
 
 void ATimeAttackGameModeBase::GameEndState()
