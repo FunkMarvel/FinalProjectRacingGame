@@ -254,6 +254,9 @@ void ACarPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Up", EInputEvent::IE_Pressed, this, &ACarPawn::SetGameSpeedUp);
 	PlayerInputComponent->BindAction("Down", EInputEvent::IE_Pressed, this, &ACarPawn::SetGameSpeedDown);
 	PlayerInputComponent->BindAction("Space", EInputEvent::IE_Pressed, CameraEffectComponent, &UCameraEffecttComponent::SpaceCamera).bConsumeInput = false;
+
+	ARacingUnrealProjectGameModeBase* GameModeBase = Cast<ARacingUnrealProjectGameModeBase>(GetWorld()->GetAuthGameMode());
+	PlayerInputComponent->BindAction("Pause", IE_Pressed, GameModeBase, &ARacingUnrealProjectGameModeBase::OnPressPause).bExecuteWhenPaused = true;
 	// PlayerInputComponent->BindAction("Space", EInputEvent::IE_Pressed, this, &ACarPawn::OnSpacePressed);
 }
 
