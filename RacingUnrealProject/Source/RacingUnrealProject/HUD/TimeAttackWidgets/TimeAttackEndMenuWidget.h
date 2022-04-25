@@ -19,6 +19,14 @@ public:
 
 	UFUNCTION()
 	FText GetTimeTextFromFloat(float NewTime);
+
+	void SetTimeText(FText CurrentTimeText, FText BestTimeText);
+
+	UFUNCTION()
+	void OnPlayAgain();
+
+	UFUNCTION()
+	void OnBackToMenu();
 	
 protected:
 	UPROPERTY(meta=(BindWidget))
