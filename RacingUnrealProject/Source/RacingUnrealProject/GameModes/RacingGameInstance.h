@@ -55,10 +55,13 @@ public:
 	
 	void SavePlayerData(FPlayerData NewPlayerData);
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Levels")
+		int32 NumberOfLaps{3};
 	
 	FPlayerData* GetBestTimePlayer();
 	FPlayerData* GetBestScorePlayer();
 
 protected:
 	TArray<FPlayerData> PlayerArray;
+	
 };
