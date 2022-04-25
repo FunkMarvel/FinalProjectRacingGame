@@ -31,6 +31,8 @@ protected:
 		class URacingGameInstance* RacingGameInstance{nullptr};
 	
 public:
+	bool bGamePaused{false};
+	
 	virtual void BeginPlay() override;
 	
 	UFUNCTION()
@@ -46,4 +48,7 @@ public:
 
 	UFUNCTION()
 		virtual void GameEndState();
+
+	UFUNCTION()
+		virtual void OnPressPause();
 };

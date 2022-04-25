@@ -22,3 +22,7 @@ void ARacingUnrealProjectGameModeBase::OnCompletedLap()
 void ARacingUnrealProjectGameModeBase::GameEndState()
 {
 }
+
+void ARacingUnrealProjectGameModeBase::OnPressPause()
+{
+}
