@@ -12,6 +12,7 @@
 
 ATimeAttackGameModeBase::ATimeAttackGameModeBase()
 {
+
 }
 
 void ATimeAttackGameModeBase::BeginPlay()
@@ -67,5 +68,15 @@ void ATimeAttackGameModeBase::GameEndState()
 		PlayerController->SetInputMode(InputMode);
 		if (TimeAttackHUD) TimeAttackHUD->ToggleEndMenu(true);
 	}
-	RacingGameInstance->SaveTime(RaceTimer);
+	CurrentPlayerData.PlayerTime = RaceTimer;
+	FPlayerData* BestPlayer = RacingGameInstance->GetBestTimePlayer();
+	if (BestPlayer)
+	{
+		TimeAttackHUD->SetBestTime(CurrentPlayerData.PlayerTime, BestPlayer->PlayerTime);
+	}
+	else
+	{
+		TimeAttackHUD->SetBestTime(CurrentPlayerData.PlayerTime, CurrentPlayerData.PlayerTime);
+	}
+	RacingGameInstance->SavePlayerData(CurrentPlayerData);
 }

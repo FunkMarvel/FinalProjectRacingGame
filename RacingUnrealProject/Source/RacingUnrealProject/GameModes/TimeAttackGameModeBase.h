@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "RacingGameInstance.h"
 #include "../RacingUnrealProjectGameModeBase.h"
 #include "TimeAttackGameModeBase.generated.h"
 
@@ -37,6 +38,8 @@ protected:
 
 	UPROPERTY()
 		class ATimeAttackHUD* TimeAttackHUD{nullptr};
+
+	FPlayerData CurrentPlayerData{};
 
 public:
 	bool IsTiming() { return bIsTiming; }
