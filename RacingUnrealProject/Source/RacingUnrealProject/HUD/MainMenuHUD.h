@@ -27,18 +27,26 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Menu Widgets")
 		TSubclassOf<class UUserWidget> LevelMenuClass;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Menu Widgets")
+		TSubclassOf<class UUserWidget> SettingsMenuClass;
+
 protected:
 	UPROPERTY()
 	class UMainMenuHUDWidget* MainMenuHUDWidget{nullptr};
 
 	UPROPERTY()
 	class ULevelSelectMenuWidget* LevelSelectMenuWidget{nullptr};
+
+	UPROPERTY()
+	class USettingsMenu* SettingsMenuWidget{nullptr};
 	
 	UPROPERTY()
 	class URacingGameInstance* GameInstance{nullptr};
 
 	UPROPERTY()
 	class AMainMenuGameModeBase* GameModeBase{nullptr};
+
+	int32 CurrentNumLaps{};
 
 	// Main menu functions:
 	UFUNCTION()
@@ -55,4 +63,17 @@ protected:
 	void OnPressScoreAttack();
 	UFUNCTION()
 	void OnPressBack();
+
+	// Settings menu functions:
+	UFUNCTION()
+	void OnPressPlus();
+
+	UFUNCTION()
+	void OnPressMinus();
+
+	UFUNCTION()
+	void OnPressSave();
+
+	UFUNCTION()
+	void OnPressReturnToMenu();
 };
