@@ -32,6 +32,7 @@ void ATimeAttackGameModeBase::BeginPlay()
 		FInputModeGameOnly InputMode{};
 		InputMode.SetConsumeCaptureMouseDown(true);
 		PlayerController->SetInputMode(InputMode);
+		
 	}
 }
 
@@ -39,6 +40,28 @@ void ATimeAttackGameModeBase::BeginTimer()
 {
 	ToggleTiming(true);
 	TimeAttackHUD = Cast<ATimeAttackHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+}
+
+void ATimeAttackGameModeBase::OnPressPause()
+{
+	Super::OnPressPause();
+	bGamePaused = !bGamePaused;
+	if (TimeAttackHUD) TimeAttackHUD->TogglePauseMenu(bGamePaused);
+	if (bGamePaused)
+	{
+		PlayerController->SetShowMouseCursor(true);
+		FInputModeGameAndUI InputMode{};
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+		PlayerController->SetInputMode(InputMode);
+	}
+	else
+	{
+		FInputModeGameOnly InputMode{};
+		PlayerController->SetShowMouseCursor(false);
+		InputMode.SetConsumeCaptureMouseDown(true);
+		PlayerController->SetInputMode(InputMode);
+	}
+	UGameplayStatics::SetGamePaused(GetWorld(), bGamePaused);
 }
 
 void ATimeAttackGameModeBase::OnCompletedLap()

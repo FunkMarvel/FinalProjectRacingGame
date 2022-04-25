@@ -23,6 +23,8 @@ public:
 	UFUNCTION()
 	void BeginTimer();
 
+	virtual void OnPressPause() override;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Timer")
 		float RaceTimer{0.f};
 
