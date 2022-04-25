@@ -12,6 +12,7 @@
 
 ATimeAttackGameModeBase::ATimeAttackGameModeBase()
 {
+
 }
 
 void ATimeAttackGameModeBase::BeginPlay()
@@ -31,6 +32,7 @@ void ATimeAttackGameModeBase::BeginPlay()
 		FInputModeGameOnly InputMode{};
 		InputMode.SetConsumeCaptureMouseDown(true);
 		PlayerController->SetInputMode(InputMode);
+		
 	}
 }
 
@@ -38,6 +40,28 @@ void ATimeAttackGameModeBase::BeginTimer()
 {
 	ToggleTiming(true);
 	TimeAttackHUD = Cast<ATimeAttackHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+}
+
+void ATimeAttackGameModeBase::OnPressPause()
+{
+	Super::OnPressPause();
+	bGamePaused = !bGamePaused;
+	if (TimeAttackHUD) TimeAttackHUD->TogglePauseMenu(bGamePaused);
+	if (bGamePaused)
+	{
+		PlayerController->SetShowMouseCursor(true);
+		FInputModeGameAndUI InputMode{};
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+		PlayerController->SetInputMode(InputMode);
+	}
+	else
+	{
+		FInputModeGameOnly InputMode{};
+		PlayerController->SetShowMouseCursor(false);
+		InputMode.SetConsumeCaptureMouseDown(true);
+		PlayerController->SetInputMode(InputMode);
+	}
+	UGameplayStatics::SetGamePaused(GetWorld(), bGamePaused);
 }
 
 void ATimeAttackGameModeBase::OnCompletedLap()
@@ -67,5 +91,15 @@ void ATimeAttackGameModeBase::GameEndState()
 		PlayerController->SetInputMode(InputMode);
 		if (TimeAttackHUD) TimeAttackHUD->ToggleEndMenu(true);
 	}
-	RacingGameInstance->SaveTime(RaceTimer);
+	CurrentPlayerData.PlayerTime = RaceTimer;
+	FPlayerData* BestPlayer = RacingGameInstance->GetBestTimePlayer();
+	if (BestPlayer)
+	{
+		TimeAttackHUD->SetBestTime(CurrentPlayerData.PlayerTime, BestPlayer->PlayerTime);
+	}
+	else
+	{
+		TimeAttackHUD->SetBestTime(CurrentPlayerData.PlayerTime, CurrentPlayerData.PlayerTime);
+	}
+	RacingGameInstance->SavePlayerData(CurrentPlayerData);
 }

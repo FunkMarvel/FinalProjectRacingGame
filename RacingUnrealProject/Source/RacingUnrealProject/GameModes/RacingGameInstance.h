@@ -6,6 +6,30 @@
 #include "Engine/GameInstance.h"
 #include "RacingGameInstance.generated.h"
 
+USTRUCT()
+struct FPlayerData
+{
+	GENERATED_BODY()
+
+	// FString PlayerName{};
+	float PlayerTime{};
+	int32 PlayerScore{};
+
+	FPlayerData() {}
+	FPlayerData(float NewPlayerTime) { PlayerTime = NewPlayerTime; }
+	FPlayerData(int32 NewPlayerScore) { PlayerScore = NewPlayerScore; }
+	FPlayerData(float NewPlayerTime, int32 NewPlayerScore) : FPlayerData(NewPlayerTime) { PlayerScore = NewPlayerScore; }
+
+	bool operator==(const FPlayerData &OtherPlayer)
+	{
+		return (PlayerScore == OtherPlayer.PlayerScore && FMath::IsNearlyEqual(PlayerTime, OtherPlayer.PlayerTime));
+	}
+	friend bool operator==(const FPlayerData &FirstPlayer, const FPlayerData &OtherPlayer)
+	{
+		return (FirstPlayer.PlayerScore == OtherPlayer.PlayerScore && FMath::IsNearlyEqual(FirstPlayer.PlayerTime, OtherPlayer.PlayerTime));
+	}
+};
+
 /**
  * 
  */
@@ -16,23 +40,28 @@ class RACINGUNREALPROJECT_API URacingGameInstance : public UGameInstance
 
 public:
 	URacingGameInstance();
+
+	enum ELevels
+	{
+		MainMenu,
+		TimeAttack,
+		ScoreAttack
+	};
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Levels")
 		TArray<FName> LevelNames{};
+	
+	void ChangeLevel(FName LevelName);
+	
+	void SavePlayerData(FPlayerData NewPlayerData);
 
-	UFUNCTION()
-		void ChangeLevel(FName LevelName);
-
-	UFUNCTION()
-		void SaveTime(float TimeToSave);
-
-	UFUNCTION()
-		void SaveScore(uint32 ScoreToSave);
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Levels")
+		int32 NumberOfLaps{3};
+	
+	FPlayerData* GetBestTimePlayer();
+	FPlayerData* GetBestScorePlayer();
 
 protected:
-	UPROPERTY(VisibleAnywhere)
-		TArray<float> TimeAttackTimes{};
-
-	UPROPERTY(VisibleAnywhere)
-		TArray<uint32> ScoreAttackScores{};
+	TArray<FPlayerData> PlayerArray;
+	
 };

@@ -3,7 +3,10 @@
 
 #include "TimeAttackHUD.h"
 
+#include "PauseMenuWidget.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/Button.h"
+#include "RacingUnrealProject/DebugLog.h"
 #include "RacingUnrealProject/GameModes/TimeAttackGameModeBase.h"
 #include "TimeAttackWidgets/RaceTimerWidget.h"
 #include "TimeAttackWidgets/TimeAttackEndMenuWidget.h"
@@ -32,6 +35,15 @@ void ATimeAttackHUD::BeginPlay()
 		TimeAttackEndMenuWidget->AddToViewport();
 		TimeAttackEndMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
+
+	if (PauseMenuClass)
+	{
+		PauseMenuWidget = CreateWidget<UPauseMenuWidget>(GetWorld(), PauseMenuClass);
+		PauseMenuWidget->AddToViewport();
+		PauseMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+		PauseMenuWidget->ResumeButton->OnClicked.AddDynamic(this, &ATimeAttackHUD::OnResume);
+		PauseMenuWidget->ReturnToMenuButton->OnClicked.AddDynamic(TimeAttackEndMenuWidget, &UTimeAttackEndMenuWidget::OnBackToMenu);
+	}
 }
 
 void ATimeAttackHUD::Tick(float DeltaSeconds)
@@ -46,9 +58,16 @@ void ATimeAttackHUD::SetLapCounter(int32 CurrentLap, int32 MaxNumLaps)
 	RaceTimerWidget->UpdateLapCounter(CurrentLap, MaxNumLaps);
 }
 
+void ATimeAttackHUD::SetBestTime(float CurrentTime, float BestTime)
+{
+	TimeAttackEndMenuWidget->SetTimeText(
+		TimeAttackEndMenuWidget->GetTimeTextFromFloat(CurrentTime),
+		TimeAttackEndMenuWidget->GetTimeTextFromFloat(BestTime));
+}
+
 void ATimeAttackHUD::ToggleEndMenu(bool bShowMenu)
 {
-	if (TimeAttackEndMenuWidget && RaceTimerWidget)
+	if (TimeAttackEndMenuWidget && RaceTimerWidget && PauseMenuWidget && !PauseMenuWidget->IsVisible())
 	{
 		if (bShowMenu)
 		{
@@ -61,4 +80,30 @@ void ATimeAttackHUD::ToggleEndMenu(bool bShowMenu)
 			TimeAttackEndMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
 		}
 	}
+}
+
+void ATimeAttackHUD::TogglePauseMenu(bool bShowMenu)
+{
+	DL_NORMAL("Here");
+	if (TimeAttackEndMenuWidget && RaceTimerWidget && PauseMenuWidget && !TimeAttackEndMenuWidget->IsVisible())
+	{
+		DL_NORMAL("Here");
+		if (bShowMenu)
+		{
+			DL_NORMAL("Here");
+			RaceTimerWidget->SetVisibility(ESlateVisibility::Collapsed);
+			PauseMenuWidget->SetVisibility(ESlateVisibility::Visible);
+		}
+		else
+		{
+			DL_NORMAL("Here");
+			RaceTimerWidget->SetVisibility(ESlateVisibility::Visible);
+			PauseMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+		}
+	}
+}
+
+void ATimeAttackHUD::OnResume()
+{
+	GameModeBase->OnPressPause();
 }

@@ -31,6 +31,13 @@ protected:
 		class URacingGameInstance* RacingGameInstance{nullptr};
 	
 public:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Laps")
+		int32 NumberOfLaps{3};
+	int32 CurrentLap{};
+	
+	bool bGamePaused{false};
+	
 	virtual void BeginPlay() override;
 	
 	UFUNCTION()
@@ -46,4 +53,7 @@ public:
 
 	UFUNCTION()
 		virtual void GameEndState();
+
+	UFUNCTION()
+		virtual void OnPressPause();
 };

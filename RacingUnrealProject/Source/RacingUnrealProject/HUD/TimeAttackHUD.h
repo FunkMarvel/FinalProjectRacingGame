@@ -23,13 +23,23 @@ public:
 
 	void SetLapCounter(int32 CurrentLap, int32 MaxNumLaps);
 
+	void SetBestTime(float CurrentTime, float BestTime);
+
 	void ToggleEndMenu(bool bShowMenu);
+
+	void TogglePauseMenu(bool bShowMenu);
+
+	UFUNCTION()
+		void OnResume();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets|In Game HUD")
 		TSubclassOf<class UUserWidget> TimerWidgetClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets|End Menu")
 		TSubclassOf<class UUserWidget> TimeAttackEndMenuClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets|Pause Menu")
+		TSubclassOf<class UUserWidget> PauseMenuClass;
 
 protected:
 	UPROPERTY()
@@ -40,4 +50,7 @@ protected:
 
 	UPROPERTY()
 		class UTimeAttackEndMenuWidget* TimeAttackEndMenuWidget{nullptr};
+
+	UPROPERTY()
+		class UPauseMenuWidget* PauseMenuWidget{nullptr};
 };

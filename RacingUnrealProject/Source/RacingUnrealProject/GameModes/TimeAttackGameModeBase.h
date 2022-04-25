@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "RacingGameInstance.h"
 #include "../RacingUnrealProjectGameModeBase.h"
 #include "TimeAttackGameModeBase.generated.h"
 
@@ -22,12 +23,11 @@ public:
 	UFUNCTION()
 	void BeginTimer();
 
+	virtual void OnPressPause() override;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Timer")
 		float RaceTimer{0.f};
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Laps")
-		int32 NumberOfLaps{3};
-	int32 CurrentLap{};
 
 protected:
 	UPROPERTY()
@@ -37,6 +37,8 @@ protected:
 
 	UPROPERTY()
 		class ATimeAttackHUD* TimeAttackHUD{nullptr};
+
+	FPlayerData CurrentPlayerData{};
 
 public:
 	bool IsTiming() { return bIsTiming; }

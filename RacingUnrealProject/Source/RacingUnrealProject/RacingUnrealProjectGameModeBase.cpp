@@ -12,6 +12,10 @@ void ARacingUnrealProjectGameModeBase::BeginPlay()
 	PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
 	RacingGameInstance = Cast<URacingGameInstance>(GetGameInstance());
 	PlayerController = GetWorld()->GetFirstPlayerController();
+	if (RacingGameInstance)
+	{
+		NumberOfLaps = RacingGameInstance->NumberOfLaps;
+	}
 }
 
 void ARacingUnrealProjectGameModeBase::OnCompletedLap()
@@ -20,5 +24,9 @@ void ARacingUnrealProjectGameModeBase::OnCompletedLap()
 }
 
 void ARacingUnrealProjectGameModeBase::GameEndState()
+{
+}
+
+void ARacingUnrealProjectGameModeBase::OnPressPause()
 {
 }
