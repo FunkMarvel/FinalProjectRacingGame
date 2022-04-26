@@ -68,7 +68,8 @@ void ASplineWormEnemy::Tick(float DeltaTime)
 	}
 	
 	UpdateSplineMeshComponent();
-	UpdateHeadTransfrom(HeadPlacement);
+	UpdateHeadTransfrom();
+	UpdateTargetTransfrom(HeadPlacement);
 
 	//Offset += +DeltaTime * WormMoveSpeed;
 	CurrentMoveTime += DeltaTime;
@@ -91,15 +92,27 @@ void ASplineWormEnemy::UpdateSplineMeshComponent()
 	const ESplineCoordinateSpace::Type CoorSpace = ESplineCoordinateSpace::World;
 	float CurrentDistance = CurrentWormDistance;
 
+	FVector Offset = FVector::ZeroVector;
+	
 	for (int32 i = 0; i < SplineMeshComponents.Num(); ++i)
 	{
+		
+
+		
 		//setting the values
-		SplineMeshComponents[i]->SetStartPosition(Spline->GetLocationAtDistanceAlongSpline(CurrentDistance, CoorSpace), false);
+		SplineMeshComponents[i]->SetStartPosition(Offset + Spline->GetLocationAtDistanceAlongSpline(CurrentDistance, CoorSpace), false);
 		SplineMeshComponents[i]->SetStartTangent(Spline->GetDirectionAtDistanceAlongSpline(CurrentDistance, CoorSpace), false);
 
 		const float OffsetDistance = CurrentDistance+ NeckSegmentLength + SplineMeshOverLap;
+
+		//offset animation
+		float SinValue = sin( 0.001f * CurrentDistance + CurrentMoveTime * 10.f);
+		float CosValue = cos( 0.001f * CurrentDistance + CurrentMoveTime * 10.f);
+		Offset = Spline->GetRightVectorAtDistanceAlongSpline(CurrentDistance, CoorSpace) * CosValue +
+			Spline->GetUpVectorAtDistanceAlongSpline(CurrentDistance, CoorSpace) * SinValue;
+		Offset *= 100.f; // TODO make dynamic UPROPERTY()
 		
-		SplineMeshComponents[i]->SetEndPosition(Spline->GetLocationAtDistanceAlongSpline(OffsetDistance, 
+		SplineMeshComponents[i]->SetEndPosition(Offset + Spline->GetLocationAtDistanceAlongSpline(OffsetDistance, 
 		CoorSpace), false);
 		SplineMeshComponents[i]->SetEndTangent(Spline->GetDirectionAtDistanceAlongSpline(OffsetDistance, 
 		CoorSpace), true);
@@ -109,7 +122,7 @@ void ASplineWormEnemy::UpdateSplineMeshComponent()
 	
 }
 
-void ASplineWormEnemy::UpdateHeadTransfrom(float RatioOnSnake)
+void ASplineWormEnemy::UpdateTargetTransfrom(float RatioOnSnake)
 {	
 	ESplineCoordinateSpace::Type CoorSpace = ESplineCoordinateSpace::World; 
 
@@ -155,6 +168,17 @@ void ASplineWormEnemy::UpdateHeadTransfrom(float RatioOnSnake)
 	GrappleSphereComponent->SetWorldRotation(Rotation);
 }
 
+void ASplineWormEnemy::UpdateHeadTransfrom() {
+	float Distance = GetWormRealLength() + CurrentWormDistance;
+	FVector Location = Spline->GetLocationAtDistanceAlongSpline(Distance,
+		ESplineCoordinateSpace::World);
+	FRotator Rotation = Spline->GetRotationAtDistanceAlongSpline(Distance,
+		ESplineCoordinateSpace::World);
+
+	WormHeadMesh->SetWorldLocation(Location);
+	WormHeadMesh->SetWorldRotation(Rotation);
+}
+
 void ASplineWormEnemy::InitSplineSegments() {
 	//init spline segmensts
 	int SegmentsToCreate = (WormGoalLength / NeckSegmentLength) - SplineMeshComponents.Num();
@@ -195,16 +219,21 @@ void ASplineWormEnemy::InitSplineSegments() {
 	
 	const float TotalLength = GetWormRealLength();
 	for (int i = 0; i < SplineMeshComponents.Num(); ++i) {
+		//setting sclae
+			//start
 		float CurveTime = (i * NeckSegmentLength) / TotalLength;
 		float Size = WormSizeCurve->GetFloatValue(CurveTime);
-		
-		//start
 		SplineMeshComponents[i]->SetStartScale(FVector2D(Size), false);
-
+		
+			//end
 		CurveTime = (1 + i) * NeckSegmentLength / TotalLength;
 		Size = WormSizeCurve->GetFloatValue(CurveTime);
-		//end
 		SplineMeshComponents[i]->SetEndScale(FVector2D(Size), true);
+
+		//setting random roll
+		float randomRoll = FMath::RandRange(-RandomRotationAmoundt, RandomRotationAmoundt);
+		SplineMeshComponents[i]->SetEndRoll(randomRoll);
+		SplineMeshComponents[i]->SetStartRoll(randomRoll);
 	}
 }
 
@@ -215,8 +244,8 @@ float ASplineWormEnemy::GetWormRealLength() const
 
 void ASplineWormEnemy::OnGrappleReaced(float Addspeed)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Destroyed Worm"))
-	Destroy();
+	DL_NORMAL("Finished grappling worm!")
+	// Destroy();
 }
 
 void ASplineWormEnemy::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

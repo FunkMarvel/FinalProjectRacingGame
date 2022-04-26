@@ -65,8 +65,11 @@ private:
 	 * @brief 
 	 * @param RatioOnSnake 1 means at the tip, 0 means at the end
 	 */
-		void UpdateHeadTransfrom(float RatioOnSnake);
+		void UpdateTargetTransfrom(float RatioOnSnake);
 
+	UFUNCTION()
+	    void UpdateHeadTransfrom();
+	
 	UFUNCTION()
 		void InitSplineSegments();
 	UFUNCTION()
@@ -87,15 +90,17 @@ public:
 		ESplineWormHeadAxis CurrentHeadAxis = ESplineWormHeadAxis::Right;
 	UPROPERTY(meta = (ToolTip = "If the Upvector for the CarPawn is upside down at the end of the grapple, Use this to invert"),
 		EditAnywhere, Category = "Spline")
-		bool bInvertUpHeadAxis = false;
+	bool bInvertUpHeadAxis = false;
+	UPROPERTY(EditAnywhere, Category = "Spline", meta = (ClampMin = 0.f, ClampMax = 180.f))
+		float RandomRotationAmoundt = 20.f;
 
+private:
 	//animation
 	UPROPERTY(EditAnywhere, Category = "Spline")
 		bool bPlayingAnim = false;
 	UPROPERTY(EditAnywhere, Category = "Spline")
 		bool bHasInitSpline = false;
-private:
-	UPROPERTY(meta = (AllowPrivateAccess = "true", ToolTip = "1 means at head, 0 is a back"), EditAnywhere, Category = "Spline")
+	UPROPERTY(meta = (AllowPrivateAccess = "true", ToolTip = "1 means at head, 0 is a back", ClampMin = 0.f, ClampMax = 1.f), EditAnywhere, Category = "Spline")
 		float HeadPlacement = 0.5f;
 	
 
