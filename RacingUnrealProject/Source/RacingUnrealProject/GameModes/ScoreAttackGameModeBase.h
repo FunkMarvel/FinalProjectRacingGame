@@ -27,4 +27,6 @@ public:
 
 protected:
 	int32 CurrentScore{};
+
+	class AScoreAttackHUD* AttackHUD{nullptr};
 };
