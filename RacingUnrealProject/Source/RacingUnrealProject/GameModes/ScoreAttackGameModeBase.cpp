@@ -73,3 +73,10 @@ void AScoreAttackGameModeBase::GameEndState()
 	}
 	RacingGameInstance->SavePlayerData(CurrentPlayerData);
 }
+
+void AScoreAttackGameModeBase::AddScore(int32 Score)
+{
+	Super::AddScore(Score);
+	CurrentScore += Score;
+	AttackHUD->SetScore(CurrentScore);
+}
