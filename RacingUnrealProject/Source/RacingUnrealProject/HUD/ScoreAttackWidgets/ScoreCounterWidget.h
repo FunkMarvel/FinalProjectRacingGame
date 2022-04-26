@@ -18,7 +18,7 @@ public:
 	virtual void NativeConstruct() override;
 
 	UFUNCTION()
-	void UpdateScore(float CurrentTime);
+	void UpdateScore(int32 CurrentScore);
 
 	UFUNCTION()
 	void UpdateLapCounter(int32 CurrentNumLaps, int32 MaxNumLaps);

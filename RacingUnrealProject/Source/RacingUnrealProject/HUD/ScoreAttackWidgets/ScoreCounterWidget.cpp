@@ -10,7 +10,7 @@ void UScoreCounterWidget::NativeConstruct()
 	Super::NativeConstruct();
 }
 
-void UScoreCounterWidget::UpdateScore(float CurrentScore)
+void UScoreCounterWidget::UpdateScore(int32 CurrentScore)
 {
 	FString ScoreString{FString::Printf(TEXT("%05d"), CurrentScore)};
 	Score->SetText(FText::FromString(ScoreString));
