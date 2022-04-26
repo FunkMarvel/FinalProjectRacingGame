@@ -41,6 +41,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets|Pause Menu")
 		TSubclassOf<class UUserWidget> PauseMenuClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets|Minimap")
+		TSubclassOf<class UUserWidget> MinimapClass;
+
 protected:
 	UPROPERTY()
 		class URaceTimerWidget* RaceTimerWidget{nullptr};
@@ -53,4 +56,7 @@ protected:
 
 	UPROPERTY()
 		class UPauseMenuWidget* PauseMenuWidget{nullptr};
+
+	UPROPERTY()
+		class UMinimapWidget* MinimapWidget{nullptr};
 };

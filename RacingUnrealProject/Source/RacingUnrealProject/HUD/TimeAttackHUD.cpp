@@ -7,6 +7,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
 #include "RacingUnrealProject/GameModes/TimeAttackGameModeBase.h"
+#include "TimeAttackWidgets/MinimapWidget.h"
 #include "TimeAttackWidgets/RaceTimerWidget.h"
 #include "TimeAttackWidgets/TimeAttackEndMenuWidget.h"
 
@@ -41,6 +42,14 @@ void ATimeAttackHUD::BeginPlay()
 		PauseMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
 		PauseMenuWidget->ResumeButton->OnClicked.AddDynamic(this, &ATimeAttackHUD::OnResume);
 		PauseMenuWidget->ReturnToMenuButton->OnClicked.AddDynamic(TimeAttackEndMenuWidget, &UTimeAttackEndMenuWidget::OnBackToMenu);
+	}
+
+	if (MinimapClass) {
+		MinimapWidget = CreateWidget<UMinimapWidget>(GetWorld(), MinimapClass);
+		MinimapWidget->AddToViewport();
+		MinimapWidget->SetVisibility(ESlateVisibility::Visible);
+		MinimapWidget->CarPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+		MinimapWidget->PlayerStartLocation = MinimapWidget->CarPawn->GetActorLocation();
 	}
 }
 

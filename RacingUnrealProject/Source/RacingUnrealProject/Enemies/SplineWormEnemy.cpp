@@ -136,8 +136,8 @@ void ASplineWormEnemy::HandleIdleAnimation() {
 		float CurrentDistance = i * NeckSegmentLength + (Spline->GetSplineLength() - GetWormRealLength()); // offsets until end of line
 		
 		//offset animation
-		float SinValue = sin(  CurrentMoveTimeAffector * CurrentMoveTime);
-		float CosValue = cos( CurrentMoveTimeAffector * CurrentMoveTime);
+		float SinValue = sin(  CurrentMoveTimeAffector * CurrentMoveTime + CurrentDistance);
+		float CosValue = cos( CurrentMoveTimeAffector * CurrentMoveTime + CurrentDistance);
 		FVector Offset = Spline->GetRightVectorAtDistanceAlongSpline(CurrentDistance, CoorSpace) * CosValue +
 			Spline->GetUpVectorAtDistanceAlongSpline(CurrentDistance, CoorSpace) * SinValue;
 		Offset *= MoveAmplitude;
