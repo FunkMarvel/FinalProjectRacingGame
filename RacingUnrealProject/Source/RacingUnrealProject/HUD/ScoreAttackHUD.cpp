@@ -43,6 +43,11 @@ void AScoreAttackHUD::SetLapCounter(int32 CurrentLap, int32 MaxNumLaps)
 	ScoreCounterWidget->UpdateLapCounter(CurrentLap, MaxNumLaps);
 }
 
+void AScoreAttackHUD::SetScore(int32 CurrentScore)
+{
+	ScoreCounterWidget->UpdateScore(CurrentScore);
+}
+
 void AScoreAttackHUD::SetBestScore(int32 CurrentScore, int32 BestScore)
 {
 	FString CurrentScoreString{FString::Printf(TEXT("%05d"), CurrentScore)};

@@ -20,6 +20,8 @@ public:
 
 	void SetLapCounter(int32 CurrentLap, int32 MaxNumLaps);
 
+	void SetScore(int32 CurrentScore);
+
 	void SetBestScore(int32 CurrentScore, int32 BestScore);
 
 	void ToggleEndMenu(bool bShowMenu);
