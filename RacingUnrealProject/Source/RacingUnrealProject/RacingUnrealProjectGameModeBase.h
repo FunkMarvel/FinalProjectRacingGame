@@ -59,4 +59,7 @@ public:
 
 	UFUNCTION()
 		virtual void OnPressPause();
+
+	UFUNCTION()
+		virtual void AddScore(int32 Score);
 };

@@ -3,7 +3,6 @@
 
 #include "RacingUnrealProjectGameModeBase.h"
 
-#include "DebugLog.h"
 #include "Checkpoint/Checkpoint.h"
 #include "Components/ArrowComponent.h"
 #include "GameModes/RacingGameInstance.h"
@@ -39,5 +38,9 @@ void ARacingUnrealProjectGameModeBase::GameEndState()
 }
 
 void ARacingUnrealProjectGameModeBase::OnPressPause()
+{
+}
+
+void ARacingUnrealProjectGameModeBase::AddScore(int32 Score)
 {
 }
