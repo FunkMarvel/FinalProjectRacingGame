@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "RacingUnrealProject/RacingUnrealProjectGameModeBase.h"
 #include "BaseEnemyActor.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FEnemyDeath, int32, EnemyIndex);
@@ -41,10 +42,15 @@ protected:
 
 	bool IsGrounded();
 
-	UPROPERTY(EditDefaultsOnly, Category = "Car")
+	UPROPERTY(EditDefaultsOnly, Category = "Ground")
 	class UArrowComponent* ArrowRayCastStart{nullptr};
 
 	int32 EnemyArrayIndex;
+
+	UPROPERTY(EditAnywhere, Category="Score")
+	int32 ScoreValue{1};
+
+	ARacingUnrealProjectGameModeBase* GameModeBase{nullptr};
 
 public:
 	// Called every frame

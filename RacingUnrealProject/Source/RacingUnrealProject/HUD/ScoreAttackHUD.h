@@ -20,7 +20,9 @@ public:
 
 	void SetLapCounter(int32 CurrentLap, int32 MaxNumLaps);
 
-	void SetBestTime(float CurrentTime, float BestTime);
+	void SetScore(int32 CurrentScore);
+
+	void SetBestScore(int32 CurrentScore, int32 BestScore);
 
 	void ToggleEndMenu(bool bShowMenu);
 
@@ -46,4 +48,7 @@ protected:
 
 	UPROPERTY()
 		class UScoreCounterWidget* ScoreCounterWidget{nullptr};
+
+	UPROPERTY()
+		class UScoreAttackEndMenuWidget* ScoreAttackEndMenuWidget{nullptr};
 };

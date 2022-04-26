@@ -25,6 +25,10 @@ public:
 	
 	virtual void GameEndState() override;
 
+	virtual void AddScore(int32 Score) override;
+
 protected:
 	int32 CurrentScore{};
+
+	class AScoreAttackHUD* AttackHUD{nullptr};
 };

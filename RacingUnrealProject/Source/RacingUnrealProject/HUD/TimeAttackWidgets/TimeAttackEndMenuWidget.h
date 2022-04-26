@@ -23,10 +23,10 @@ public:
 	void SetTimeText(FText CurrentTimeText, FText BestTimeText);
 
 	UFUNCTION()
-	void OnPlayAgain();
+	virtual void OnPlayAgain();
 
 	UFUNCTION()
-	void OnBackToMenu();
+	virtual void OnBackToMenu();
 	
 protected:
 	UPROPERTY(meta=(BindWidget))
