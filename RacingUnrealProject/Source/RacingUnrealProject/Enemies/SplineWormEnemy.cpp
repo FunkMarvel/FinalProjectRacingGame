@@ -30,6 +30,9 @@ ASplineWormEnemy::ASplineWormEnemy()
 	WormTargetMesh->SetupAttachment(GrappleSphereComponent);
 	WormTargetMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	WormHeadMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WormHeadMesh"));
+	WormHeadMesh->SetupAttachment(GetRootComponent());
+	WormHeadMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	TriggerBox = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerBox"));
 	TriggerBox->SetupAttachment(GetRootComponent());
@@ -55,7 +58,12 @@ void ASplineWormEnemy::BeginPlay()
 void ASplineWormEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (bIdle) {
+		CurrentMoveTime += DeltaTime;
+		HandleIdleAnimation();
+	}
 
+	
 	if (!bPlayingAnim)
 		return;
 
@@ -65,9 +73,10 @@ void ASplineWormEnemy::Tick(float DeltaTime)
 	}
 	
 	UpdateSplineMeshComponent();
-	UpdateHeadTransfrom(HeadPlacement);
+	UpdateHeadTransfrom();
+	UpdateTargetTransfrom(HeadPlacement);
 
-	//Offset += +DeltaTime * WormMoveSpeed;
+	//sets the current move time
 	CurrentMoveTime += DeltaTime;
 	CurrentWormDistance = MovmentCurveFloat->GetFloatValue(CurrentMoveTime / WormMoveDuration);
 	CurrentWormDistance *= Spline->GetSplineLength();
@@ -78,6 +87,7 @@ void ASplineWormEnemy::Tick(float DeltaTime)
     	NeckSegmentLength + SplineMeshOverLap + CurrentWormDistance)
     {
 	    bPlayingAnim = false;
+    	bIdle = true;
     	GrappleSphereComponent->SetIsEnabled(true);
     }
 	
@@ -85,42 +95,63 @@ void ASplineWormEnemy::Tick(float DeltaTime)
 
 void ASplineWormEnemy::UpdateSplineMeshComponent()
 {
-
+	
 	float CurrentDistance = CurrentWormDistance;
+
+	FVector Offset = FVector::ZeroVector;
+	
 	for (int32 i = 0; i < SplineMeshComponents.Num(); ++i)
 	{
-		// FVector StartLocation, EndLocation, StartTangent, EndTangent;
+		
 
-		/*StartLocation = Spline->GetLocationAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World);
-		StartTangent = Spline->GetDirectionAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World);
-		EndLocation = Spline->GetLocationAtDistanceAlongSpline(CurrentDistance + NeckSegmentLength + SplineMeshOverLap, 
-		ESplineCoordinateSpace::World);
-		EndTangent = Spline->GetDirectionAtDistanceAlongSpline(CurrentDistance + NeckSegmentLength + SplineMeshOverLap, 
-		ESplineCoordinateSpace::World);*/
-
-		//normalizing
-		/*StartTangent.Normalize();
-		EndTangent.Normalize();*/
 		
 		//setting the values
-		SplineMeshComponents[i]->SetStartPosition(Spline->GetLocationAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World), false);
-		SplineMeshComponents[i]->SetStartTangent(Spline->GetDirectionAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World), false);
+		SplineMeshComponents[i]->SetStartPosition(Offset + Spline->GetLocationAtDistanceAlongSpline(CurrentDistance, CoorSpace), false);
+		SplineMeshComponents[i]->SetStartTangent(Spline->GetDirectionAtDistanceAlongSpline(CurrentDistance, CoorSpace), false);
 
 		const float OffsetDistance = CurrentDistance+ NeckSegmentLength + SplineMeshOverLap;
+
+		//offset animation
+		float SinValue = sin( CurrentDistanceAffector * CurrentDistance + CurrentMoveTime * CurrentMoveTimeAffector);
+		float CosValue = cos( CurrentDistanceAffector * CurrentDistance + CurrentMoveTime * CurrentMoveTimeAffector);
+		Offset = Spline->GetRightVectorAtDistanceAlongSpline(CurrentDistance, CoorSpace) * CosValue +
+			Spline->GetUpVectorAtDistanceAlongSpline(CurrentDistance, CoorSpace) * SinValue;
+		Offset *= MoveAmplitude;
 		
-		SplineMeshComponents[i]->SetEndPosition(Spline->GetLocationAtDistanceAlongSpline(OffsetDistance, 
-		ESplineCoordinateSpace::World), false);
+		SplineMeshComponents[i]->SetEndPosition(Offset + Spline->GetLocationAtDistanceAlongSpline(OffsetDistance, 
+		CoorSpace), false);
 		SplineMeshComponents[i]->SetEndTangent(Spline->GetDirectionAtDistanceAlongSpline(OffsetDistance, 
-		ESplineCoordinateSpace::World), true);
+		CoorSpace), true);
 		
 		CurrentDistance += NeckSegmentLength;
 	}
 	
 }
 
-void ASplineWormEnemy::UpdateHeadTransfrom(float RatioOnSnake)
+void ASplineWormEnemy::HandleIdleAnimation() {
+	
+	
+	
+	for (int i = 0; i < SplineMeshComponents.Num(); ++i) {
+		float CurrentDistance = i * NeckSegmentLength + (Spline->GetSplineLength() - GetWormRealLength()); // offsets until end of line
+		
+		//offset animation
+		float SinValue = sin(  CurrentMoveTimeAffector * CurrentMoveTime);
+		float CosValue = cos( CurrentMoveTimeAffector * CurrentMoveTime);
+		FVector Offset = Spline->GetRightVectorAtDistanceAlongSpline(CurrentDistance, CoorSpace) * CosValue +
+			Spline->GetUpVectorAtDistanceAlongSpline(CurrentDistance, CoorSpace) * SinValue;
+		Offset *= MoveAmplitude;
+		
+		SplineMeshComponents[i]->SetStartPosition(Offset +
+			Spline->GetLocationAtDistanceAlongSpline(CurrentDistance, CoorSpace), false);
+		SplineMeshComponents[i]->SetEndPosition(Offset +
+			Spline->GetLocationAtDistanceAlongSpline(CurrentDistance + NeckSegmentLength, CoorSpace), true);
+
+	}
+}
+
+void ASplineWormEnemy::UpdateTargetTransfrom(float RatioOnSnake)
 {	
-	ESplineCoordinateSpace::Type CoorSpace = ESplineCoordinateSpace::World; 
 
 	//location
 	float Distance = CurrentWormDistance + GetWormRealLength() * RatioOnSnake;
@@ -164,6 +195,17 @@ void ASplineWormEnemy::UpdateHeadTransfrom(float RatioOnSnake)
 	GrappleSphereComponent->SetWorldRotation(Rotation);
 }
 
+void ASplineWormEnemy::UpdateHeadTransfrom() {
+	float Distance = GetWormRealLength() + CurrentWormDistance;
+	FVector Location = Spline->GetLocationAtDistanceAlongSpline(Distance,
+		ESplineCoordinateSpace::World);
+	FRotator Rotation = Spline->GetRotationAtDistanceAlongSpline(Distance,
+		ESplineCoordinateSpace::World);
+
+	WormHeadMesh->SetWorldLocation(Location);
+	WormHeadMesh->SetWorldRotation(Rotation);
+}
+
 void ASplineWormEnemy::InitSplineSegments() {
 	//init spline segmensts
 	int SegmentsToCreate = (WormGoalLength / NeckSegmentLength) - SplineMeshComponents.Num();
@@ -175,11 +217,16 @@ void ASplineWormEnemy::InitSplineSegments() {
 			USplineMeshComponent* NewSplineMesh = NewObject<USplineMeshComponent>(this);
 			if (NewSplineMesh)
 			{
+				//essensial
 				NewSplineMesh->RegisterComponent();
 				NewSplineMesh->SetMobility(EComponentMobility::Movable);
 				NewSplineMesh->SetStaticMesh(NeckSegment);
 
-				NewSplineMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+				//other
+				//NewSplineMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+				// NewSplineMesh->SetMaterial(0, WormBodyMaterial);
+				
+				//adds to array
 				SplineMeshComponents.Emplace(NewSplineMesh);
 			}
 		}
@@ -192,19 +239,40 @@ void ASplineWormEnemy::InitSplineSegments() {
 			SplineMeshComponents.RemoveAt(LastIndex);
 		}
 	}
+
+
+	//setting the sizes on each spline mesh segment
+	//this cpould be optimized, but since its only called once per worm, i think its fine for now
+	
+	const float TotalLength = GetWormRealLength();
+	for (int i = 0; i < SplineMeshComponents.Num(); ++i) {
+		//setting sclae
+			//start
+		float CurveTime = (i * NeckSegmentLength) / TotalLength;
+		float Size = WormSizeCurve->GetFloatValue(CurveTime);
+		SplineMeshComponents[i]->SetStartScale(FVector2D(Size), false);
+		
+			//end
+		CurveTime = (1 + i) * NeckSegmentLength / TotalLength;
+		Size = WormSizeCurve->GetFloatValue(CurveTime);
+		SplineMeshComponents[i]->SetEndScale(FVector2D(Size), true);
+
+		//setting random roll
+		float randomRoll = FMath::RandRange(-RandomRotationAmoundt, RandomRotationAmoundt);
+		SplineMeshComponents[i]->SetEndRoll(randomRoll);
+		SplineMeshComponents[i]->SetStartRoll(randomRoll);
+	}
 }
 
 float ASplineWormEnemy::GetWormRealLength() const
 {
-	float Tip = 0.f;
-	Tip += SplineMeshComponents.Num() * NeckSegmentLength + SplineMeshOverLap;
-	return Tip;
+	return SplineMeshComponents.Num() * NeckSegmentLength + SplineMeshOverLap;
 }
 
 void ASplineWormEnemy::OnGrappleReaced(float Addspeed)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Destroyed Worm"))
-	Destroy();
+	DL_NORMAL("Finished grappling worm!")
+	// Destroy();
 }
 
 void ASplineWormEnemy::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

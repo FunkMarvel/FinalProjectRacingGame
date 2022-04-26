@@ -34,6 +34,7 @@ void AGameStartSequenceActor::BeginPlay()
 
 	if (bSkipSequence) // if we want to skip this, just destroy the object
 	{
+		StartSequenceFinishedEvent.Broadcast();
 		Destroy();
 		return;
 	}

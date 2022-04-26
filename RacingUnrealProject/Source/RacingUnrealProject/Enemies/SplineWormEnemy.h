@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/SplineComponent.h"
 #include "GameFramework/Actor.h"
 
 #include "RacingUnrealProject/Enums/Enums.h"
@@ -26,33 +27,55 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	// my deseg
+public:
+	UPROPERTY(EditAnywhere, Category = "Meshes")
+	class UStaticMeshComponent* WormTargetMesh = nullptr;
+	UPROPERTY(EditAnywhere, Category = "Meshes")
+	class UStaticMeshComponent* WormHeadMesh = nullptr;
 	UPROPERTY(EditAnywhere, Category = "Spline")
-		class USplineComponent* Spline = nullptr;
-	UPROPERTY(EditAnywhere, Category = "Spline")
-		class UStaticMeshComponent* WormTargetMesh = nullptr;
-	UPROPERTY(EditAnywhere, Category = "Spline", BlueprintReadOnly)
 		class UGrappleSphereComponent* GrappleSphereComponent = nullptr;
 	UPROPERTY(EditAnywhere, Category = "Spline")
 		class UBoxComponent* TriggerBox = nullptr;
-	
-	
 	UPROPERTY(EditAnywhere, Category = "Spline")
-		class UStaticMesh* NeckSegment = nullptr;
-	UPROPERTY(EditAnywhere, Category = "Spline")
-		class UCurveFloat* MovmentCurveFloat;
+		class USplineComponent* Spline = nullptr;
+	
 private:
+	
+	// float curves
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = "Spline")
+		class UCurveFloat* MovmentCurveFloat = nullptr;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = "Spline")
+		class UCurveFloat* WormSizeCurve = nullptr;
+
+	//static meshes
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = "Spline")
+		class UStaticMesh* NeckSegment = nullptr;
+
+	//not editor visible
 	UPROPERTY()
 		TArray<class USplineMeshComponent*> SplineMeshComponents;
+	
+
+
+	//funcs
 	UFUNCTION()
 		void UpdateSplineMeshComponent();
-
+	
+	UFUNCTION()
+		void HandleIdleAnimation();
+	
 	UFUNCTION()
 	/**
 	 * @brief 
 	 * @param RatioOnSnake 1 means at the tip, 0 means at the end
 	 */
-		void UpdateHeadTransfrom(float RatioOnSnake);
+		void UpdateTargetTransfrom(float RatioOnSnake);
 
+	UFUNCTION()
+	    void UpdateHeadTransfrom();
+	
 	UFUNCTION()
 		void InitSplineSegments();
 	UFUNCTION()
@@ -73,15 +96,30 @@ public:
 		ESplineWormHeadAxis CurrentHeadAxis = ESplineWormHeadAxis::Right;
 	UPROPERTY(meta = (ToolTip = "If the Upvector for the CarPawn is upside down at the end of the grapple, Use this to invert"),
 		EditAnywhere, Category = "Spline")
-		bool bInvertUpHeadAxis = false;
+	bool bInvertUpHeadAxis = false;
+	UPROPERTY(EditAnywhere, Category = "Spline", meta = (ClampMin = 0.f, ClampMax = 180.f))
+		float RandomRotationAmoundt = 20.f;
 
+	//move animation varibales
+	UPROPERTY(EditAnywhere, Category = "Spline|MoveAnimation")
+	float CurrentDistanceAffector = 0.001f;
+	UPROPERTY(EditAnywhere, Category = "Spline|MoveAnimation")
+	float CurrentMoveTimeAffector = 10.f;
+	UPROPERTY(EditAnywhere, Category = "Spline|MoveAnimation")
+	float MoveAmplitude = 100.f;
+
+
+	//other
+	ESplineCoordinateSpace::Type CoorSpace = ESplineCoordinateSpace::World;
+private:
 	//animation
 	UPROPERTY(EditAnywhere, Category = "Spline")
 		bool bPlayingAnim = false;
+	UPROPERTY()
+		bool bIdle = false;
 	UPROPERTY(EditAnywhere, Category = "Spline")
 		bool bHasInitSpline = false;
-private:
-	UPROPERTY(meta = (AllowPrivateAccess = "true", ToolTip = "1 means at head, 0 is a back"), EditAnywhere, Category = "Spline")
+	UPROPERTY(meta = (AllowPrivateAccess = "true", ToolTip = "1 means at head, 0 is a back", ClampMin = 0.f, ClampMax = 1.f), EditAnywhere, Category = "Spline")
 		float HeadPlacement = 0.5f;
 	
 
