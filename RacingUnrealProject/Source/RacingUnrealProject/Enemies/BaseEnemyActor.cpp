@@ -9,7 +9,6 @@
 #include "Components/ArrowComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "RacingUnrealProject/DebugLog.h"
 
 // Sets default values
 ABaseEnemyActor::ABaseEnemyActor()
@@ -64,6 +63,7 @@ void ABaseEnemyActor::BeginPlay()
 {
 	Super::BeginPlay();
 	GravitySplineActive = GetClosestGravitySpline();
+	GameModeBase = Cast<ARacingUnrealProjectGameModeBase>(GetWorld()->GetAuthGameMode());
 }
 
 AGravitySplineActor* ABaseEnemyActor::GetClosestGravitySpline()
@@ -122,6 +122,7 @@ void ABaseEnemyActor::Tick(float DeltaTime)
 void ABaseEnemyActor::HandleDeath()
 {
 	EnemyDeath.Broadcast(EnemyArrayIndex);
+	if (GameModeBase) GameModeBase->AddScore(ScoreValue);
 	Destroy();
 }
 
