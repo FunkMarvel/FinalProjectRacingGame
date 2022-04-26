@@ -85,33 +85,21 @@ void ASplineWormEnemy::Tick(float DeltaTime)
 
 void ASplineWormEnemy::UpdateSplineMeshComponent()
 {
-
+	const ESplineCoordinateSpace::Type CoorSpace = ESplineCoordinateSpace::World;
 	float CurrentDistance = CurrentWormDistance;
+
 	for (int32 i = 0; i < SplineMeshComponents.Num(); ++i)
 	{
-		// FVector StartLocation, EndLocation, StartTangent, EndTangent;
-
-		/*StartLocation = Spline->GetLocationAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World);
-		StartTangent = Spline->GetDirectionAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World);
-		EndLocation = Spline->GetLocationAtDistanceAlongSpline(CurrentDistance + NeckSegmentLength + SplineMeshOverLap, 
-		ESplineCoordinateSpace::World);
-		EndTangent = Spline->GetDirectionAtDistanceAlongSpline(CurrentDistance + NeckSegmentLength + SplineMeshOverLap, 
-		ESplineCoordinateSpace::World);*/
-
-		//normalizing
-		/*StartTangent.Normalize();
-		EndTangent.Normalize();*/
-		
 		//setting the values
-		SplineMeshComponents[i]->SetStartPosition(Spline->GetLocationAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World), false);
-		SplineMeshComponents[i]->SetStartTangent(Spline->GetDirectionAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World), false);
+		SplineMeshComponents[i]->SetStartPosition(Spline->GetLocationAtDistanceAlongSpline(CurrentDistance, CoorSpace), false);
+		SplineMeshComponents[i]->SetStartTangent(Spline->GetDirectionAtDistanceAlongSpline(CurrentDistance, CoorSpace), false);
 
 		const float OffsetDistance = CurrentDistance+ NeckSegmentLength + SplineMeshOverLap;
 		
 		SplineMeshComponents[i]->SetEndPosition(Spline->GetLocationAtDistanceAlongSpline(OffsetDistance, 
-		ESplineCoordinateSpace::World), false);
+		CoorSpace), false);
 		SplineMeshComponents[i]->SetEndTangent(Spline->GetDirectionAtDistanceAlongSpline(OffsetDistance, 
-		ESplineCoordinateSpace::World), true);
+		CoorSpace), true);
 		
 		CurrentDistance += NeckSegmentLength;
 	}
@@ -175,11 +163,15 @@ void ASplineWormEnemy::InitSplineSegments() {
 			USplineMeshComponent* NewSplineMesh = NewObject<USplineMeshComponent>(this);
 			if (NewSplineMesh)
 			{
+				//essensial
 				NewSplineMesh->RegisterComponent();
 				NewSplineMesh->SetMobility(EComponentMobility::Movable);
 				NewSplineMesh->SetStaticMesh(NeckSegment);
 
+				//other
 				NewSplineMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+				
+				//adds to array
 				SplineMeshComponents.Emplace(NewSplineMesh);
 			}
 		}
@@ -191,6 +183,23 @@ void ASplineWormEnemy::InitSplineSegments() {
 			SplineMeshComponents[LastIndex]->DestroyComponent();
 			SplineMeshComponents.RemoveAt(LastIndex);
 		}
+	}
+
+
+	//setting the sizes
+	
+	const float TotalLength = GetWormRealLength();
+	for (int i = 0; i < SplineMeshComponents.Num(); ++i) {
+		float CurveTime = (i * NeckSegmentLength) / TotalLength;
+		float Size = WormSizeCurve->GetFloatValue(CurveTime);
+		
+		//start
+		SplineMeshComponents[i]->SetStartScale(FVector2D(Size), false);
+
+		CurveTime = (1 + i) * NeckSegmentLength / TotalLength;
+		Size = WormSizeCurve->GetFloatValue(CurveTime);
+		//end
+		SplineMeshComponents[i]->SetEndScale(FVector2D(Size), true);
 	}
 }
 

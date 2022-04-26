@@ -28,18 +28,27 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	UPROPERTY(EditAnywhere, Category = "Spline")
 		class USplineComponent* Spline = nullptr;
-	UPROPERTY(EditAnywhere, Category = "Spline")
-		class UStaticMeshComponent* WormTargetMesh = nullptr;
 	UPROPERTY(EditAnywhere, Category = "Spline", BlueprintReadOnly)
 		class UGrappleSphereComponent* GrappleSphereComponent = nullptr;
 	UPROPERTY(EditAnywhere, Category = "Spline")
 		class UBoxComponent* TriggerBox = nullptr;
 	
-	
+	// float curves
+	UPROPERTY(EditAnywhere, Category = "Spline")
+		class UCurveFloat* MovmentCurveFloat = nullptr;
+	UPROPERTY(EditAnywhere, Category = "Spline")
+		class UCurveFloat* WormSizeCurve = nullptr;
+
+	//static meshes
 	UPROPERTY(EditAnywhere, Category = "Spline")
 		class UStaticMesh* NeckSegment = nullptr;
+	
+	// static mesh components
 	UPROPERTY(EditAnywhere, Category = "Spline")
-		class UCurveFloat* MovmentCurveFloat;
+		class UStaticMeshComponent* WormTargetMesh = nullptr;
+	UPROPERTY(EditAnywhere, Category = "Spline")
+		class UStaticMeshComponent* WormHeadMesh = nullptr;
+	
 private:
 	UPROPERTY()
 		TArray<class USplineMeshComponent*> SplineMeshComponents;
