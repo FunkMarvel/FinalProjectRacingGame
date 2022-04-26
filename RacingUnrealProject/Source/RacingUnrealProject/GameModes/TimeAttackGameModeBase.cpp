@@ -4,10 +4,8 @@
 #include "TimeAttackGameModeBase.h"
 
 #include "RacingGameInstance.h"
-#include "Components/ArrowComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "RacingUnrealProject/GameStartSequenceActor.h"
-#include "RacingUnrealProject/Checkpoint/Checkpoint.h"
 #include "RacingUnrealProject/HUD/TimeAttackHUD.h"
 
 ATimeAttackGameModeBase::ATimeAttackGameModeBase()
