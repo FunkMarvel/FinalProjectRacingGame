@@ -42,6 +42,7 @@ void ADroneActor::BeginPlay()
 		DroppedEnemyActor->AttachToActor(this, AttachmentTransformRules);
 		DroppedEnemyActor->ChangeState(ASpikyBallEnemyActor::Idle);
 	}
+	ScoreValue = 100;
 }
 
 void ADroneActor::Tick(float DeltaSeconds)
