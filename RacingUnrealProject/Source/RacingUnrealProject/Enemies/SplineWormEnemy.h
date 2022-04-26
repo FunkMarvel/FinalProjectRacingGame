@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/SplineComponent.h"
 #include "GameFramework/Actor.h"
 
 #include "RacingUnrealProject/Enums/Enums.h"
@@ -55,11 +56,16 @@ private:
 	//not editor visible
 	UPROPERTY()
 		TArray<class USplineMeshComponent*> SplineMeshComponents;
+	
+
 
 	//funcs
 	UFUNCTION()
 		void UpdateSplineMeshComponent();
-
+	
+	UFUNCTION()
+		void HandleIdleAnimation();
+	
 	UFUNCTION()
 	/**
 	 * @brief 
@@ -94,10 +100,23 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Spline", meta = (ClampMin = 0.f, ClampMax = 180.f))
 		float RandomRotationAmoundt = 20.f;
 
+	//move animation varibales
+	UPROPERTY(EditAnywhere, Category = "Spline|MoveAnimation")
+	float CurrentDistanceAffector = 0.001f;
+	UPROPERTY(EditAnywhere, Category = "Spline|MoveAnimation")
+	float CurrentMoveTimeAffector = 10.f;
+	UPROPERTY(EditAnywhere, Category = "Spline|MoveAnimation")
+	float MoveAmplitude = 100.f;
+
+
+	//other
+	ESplineCoordinateSpace::Type CoorSpace = ESplineCoordinateSpace::World;
 private:
 	//animation
 	UPROPERTY(EditAnywhere, Category = "Spline")
 		bool bPlayingAnim = false;
+	UPROPERTY()
+		bool bIdle = false;
 	UPROPERTY(EditAnywhere, Category = "Spline")
 		bool bHasInitSpline = false;
 	UPROPERTY(meta = (AllowPrivateAccess = "true", ToolTip = "1 means at head, 0 is a back", ClampMin = 0.f, ClampMax = 1.f), EditAnywhere, Category = "Spline")
