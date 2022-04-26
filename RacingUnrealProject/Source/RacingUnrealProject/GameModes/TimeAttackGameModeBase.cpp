@@ -31,12 +31,13 @@ void ATimeAttackGameModeBase::BeginPlay()
 		InputMode.SetConsumeCaptureMouseDown(true);
 		PlayerController->SetInputMode(InputMode);
 	}
+
+	TimeAttackHUD = Cast<ATimeAttackHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 }
 
 void ATimeAttackGameModeBase::BeginTimer()
 {
 	ToggleTiming(true);
-	TimeAttackHUD = Cast<ATimeAttackHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 }
 
 void ATimeAttackGameModeBase::OnPressPause()
