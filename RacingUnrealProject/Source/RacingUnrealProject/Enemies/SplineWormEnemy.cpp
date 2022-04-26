@@ -30,6 +30,9 @@ ASplineWormEnemy::ASplineWormEnemy()
 	WormTargetMesh->SetupAttachment(GrappleSphereComponent);
 	WormTargetMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	WormHeadMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WormHeadMesh"));
+	WormHeadMesh->SetupAttachment(GetRootComponent());
+	WormHeadMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	TriggerBox = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerBox"));
 	TriggerBox->SetupAttachment(GetRootComponent());
@@ -169,7 +172,8 @@ void ASplineWormEnemy::InitSplineSegments() {
 				NewSplineMesh->SetStaticMesh(NeckSegment);
 
 				//other
-				NewSplineMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+				//NewSplineMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+				// NewSplineMesh->SetMaterial(0, WormBodyMaterial);
 				
 				//adds to array
 				SplineMeshComponents.Emplace(NewSplineMesh);
@@ -186,7 +190,8 @@ void ASplineWormEnemy::InitSplineSegments() {
 	}
 
 
-	//setting the sizes
+	//setting the sizes on each spline mesh segment
+	//this cpould be optimized, but since its only called once per worm, i think its fine for now
 	
 	const float TotalLength = GetWormRealLength();
 	for (int i = 0; i < SplineMeshComponents.Num(); ++i) {
@@ -205,9 +210,7 @@ void ASplineWormEnemy::InitSplineSegments() {
 
 float ASplineWormEnemy::GetWormRealLength() const
 {
-	float Tip = 0.f;
-	Tip += SplineMeshComponents.Num() * NeckSegmentLength + SplineMeshOverLap;
-	return Tip;
+	return SplineMeshComponents.Num() * NeckSegmentLength + SplineMeshOverLap;
 }
 
 void ASplineWormEnemy::OnGrappleReaced(float Addspeed)

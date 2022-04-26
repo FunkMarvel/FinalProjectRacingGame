@@ -26,32 +26,37 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	// my deseg
+public:
+	UPROPERTY(EditAnywhere, Category = "Meshes")
+	class UStaticMeshComponent* WormTargetMesh = nullptr;
+	UPROPERTY(EditAnywhere, Category = "Meshes")
+	class UStaticMeshComponent* WormHeadMesh = nullptr;
 	UPROPERTY(EditAnywhere, Category = "Spline")
-		class USplineComponent* Spline = nullptr;
-	UPROPERTY(EditAnywhere, Category = "Spline", BlueprintReadOnly)
 		class UGrappleSphereComponent* GrappleSphereComponent = nullptr;
 	UPROPERTY(EditAnywhere, Category = "Spline")
 		class UBoxComponent* TriggerBox = nullptr;
+	UPROPERTY(EditAnywhere, Category = "Spline")
+		class USplineComponent* Spline = nullptr;
+	
+private:
 	
 	// float curves
-	UPROPERTY(EditAnywhere, Category = "Spline")
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = "Spline")
 		class UCurveFloat* MovmentCurveFloat = nullptr;
-	UPROPERTY(EditAnywhere, Category = "Spline")
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = "Spline")
 		class UCurveFloat* WormSizeCurve = nullptr;
 
 	//static meshes
-	UPROPERTY(EditAnywhere, Category = "Spline")
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = "Spline")
 		class UStaticMesh* NeckSegment = nullptr;
-	
-	// static mesh components
-	UPROPERTY(EditAnywhere, Category = "Spline")
-		class UStaticMeshComponent* WormTargetMesh = nullptr;
-	UPROPERTY(EditAnywhere, Category = "Spline")
-		class UStaticMeshComponent* WormHeadMesh = nullptr;
-	
-private:
+
+	//not editor visible
 	UPROPERTY()
 		TArray<class USplineMeshComponent*> SplineMeshComponents;
+
+	//funcs
 	UFUNCTION()
 		void UpdateSplineMeshComponent();
 
