@@ -22,6 +22,9 @@ public:
 	UPROPERTY(EditAnywhere, Category="Trigger|End Volume")
 		class UBoxComponent* ExitVolume;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
+		class UArrowComponent* SpawnPoint{nullptr};
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Spawning")
 		TSubclassOf<class ABaseEnemyActor> EnemyClassToSpawn;
 
@@ -30,11 +33,11 @@ public:
 	int32 NumberOfSpawnedEnemies{0};
 	int32 NumberOfDestroyedEnemies{0};
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Spawning")
-		float SpawnForwardOffset{10000.f};
-	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Spawning")
-		float SpawnHeight{0.5f*SpawnForwardOffset};
+	// UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Spawning")
+	// 	float SpawnForwardOffset{10000.f};
+	//
+	// UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Spawning")
+	// 	float SpawnHeight{0.5f*SpawnForwardOffset};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Spawning")
 		float SpawnSpacing{1000.f};

@@ -8,6 +8,7 @@
 #include "BaseEnemyActor.h"
 #include "Components/BoxComponent.h"
 #include "../DebugLog.h"
+#include "Components/ArrowComponent.h"
 
 // Sets default values
 AEnemySpawner::AEnemySpawner()
@@ -19,7 +20,12 @@ AEnemySpawner::AEnemySpawner()
 	TriggerVolume->bSelectable = true;
 	
 	ExitVolume = CreateDefaultSubobject<UBoxComponent>(TEXT("ExitVolume"));
+	ExitVolume->SetupAttachment(GetRootComponent());
 	ExitVolume->bSelectable = true;
+	
+	SpawnPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("SpawnPoint"));
+	SpawnPoint->SetupAttachment(GetRootComponent());
+	SpawnPoint->bSelectable = true;
 }
 
 void AEnemySpawner::OnTriggerOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -28,10 +34,9 @@ void AEnemySpawner::OnTriggerOverlapBegin(UPrimitiveComponent* OverlappedCompone
 	if (EnemyClassToSpawn && OtherActor->IsA<APawn>() && NumberOfSpawnedEnemies < NumberOfEnemiesToSpawn)
 	{
 		int32 Alternator{1};
-		FVector SidewaysOffset{SpawnSpacing*OtherActor->GetActorRightVector()};
-		FRotator SpawnOrientation{OtherActor->GetActorRotation()};
-		FVector SpawnLocation{OtherActor->GetActorLocation() + OtherActor->GetActorUpVector()*SpawnHeight
-		+ OtherActor->GetActorForwardVector()*SpawnHeight};
+		FVector SidewaysOffset{SpawnSpacing*SpawnPoint->GetRightVector()};
+		FRotator SpawnOrientation{SpawnPoint->GetComponentRotation()};
+		FVector SpawnLocation{SpawnPoint->GetComponentLocation()};
 		for (int32 i{}; i < NumberOfEnemiesToSpawn; i++)
 		{
 			EnemyActors[i] = GetWorld()->SpawnActor<ABaseEnemyActor>(
@@ -66,6 +71,7 @@ void AEnemySpawner::OnExitOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor
 	{
 		for (ABaseEnemyActor* Enemy : EnemyActors)
 		{
+			DL_NORMAL(TEXT("Destroyed"));
 			if (Enemy) Enemy->HandleDeath();
 		}
 		NumberOfSpawnedEnemies = 0;
@@ -85,6 +91,7 @@ void AEnemySpawner::BeginPlay()
 
 	EnemyActors.Init(nullptr, NumberOfEnemiesToSpawn);
 }
+
 
 // Called every frame
 void AEnemySpawner::Tick(float DeltaTime)
