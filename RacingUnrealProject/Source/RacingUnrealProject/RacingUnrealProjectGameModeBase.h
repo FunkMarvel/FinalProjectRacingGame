@@ -32,12 +32,13 @@ protected:
 		class URacingGameInstance* RacingGameInstance{nullptr};
 
 	FPlayerData CurrentPlayerData{};
+	bool bFirstLap{true};
 	
 public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Laps")
 		int32 NumberOfLaps{3};
-	int32 CurrentLap{};
+	int32 CurrentLap{1};
 	
 	bool bGamePaused{false};
 	

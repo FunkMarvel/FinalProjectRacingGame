@@ -22,15 +22,20 @@ void ARacingUnrealProjectGameModeBase::BeginPlay()
 void ARacingUnrealProjectGameModeBase::OnCompletedLap()
 {
 	FVector PlayerToGoalDir{(GoalCheckpoint->GetActorLocation() - PlayerPawn->GetActorLocation()).GetSafeNormal()};
+	if (CurrentLap >= NumberOfLaps) GameEndState();
 	if (FVector::DotProduct(PlayerToGoalDir, GoalCheckpoint->GetSpawnArrow()->GetForwardVector()) > 0.f)
 	{
+		if (bFirstLap)
+		{
+			bFirstLap = false;
+			return;
+		}
 		CurrentLap++;
 	}
 	else if (FVector::DotProduct(PlayerToGoalDir, GoalCheckpoint->GetSpawnArrow()->GetForwardVector()) < 0.f)
 	{
 		CurrentLap--;
 	}
-	if (CurrentLap >= NumberOfLaps) GameEndState();
 }
 
 void ARacingUnrealProjectGameModeBase::GameEndState()
