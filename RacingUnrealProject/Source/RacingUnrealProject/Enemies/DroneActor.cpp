@@ -31,17 +31,6 @@ void ADroneActor::BeginPlay()
 	GrappleSphereComponent->OnGrappleHitEvent.AddDynamic(this, &ADroneActor::Grappled);
 	GrappleSphereComponent->OnReachedEvent.AddDynamic(this, &ADroneActor::Reached);
 	SensorSphere->OnComponentBeginOverlap.AddDynamic(this, &ADroneActor::OnOverlap);
-
-	if (DroppableEnemyClass)
-	{
-		FAttachmentTransformRules AttachmentTransformRules(EAttachmentRule::SnapToTarget, true);
-		AttachmentTransformRules.LocationRule = EAttachmentRule::KeepWorld;
-		AttachmentTransformRules.ScaleRule = EAttachmentRule::KeepWorld;
-		FVector SpawnLocation{GetActorLocation() - SpawnOffset*GetActorUpVector()};
-		DroppedEnemyActor = GetWorld()->SpawnActor<ASpikyBallEnemyActor>(DroppableEnemyClass, SpawnLocation, GetActorRotation());
-		DroppedEnemyActor->AttachToActor(this, AttachmentTransformRules);
-		DroppedEnemyActor->ChangeState(ASpikyBallEnemyActor::Idle);
-	}
 	ScoreValue = 100;
 }
 
@@ -71,6 +60,18 @@ void ADroneActor::Tick(float DeltaSeconds)
  //    {
  //    	GravitySplineActive = PlayerPawn->GravitySplineActive;
  //    }
+
+	if (DroppableEnemyClass && bDropEnemy && !bHasSpawned)
+	{
+		FAttachmentTransformRules AttachmentTransformRules(EAttachmentRule::SnapToTarget, true);
+		AttachmentTransformRules.LocationRule = EAttachmentRule::KeepWorld;
+		AttachmentTransformRules.ScaleRule = EAttachmentRule::KeepWorld;
+		FVector SpawnLocation{GetActorLocation() - SpawnOffset*GetActorUpVector()};
+		DroppedEnemyActor = GetWorld()->SpawnActor<ASpikyBallEnemyActor>(DroppableEnemyClass, SpawnLocation, GetActorRotation());
+		DroppedEnemyActor->AttachToActor(this, AttachmentTransformRules);
+		DroppedEnemyActor->ChangeState(ASpikyBallEnemyActor::Idle);
+		bHasSpawned = true;
+	}
 }
 
 void ADroneActor::InterceptingState()
@@ -104,7 +105,7 @@ void ADroneActor::AttackingState()
 	FRotator NewRot{FMath::RInterpTo(CurrentRot, TargetRot, GetWorld()->GetDeltaSeconds(), 5.f)};
 	SetActorRotation(NewRot);
 	
-	if (DroppedEnemyActor && DropTimer >= DropTime)
+	if (DroppedEnemyActor && DropTimer >= DropTime && bDropEnemy && bHasSpawned)
 	{
 		// FDetachmentTransformRules DetachmentTransformRules(EDetachmentRule::KeepWorld, false);
 		DroppedEnemyActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
@@ -114,7 +115,7 @@ void ADroneActor::AttackingState()
 		DroppedEnemyActor->ChangeState(ASpikyBallEnemyActor::Airborne);
 		DroppedEnemyActor = nullptr;
 	}
-	else if (DropTimer < DropTime)
+	else if (DropTimer < DropTime && bDropEnemy && bHasSpawned)
 	{
 		DropTimer += GetWorld()->GetDeltaSeconds();
 	}

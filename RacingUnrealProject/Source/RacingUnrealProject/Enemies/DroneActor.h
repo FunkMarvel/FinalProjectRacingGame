@@ -67,6 +67,7 @@ protected:
 
 	EDroneState CurrentState{EDroneState::Idle};
 	bool bEnteringState{false};
+	bool bHasSpawned{false};
 
 	void ChangeState(EDroneState NewState)
 	{

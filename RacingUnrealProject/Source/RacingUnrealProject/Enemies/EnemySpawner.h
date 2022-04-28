@@ -32,6 +32,9 @@ public:
 		TSubclassOf<class ABaseEnemyActor> EnemyClassToSpawn;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Spawning")
+		bool bSpawnedEnemiesShouldDropSpikyBalls{true};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Spawning")
 		int32 NumberOfEnemiesToSpawn{1};
 	int32 NumberOfSpawnedEnemies{0};
 	int32 NumberOfDestroyedEnemies{0};

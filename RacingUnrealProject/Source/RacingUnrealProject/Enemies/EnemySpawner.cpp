@@ -52,6 +52,7 @@ void AEnemySpawner::OnTriggerOverlapBegin(UPrimitiveComponent* OverlappedCompone
 			EnemyActors[i]->EnemyDeath.AddDynamic(this, &AEnemySpawner::OnEnemyDeath);
 			EnemyActors[i]->SetEnemyArrayIndex(i);
 			EnemyActors[i]->SetTargetLocation(TargetLocation->GetComponentLocation());
+			EnemyActors[i]->bDropEnemy = bSpawnedEnemiesShouldDropSpikyBalls;
 			NumberOfSpawnedEnemies++;
 			Alternator *= -1;
 		}
