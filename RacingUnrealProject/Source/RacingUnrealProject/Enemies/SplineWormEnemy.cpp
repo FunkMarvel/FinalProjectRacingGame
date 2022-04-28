@@ -128,7 +128,7 @@ void ASplineWormEnemy::UpdateSplineMeshComponent()
 	
 }
 
-void ASplineWormEnemy::HandleIdleAnimation() {
+void ASplineWormEnemy::HandleIdleAnimation()  {
 	
 	
 	
@@ -136,11 +136,11 @@ void ASplineWormEnemy::HandleIdleAnimation() {
 		float CurrentDistance = i * NeckSegmentLength + (Spline->GetSplineLength() - GetWormRealLength()); // offsets until end of line
 		
 		//offset animation
-		float SinValue = sin(  CurrentMoveTimeAffector * CurrentMoveTime + CurrentDistance);
-		float CosValue = cos( CurrentMoveTimeAffector * CurrentMoveTime + CurrentDistance);
+		float SinValue = sin(  IdleTimeAffector * CurrentMoveTime + CurrentDistance);
+		float CosValue = cos( IdleTimeAffector * CurrentMoveTime + CurrentDistance);
 		FVector Offset = Spline->GetRightVectorAtDistanceAlongSpline(CurrentDistance, CoorSpace) * CosValue +
 			Spline->GetUpVectorAtDistanceAlongSpline(CurrentDistance, CoorSpace) * SinValue;
-		Offset *= MoveAmplitude;
+		Offset *= IdleAmplitude;
 		
 		SplineMeshComponents[i]->SetStartPosition(Offset +
 			Spline->GetLocationAtDistanceAlongSpline(CurrentDistance, CoorSpace), false);
@@ -223,7 +223,7 @@ void ASplineWormEnemy::InitSplineSegments() {
 				NewSplineMesh->SetStaticMesh(NeckSegment);
 
 				//other
-				//NewSplineMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+				NewSplineMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 				// NewSplineMesh->SetMaterial(0, WormBodyMaterial);
 				
 				//adds to array

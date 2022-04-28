@@ -108,21 +108,27 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Spline|MoveAnimation")
 	float MoveAmplitude = 100.f;
 
+	// idle animation variables
+	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Spline|IdleAnimation")
+	float IdleTimeAffector = 3.f;
+	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Spline|IdleAnimation")
+	float IdleAmplitude = 30.f;
 
 	//other
 	ESplineCoordinateSpace::Type CoorSpace = ESplineCoordinateSpace::World;
 private:
 	//animation
-	UPROPERTY(EditAnywhere, Category = "Spline")
+	UPROPERTY()
 		bool bPlayingAnim = false;
 	UPROPERTY()
 		bool bIdle = false;
-	UPROPERTY(EditAnywhere, Category = "Spline")
+	UPROPERTY()
 		bool bHasInitSpline = false;
 	UPROPERTY(meta = (AllowPrivateAccess = "true", ToolTip = "1 means at head, 0 is a back", ClampMin = 0.f, ClampMax = 1.f), EditAnywhere, Category = "Spline")
 		float HeadPlacement = 0.5f;
 	
-
+	
+       
 	// not visible variables
 	UPROPERTY(/*meta = ( ToolTip = "Is the distance along spline the end of the worm is"), EditAnywhere, Category = "Spline"*/)
 		float CurrentWormDistance = 0.f;
