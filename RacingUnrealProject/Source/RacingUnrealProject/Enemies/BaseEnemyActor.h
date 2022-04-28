@@ -33,6 +33,9 @@ public:
 	                            int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	FVector GetToPlayerVector(bool bNormalized = true);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
+		bool bDropEnemy{false};
 	
 protected:
 	FVector TargetLocation{};
