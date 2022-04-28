@@ -302,7 +302,7 @@ void ACarPawn::StateDriving()
 
 	UpdateCameraBoomLength();
 	//HandleMaxTurnWithSpline();
-	DrawDebugLine(GetWorld(), SphereComp->GetComponentLocation(), SphereComp->GetComponentLocation() + LocalUpVector * 10000.f, FColor::Red, false);
+	//DrawDebugLine(GetWorld(), SphereComp->GetComponentLocation(), SphereComp->GetComponentLocation() + LocalUpVector * 10000.f, FColor::Red, false);
 	
 	//should we be grappling
 	if (PhysicsGrappleComponent->ValidGrappleState())
