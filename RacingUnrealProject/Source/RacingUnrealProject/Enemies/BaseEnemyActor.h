@@ -33,8 +33,9 @@ public:
 	                            int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	FVector GetToPlayerVector(bool bNormalized = true);
-
+	
 protected:
+	FVector TargetLocation{};
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -59,5 +60,6 @@ public:
 	void SetEnemyArrayIndex(int32 Index) { EnemyArrayIndex = Index; }
 	void HandleDeath();
 
+	void SetTargetLocation(FVector Target) { TargetLocation = Target; }
 	FEnemyDeath EnemyDeath;
 };

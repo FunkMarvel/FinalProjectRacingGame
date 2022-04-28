@@ -6,6 +6,7 @@
 #include <string>
 
 #include "BaseEnemyActor.h"
+#include "DroneActor.h"
 #include "Components/BoxComponent.h"
 #include "../DebugLog.h"
 #include "Components/ArrowComponent.h"
@@ -26,6 +27,11 @@ AEnemySpawner::AEnemySpawner()
 	SpawnPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("SpawnPoint"));
 	SpawnPoint->SetupAttachment(GetRootComponent());
 	SpawnPoint->bSelectable = true;
+
+	TargetLocation = CreateDefaultSubobject<UArrowComponent>(TEXT("TargetLocation"));
+	TargetLocation->SetupAttachment(GetRootComponent());
+	TargetLocation->bSelectable = true;
+	
 }
 
 void AEnemySpawner::OnTriggerOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -45,6 +51,7 @@ void AEnemySpawner::OnTriggerOverlapBegin(UPrimitiveComponent* OverlappedCompone
 				);
 			EnemyActors[i]->EnemyDeath.AddDynamic(this, &AEnemySpawner::OnEnemyDeath);
 			EnemyActors[i]->SetEnemyArrayIndex(i);
+			EnemyActors[i]->SetTargetLocation(TargetLocation->GetComponentLocation());
 			NumberOfSpawnedEnemies++;
 			Alternator *= -1;
 		}
