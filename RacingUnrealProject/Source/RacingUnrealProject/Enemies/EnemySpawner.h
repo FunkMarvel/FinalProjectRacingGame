@@ -25,6 +25,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
 		class UArrowComponent* SpawnPoint{nullptr};
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
+		class UArrowComponent* TargetLocation{nullptr};
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Spawning")
 		TSubclassOf<class ABaseEnemyActor> EnemyClassToSpawn;
 
