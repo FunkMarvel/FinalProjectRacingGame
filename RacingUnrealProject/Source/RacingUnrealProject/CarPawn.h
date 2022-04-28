@@ -215,14 +215,14 @@ private:
 	bool IsOutOfBounds();
 	
 
-#if WITH_EDITORONLY_DATA
+// #if WITH_EDITORONLY_DATA
 	//TODO debug remove!
 	UFUNCTION()
 	void SetGameSpeedUp();
 	UFUNCTION()
 	void SetGameSpeedDown();
 	// TODO debug remove end
-#endif
+// #endif
 
 	//events
 // public:

@@ -21,7 +21,7 @@
 #include "Chaos/KinematicTargets.h"
 #include "Checkpoint/Checkpoint.h"
 #include "Components/SplineComponent.h"
-#include "EnvironmentQuery/EnvQueryTypes.h"
+// #include "EnvironmentQuery/EnvQueryTypes.h"
 #include "Grappling/GrappableWidgetComponent.h"
 
 
