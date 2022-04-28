@@ -72,15 +72,15 @@ int32 AGravitySplineActor::GetClosestSplinePoint(USplineComponent* splineEval, F
 
 	FVector loc = splineEval->GetLocationAtSplinePoint(index, ESplineCoordinateSpace::World);
 
-	DrawDebugSphere(GetWorld(), loc , 70.f, 32,
-		FColor::Emerald, false, 1.f);
+	// DrawDebugSphere(GetWorld(), loc , 70.f, 32,
+		// FColor::Emerald, false, 1.f);
 
 	
 
 	//FVector up = (splineEval->GetRotationAtSplinePoint(index, ESplineCoordinateSpace::World).Add(90.f, 0.f, 0.f)).Vector();
 	FVector up = splineEval->GetUpVectorAtSplinePoint(index, ESplineCoordinateSpace::World);
 
-	DrawDebugLine(GetWorld(), loc, loc + up * 400.f, FColor::Red, false);
+	// DrawDebugLine(GetWorld(), loc, loc + up * 400.f, FColor::Red, false);
 
 
 	return index;

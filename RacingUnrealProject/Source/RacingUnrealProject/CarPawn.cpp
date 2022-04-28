@@ -779,7 +779,7 @@ FVector ACarPawn::GetUpVectorFromUnderCar()
 		TraceParams
 	);
 
-	DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 1.f, (uint8)0U, 10.f);
+	// DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 1.f, (uint8)0U, 10.f);
 	if (hit.IsValidBlockingHit())
 	{
 		// DL_NORMAL("LineTraceChannelHit!")
