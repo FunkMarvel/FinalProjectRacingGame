@@ -74,38 +74,38 @@ void ATimeAttackHUD::SetBestTime(float CurrentTime, float BestTime)
 
 void ATimeAttackHUD::ToggleEndMenu(bool bShowMenu)
 {
-	if (TimeAttackEndMenuWidget && RaceTimerWidget && MinimapClass && PauseMenuWidget && !PauseMenuWidget->IsVisible())
+	if (PauseMenuWidget && !PauseMenuWidget->IsVisible())
 	{
 		if (bShowMenu)
 		{
-			RaceTimerWidget->SetVisibility(ESlateVisibility::Collapsed);
-			TimeAttackEndMenuWidget->SetVisibility(ESlateVisibility::Visible);
-			MinimapWidget->SetVisibility(ESlateVisibility::Collapsed);
+			if (RaceTimerWidget) RaceTimerWidget->SetVisibility(ESlateVisibility::Collapsed);
+			if (TimeAttackEndMenuWidget) TimeAttackEndMenuWidget->SetVisibility(ESlateVisibility::Visible);
+			if (MinimapWidget) MinimapWidget->SetVisibility(ESlateVisibility::Collapsed);
 		}
 		else
 		{
-			RaceTimerWidget->SetVisibility(ESlateVisibility::Visible);
-			TimeAttackEndMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
-			MinimapWidget->SetVisibility(ESlateVisibility::Visible);
+			if (RaceTimerWidget) RaceTimerWidget->SetVisibility(ESlateVisibility::Visible);
+			if (TimeAttackEndMenuWidget) TimeAttackEndMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+			if (MinimapWidget) MinimapWidget->SetVisibility(ESlateVisibility::Visible);
 		}
 	}
 }
 
 void ATimeAttackHUD::TogglePauseMenu(bool bShowMenu)
 {
-	if (TimeAttackEndMenuWidget && RaceTimerWidget && MinimapClass && PauseMenuWidget && !TimeAttackEndMenuWidget->IsVisible())
+	if (TimeAttackEndMenuWidget && !TimeAttackEndMenuWidget->IsVisible())
 	{
 		if (bShowMenu)
 		{
-			RaceTimerWidget->SetVisibility(ESlateVisibility::Collapsed);
-			PauseMenuWidget->SetVisibility(ESlateVisibility::Visible);
-			MinimapWidget->SetVisibility(ESlateVisibility::Collapsed);
+			if (RaceTimerWidget) RaceTimerWidget->SetVisibility(ESlateVisibility::Collapsed);
+			if (PauseMenuWidget) PauseMenuWidget->SetVisibility(ESlateVisibility::Visible);
+			if (MinimapWidget) MinimapWidget->SetVisibility(ESlateVisibility::Collapsed);
 		}
 		else
 		{
-			RaceTimerWidget->SetVisibility(ESlateVisibility::Visible);
-			PauseMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
-			MinimapWidget->SetVisibility(ESlateVisibility::Visible);
+			if (RaceTimerWidget) RaceTimerWidget->SetVisibility(ESlateVisibility::Visible);
+			if (PauseMenuWidget) PauseMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+			if (MinimapWidget) MinimapWidget->SetVisibility(ESlateVisibility::Visible);
 		}
 	}
 }
