@@ -44,7 +44,7 @@ void ATimeAttackHUD::BeginPlay()
 		PauseMenuWidget->ReturnToMenuButton->OnClicked.AddDynamic(TimeAttackEndMenuWidget, &UTimeAttackEndMenuWidget::OnBackToMenu);
 	}
 
-	if (MinimapClass) {
+	if (/*MinimapClass*/ false) {
 		MinimapWidget = CreateWidget<UMinimapWidget>(GetWorld(), MinimapClass);
 		MinimapWidget->AddToViewport();
 		MinimapWidget->SetVisibility(ESlateVisibility::Visible);
