@@ -719,7 +719,7 @@ bool ACarPawn::IsOutOfBounds()
 		float dist = (ClosestSplineLocation - SphereComp->GetComponentLocation()).Size();
 		
 		
-		if (dist > MaxOutOfBoundsDistance)
+		if (dist > GravitySplineActive->GetMaxDistance())
 		{
 			return true;
 		}

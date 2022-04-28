@@ -75,4 +75,10 @@ public:
 	UPROPERTY(EditAnywhere)
 		class UBoxComponent* BoxSplineTwo = nullptr;
 
+	UFUNCTION()
+		float GetMaxDistance() const {return MaxDistance; }
+
+private:
+	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Gravity")
+		float MaxDistance = 6000.f;
 };

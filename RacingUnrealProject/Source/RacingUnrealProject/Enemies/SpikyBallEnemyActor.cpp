@@ -148,5 +148,5 @@ void ASpikyBallEnemyActor::Move()
 
 void ASpikyBallEnemyActor::ApplyGravity()
 {
-	SphereComp->AddForce(-LocalUpVector * Acceleration, NAME_None, true);
+	SphereComp->AddForce(-LocalUpVector * Acceleration * 3.f, NAME_None, true);
 }

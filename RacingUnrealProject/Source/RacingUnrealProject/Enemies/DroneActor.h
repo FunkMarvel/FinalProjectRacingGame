@@ -35,7 +35,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Spawning")
 		float SpawnOffset{500.f};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
-		float DropTime{1.f};
+		float DropTime{0.3f};
 	float DropTimer{};
 	
 	float InterceptTimer{};
