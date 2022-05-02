@@ -112,10 +112,10 @@ void ADroneActor::AttackingState()
 		DroppedEnemyActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		DroppedEnemyActor->SphereComp->SetSimulatePhysics(true);
 		DroppedEnemyActor->SphereComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		DroppedEnemyActor->GravitySplineActive = GravitySplineActive;
 		DroppedEnemyActor->RotateSphereComponentToLocalUpVector();
 		DroppedEnemyActor->ChangeState(ASpikyBallEnemyActor::Airborne);
-		DroppedEnemyActor->CurrentState = ASpikyBallEnemyActor::Airborne;
-		DroppedEnemyActor = nullptr;
+		bDropEnemy = false;
 	}
 	else if (DropTimer < DropTime && bDropEnemy && bHasSpawned)
 	{
@@ -134,8 +134,14 @@ void ADroneActor::Reached(float AddSpeedAmount)
 	HandleDeath();
 }
 
+void ADroneActor::HandleDeath()
+{
+	if (DroppedEnemyActor) DroppedEnemyActor->Destroy();
+	Super::HandleDeath();
+}
+
 void ADroneActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                            UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	DL_NORMAL("Overlapping")
 	if (OtherActor->IsA<ADroneActor>())
