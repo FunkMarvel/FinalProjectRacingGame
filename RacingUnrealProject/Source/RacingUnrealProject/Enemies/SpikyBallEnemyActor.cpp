@@ -37,8 +37,8 @@ void ASpikyBallEnemyActor::BeginPlay()
 void ASpikyBallEnemyActor::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	if (CurrentState == EBallState::Spiked && GetToPlayerVector(false).Size() > 0.5*TargetDistance) { Destroy(); }
-	else if (GetToPlayerVector(false).Size() > TargetDistance) { return; }
+	// if (CurrentState == EBallState::Spiked && GetToPlayerVector(false).Size() > TargetDistance) { Destroy(); }
+	// else if (GetToPlayerVector(false).Size() > TargetDistance) { return; }
 	if (GravitySplineActive) LocalUpVector = GravitySplineActive->GetFixedUpVectorFromLocation(GetActorLocation());
 	
 	switch (CurrentState)
