@@ -39,6 +39,7 @@ public:
 	
 protected:
 	FVector TargetLocation{};
+	FVector LocalUpVector{};
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 

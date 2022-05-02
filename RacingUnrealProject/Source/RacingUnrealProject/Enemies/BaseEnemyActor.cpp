@@ -94,12 +94,13 @@ AGravitySplineActor* ABaseEnemyActor::GetClosestGravitySpline()
 bool ABaseEnemyActor::IsGrounded()
 {
 		FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
+		if (GravitySplineActive) LocalUpVector = GravitySplineActive->GetFixedUpVectorFromLocation(SphereComp->GetComponentLocation());
 
 		FHitResult Hit{};
 		GetWorld()->LineTraceSingleByObjectType(
 			Hit,
 			ArrowRayCastStart->GetComponentLocation(),
-			ArrowRayCastStart->GetComponentLocation() - GetActorUpVector() *1.05* SphereComp->GetScaledSphereRadius(),
+			ArrowRayCastStart->GetComponentLocation() - GravitySplineActive->GetActorUpVector() *1.125* SphereComp->GetScaledSphereRadius(),
 			FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldStatic),
 			TraceParams
 		);
