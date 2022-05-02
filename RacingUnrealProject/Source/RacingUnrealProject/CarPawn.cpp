@@ -196,7 +196,6 @@ void ACarPawn::TiltCarMesh(FVector AsymVector)
 	FVector CarMeshUpVector = LocalUpVector;
 	if (hit.IsValidBlockingHit()) {
 		CarMeshUpVector = hit.ImpactNormal;
-		DL_NORMAL("BINGUS BANGUS YOU HIT A CHANGUS")
 	}
 
 	//creates new rotaiton

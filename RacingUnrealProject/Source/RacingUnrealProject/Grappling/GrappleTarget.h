@@ -24,30 +24,35 @@ public:
 	virtual void Tick(float DeltaTime) override;
 // my deseg
 private:
-	/*UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "GrappleTarget")
-	class UBillboardComponent* BillboardComponent = nullptr;*/
-	/*UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "GrappleTarget")
-	class UWidgetComponent* Widget = nullptr;*/
-	// UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "GrappleTarget")
-	// class USphereComponent* SphereComponent = nullptr;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "GrappleTarget")
 		class UArrowComponent* RootArrow = nullptr;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "GrappleTarget")
 		class UGrappleSphereComponent* GrappleSphereComponent = nullptr;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "GrappleTarget")
 		class USkeletalMeshComponent* MainMesh = nullptr;
-	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "GrappleTarget")
-		class UBoxComponent* Trigger = nullptr;
 	
 	
 	
 public:
-	void SetVisbility(bool bVisible);
+	// grapplesphere functions
 	UFUNCTION()
 	void OnReachedTarget(float AddSpeedAmount);
 	UFUNCTION()
 	void OnGrappleTarget(FTransform SphereCompTransfrom);
+
+	
+	//enter exit relevant
+	UPROPERTY(EditAnywhere, Category = "GrappleTarget")
+		class AEnterExitTrigger* EnterTrigger = nullptr;
+	UPROPERTY(EditAnywhere, Category = "GrappleTarget")
+		class AEnterExitTrigger* ExitTrigger = nullptr;
+
+	UFUNCTION(BlueprintCallable)
+		void VisualizeTriggers();
+
 	UFUNCTION()
-	void OnTriggerEnter(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+		void OnEnterTrigger();
+	UFUNCTION()
+		void OnExitTrigger();
+		
 };

@@ -37,8 +37,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Spline")
 		class UGrappleSphereComponent* GrappleSphereComponent = nullptr;
 	UPROPERTY(EditAnywhere, Category = "Spline")
-		class UBoxComponent* TriggerBox = nullptr;
-	UPROPERTY(EditAnywhere, Category = "Spline")
 		class USplineComponent* Spline = nullptr;
 	
 private:
@@ -140,8 +138,20 @@ private:
 	//grapple events
 	UFUNCTION()
 		void OnGrappleReaced(float Addspeed);
+	
+	//enter exit
+	UPROPERTY(EditAnywhere, Category = "Spline|EnterExit")
+		class AEnterExitTrigger* EnterTrigger = nullptr;
+	UPROPERTY(EditAnywhere, Category = "Spline|EnterExit")
+		class AEnterExitTrigger* ExitTrigger = nullptr;
+	//new system
+
 	UFUNCTION()
-		void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+		void StartWorm();
+	UFUNCTION()
+		void ResetWorm();
+	UFUNCTION(BlueprintCallable)
+		void VisualizeTriggers();
 };
 
 
