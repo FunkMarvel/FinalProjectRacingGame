@@ -9,6 +9,7 @@
 
 //DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHitGround, float, Speed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSpacePressedEvent);
+
 UCLASS(config=Game, BlueprintType, Blueprintable)
 class RACINGUNREALPROJECT_API ACarPawn : public APawn
 {
@@ -18,6 +19,9 @@ public:
 	// Sets default values for this pawn's properties
 	ACarPawn();
 
+	UFUNCTION()
+		void ResetCarToLastCheckpoint();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -26,7 +30,7 @@ protected:
 	void TiltCarMesh(FVector AsymVector);
 	void HandleAsymFriction(const FVector& AsymVector);
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -35,95 +39,94 @@ public:
 	// my deseg
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Car", BlueprintReadWrite)
-		class USphereComponent* SphereComp{ nullptr };
+	class USphereComponent* SphereComp{nullptr};
 	UPROPERTY(EditDefaultsOnly, Category = "Car")
-		class UStaticMeshComponent* CarMesh{ nullptr };
+	class UStaticMeshComponent* CarMesh{nullptr};
 	UPROPERTY(EditDefaultsOnly, Category = "Car")
-		class USpringArmComponent* CameraBoom{ nullptr };
+	class USpringArmComponent* CameraBoom{nullptr};
 	UPROPERTY(EditDefaultsOnly, Category = "Car")
-		class UCameraComponent* MainCamera{ nullptr };
+	class UCameraComponent* MainCamera{nullptr};
 	UPROPERTY(EditDefaultsOnly, Category = "Car")
-		class UArrowComponent* SecondCameraTransfrom = nullptr;
+	class UArrowComponent* SecondCameraTransfrom = nullptr;
 	UPROPERTY(EditDefaultsOnly, Category = "Car")
-		class UArrowComponent* ArrowRayCastStart{ nullptr };
+	class UArrowComponent* ArrowRayCastStart{nullptr};
 	UPROPERTY(EditDefaultsOnly, Category = "Car")
 	class USphereComponent* GrappleHookSphereComponent = nullptr;
 	UPROPERTY(EditDefaultsOnly, Category = "Car")
-		class UStaticMeshComponent* GrappleHookMesh = nullptr;
+	class UStaticMeshComponent* GrappleHookMesh = nullptr;
 	UPROPERTY(EditDefaultsOnly, Category = "Car")
-		class UStaticMeshComponent* GrappleSensor = nullptr;
+	class UStaticMeshComponent* GrappleSensor = nullptr;
 	UPROPERTY(EditDefaultsOnly, Category = "Car")
-		class UPhysicsGrapplingComponent* PhysicsGrappleComponent = nullptr;
+	class UPhysicsGrapplingComponent* PhysicsGrappleComponent = nullptr;
 	UPROPERTY(EditDefaultsOnly, Category = "Car")
-		class UCameraEffecttComponent* CameraEffectComponent = nullptr;
+	class UCameraEffecttComponent* CameraEffectComponent = nullptr;
 	UPROPERTY(EditDefaultsOnly, Category = "Car")
-		class UNeckComponent* NeckComponent = nullptr;
+	class UNeckComponent* NeckComponent = nullptr;
 
 	//Grapple widget comp
 	UPROPERTY(EditDefaultsOnly, Category = "Car|Widget")
-		class UGrappableWidgetComponent* GrappableWidgetComponent = nullptr;
-	
+	class UGrappableWidgetComponent* GrappableWidgetComponent = nullptr;
+
 	// spline neck
 	UPROPERTY(EditDefaultsOnly, Category = "Car|Neck")
-		class USplineComponent* NeckSpline = nullptr;
-	
+	class USplineComponent* NeckSpline = nullptr;
+
 	//spline gravity
 	UPROPERTY(EditAnywhere, Category = "Car|spline")
-		class AGravitySplineActor* GravitySplineActive = nullptr;
+	class AGravitySplineActor* GravitySplineActive = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car|Hover")
-		float HoverHeight{100.f};
+	float HoverHeight{100.f};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car|Hover")
-		float HoverCutOffHeight{1.5f*HoverHeight};
+	float HoverCutOffHeight{1.5f * HoverHeight};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car|Hover")
-		float HoverDampingFactor{4};
+	float HoverDampingFactor{4};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car|Hover")
-		float HoverForceReduction{20};
+	float HoverForceReduction{20};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Car|Hover")
-		float GravityForce{2720};
-	
-	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Hover")
-		float GravityMod = 1.f;
-	
-	const float BaseGravMod = 1.f;
-	
-	UFUNCTION()
-	void OnHitt(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-	FVector LocalUpVector = FVector(1.f,1.f,1.f);
-	UFUNCTION()
-	void OnBeginOverLap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, 
-		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION()
-		void OnEndOverLap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, 
-			int32 OtherBodyIndex);
+	float GravityForce{2720};
 
-	
+	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Hover")
+	float GravityMod = 1.f;
+
+	const float BaseGravMod = 1.f;
+
+	UFUNCTION()
+	void OnHitt(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse,
+	            const FHitResult& Hit);
+	FVector LocalUpVector = FVector(1.f, 1.f, 1.f);
+	UFUNCTION()
+	void OnBeginOverLap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	                    int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void OnEndOverLap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	                  int32 OtherBodyIndex);
+
 
 private:
-
 	//movement
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Movment")
-		float AccelerationForce = 1200.f;
+	float AccelerationForce = 1200.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Movment")
-		float DeaccelerationForce = 900.f;
+	float DeaccelerationForce = 900.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Movment")
-		float DragForce = 700;
+	float DragForce = 700;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Movment")
-		float MaxSpeed = 6900.f;
+	float MaxSpeed = 6900.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Movment")
-		float TurnSpeed = 75.f;
+	float TurnSpeed = 75.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Movment")
-		float MaxGroundAngle = 75.f;
+	float MaxGroundAngle = 75.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Movment")
-		float MaxCar_SplineAngle = 85.f;
+	float MaxCar_SplineAngle = 85.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Movment")
-		float MaxCar_SplineAngleCorrectionSpeed = 100.f;
+	float MaxCar_SplineAngleCorrectionSpeed = 100.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Movment")
-		float AsymForce = 300000.f;
+	float AsymForce = 300000.f;
 
 	//Camera
 private:
@@ -133,9 +136,10 @@ private:
 	float StartCameraBoomLength = 0.f; //gets set at begin play
 	UPROPERTY()
 	float TargetCameraBoomLength = 0.f;
-	UPROPERTY() 
+	UPROPERTY()
 	FVector2D OnStartCameraLag = FVector2D::ZeroVector;
-	UPROPERTY(meta = (AllowPrivateAccess = "true", ToolTip = "X is CameraLag,  Y is CameraRotationLag"), EditDefaultsOnly, Category = "Car|Camera")
+	UPROPERTY(meta = (AllowPrivateAccess = "true", ToolTip = "X is CameraLag,  Y is CameraRotationLag"),
+		EditDefaultsOnly, Category = "Car|Camera")
 	FVector2D GrapplingCameraLag = FVector2D::ZeroVector;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Car|Camera")
 	float MaxYawLookAngle = 90.f;
@@ -144,20 +148,21 @@ private:
 public:
 	//camera boom
 	UFUNCTION()
-		float GetStartCameraBoomLength() const {return StartCameraBoomLength; }
+	float GetStartCameraBoomLength() const { return StartCameraBoomLength; }
+
 	UFUNCTION()
-		void SetTargetCameraBoomLength(float NewCameraBoomLength){TargetCameraBoomLength = NewCameraBoomLength; }
+	void SetTargetCameraBoomLength(float NewCameraBoomLength) { TargetCameraBoomLength = NewCameraBoomLength; }
+
 	UFUNCTION()
-		void UpdateCameraBoomLength();
-	
-	
+	void UpdateCameraBoomLength();
+
+
 	//Deathzone
 private:
 	UPROPERTY()
-		FVector StartPlayerLocation = FVector::ZeroVector;
+	FVector StartPlayerLocation = FVector::ZeroVector;
 
-	
-	
+
 	//state machince
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Car|State")
 	EVehicleState CurrentVehicleState = EVehicleState::AirBorne;
@@ -165,30 +170,30 @@ private:
 	bool bEnterState = false;
 	UFUNCTION()
 	void EnterState(EVehicleState NewState);
-	
-	
+
+
 	UFUNCTION()
 	void StateDriving();
-	
+
 	UFUNCTION()
 	void StateGrappling();
 	UPROPERTY(EditAnywhere, Category = "Car|State")
 	float FinishGrappleDistance = 100.f;
-	
+
 	UFUNCTION()
 	void StateAirBorne();
-	
+
 	UFUNCTION()
 	void StateDashing();
-	
+
 	UFUNCTION()
 	void ToggleGrappleHook();
-	
+
 	//TODO orgenize these :)
 
-	
+
 	//other funcs
-	
+
 	FVector CalcAsymVector();
 	float CaltAsymForce();
 
@@ -197,7 +202,7 @@ private:
 	void MoveYAxis(float Value);
 	void LookXAxis(float Value);
 	void LookYAxis(float Value);
-	
+
 	UFUNCTION(BlueprintCallable)
 	bool IsGrounded();
 	float DistanceToGround();
@@ -205,55 +210,53 @@ private:
 	FHitResult ShootRayFromCenterOfScreen();
 	void SetUpVectorAsSplineUpAxis();
 	bool IsMovingForward();
-	
+
 	float GetSplineCarForwardAngle();
 	void HandleMaxTurnWithSpline();
 	void ApplyDrag();
 	UFUNCTION()
 	bool IsOutOfBounds();
-	
 
-// #if WITH_EDITORONLY_DATA
+
+	// #if WITH_EDITORONLY_DATA
 	//TODO debug remove!
 	UFUNCTION()
 	void SetGameSpeedUp();
 	UFUNCTION()
 	void SetGameSpeedDown();
 	// TODO debug remove end
-// #endif
+	// #endif
 
 	//events
-// public:
-// 	FSpacePressedEvent SpacePressedEvent;
-// 	UFUNCTION()
-// 	void OnSpacePressed(){
-// 		UE_LOG(LogTemp, Warning, TEXT("SKIP!!!"))
-// 		SpacePressedEvent.Broadcast();
-// 	}
-	
-	
-	
+	// public:
+	// 	FSpacePressedEvent SpacePressedEvent;
+	// 	UFUNCTION()
+	// 	void OnSpacePressed(){
+	// 		UE_LOG(LogTemp, Warning, TEXT("SKIP!!!"))
+	// 		SpacePressedEvent.Broadcast();
+	// 	}
+
+
 public:
 	static float SignedAngleAxis(FVector v1, FVector v2, FVector axis);
 	static float UnsignedAngle(FVector v1, FVector v2);
-	
-	
+
+
 	bool IsUnderMaxSpeed(bool bBuffer);
 
 	UFUNCTION()
-		FVector GetUpVectorFromUnderCar(); 
-	
+	FVector GetUpVectorFromUnderCar();
+
 	//debug
 public:
 	UPROPERTY(EditAnywhere, Category = "Car|Debug")
 	bool bDebugCarState = false;
-	
+
 	//bp events
 	UFUNCTION(BlueprintImplementableEvent)
-		void MaxTurnBpEvent(bool bRightSide);
+	void MaxTurnBpEvent(bool bRightSide);
 	UFUNCTION(BlueprintImplementableEvent)
-		void NotMaxTurnBpEvent();
+	void NotMaxTurnBpEvent();
 	UFUNCTION(BlueprintImplementableEvent)
-		void HitGroundBpEvent(float Speed);
-
+	void HitGroundBpEvent(float Speed);
 };
