@@ -7,6 +7,7 @@
 #include "../GravitySplineActor.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "RacingUnrealProject/DebugLog.h"
 
 ASpikyBallEnemyActor::ASpikyBallEnemyActor() : ABaseEnemyActor()
 {
@@ -36,8 +37,9 @@ void ASpikyBallEnemyActor::BeginPlay()
 void ASpikyBallEnemyActor::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	if (CurrentState == EBallState::Spiked && GetToPlayerVector(false).Size() > TargetDistance) { Destroy(); }
+	if (CurrentState == EBallState::Spiked && GetToPlayerVector(false).Size() > 0.5*TargetDistance) { Destroy(); }
 	else if (GetToPlayerVector(false).Size() > TargetDistance) { return; }
+	if (GravitySplineActive) LocalUpVector = GravitySplineActive->GetFixedUpVectorFromLocation(GetActorLocation());
 	
 	switch (CurrentState)
 	{
@@ -51,6 +53,7 @@ void ASpikyBallEnemyActor::Tick(float DeltaSeconds)
 		SpikedState();
 		break;
 	case EBallState::Idle:
+		DL_NORMAL(TEXT("Idle"));
 		break;
 	}
 }
@@ -95,7 +98,7 @@ void ASpikyBallEnemyActor::AirborneState()
 	if (bEnteringState) bEnteringState = false;
 	if (IsGrounded()) ChangeState(EBallState::OnGround);
 	ApplyGravity();
-	// UE_LOG(LogTemp, Warning, TEXT("Airborne"));
+	DL_NORMAL(TEXT("Airborne"));
 }
 
 void ASpikyBallEnemyActor::GroundedState()
@@ -113,7 +116,7 @@ void ASpikyBallEnemyActor::GroundedState()
 	}
 	LookAtPlayer();
 	ApplyGravity();
-	// UE_LOG(LogTemp, Warning, TEXT("Grounded"));
+	DL_NORMAL(TEXT("Grounded"));
 }
 
 void ASpikyBallEnemyActor::SpikedState()
@@ -125,6 +128,7 @@ void ASpikyBallEnemyActor::SpikedState()
 	Move();
 	ApplyGravity();
 	// UE_LOG(LogTemp, Warning, TEXT("Spiked"));
+	DL_NORMAL(TEXT("Spiked"));
 }
 
 void ASpikyBallEnemyActor::LookAtPlayer()

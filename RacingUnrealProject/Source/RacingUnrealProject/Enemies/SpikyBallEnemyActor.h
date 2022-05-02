@@ -20,7 +20,7 @@ public:
 	virtual void BeginPlay() override;
 	void Tick(float DeltaSeconds) override;
 
-	FVector LocalUpVector{};
+	// FVector LocalUpVector{};
 
 	void OnBeginOverLap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
@@ -65,7 +65,7 @@ protected:
 		float MaxSpeed{2000.f};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement|Rolling")
-		float TargetDistance{10000.f};
+		float TargetDistance{12000.f};
 };
 
 inline void ASpikyBallEnemyActor::TriggerSpikes()
