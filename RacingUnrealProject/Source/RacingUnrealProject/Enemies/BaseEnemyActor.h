@@ -53,7 +53,7 @@ protected:
 	int32 EnemyArrayIndex;
 
 	UPROPERTY(EditAnywhere, Category="Score")
-	int32 ScoreValue{1};
+		int32 ScoreValue{1};
 
 	ARacingUnrealProjectGameModeBase* GameModeBase{nullptr};
 

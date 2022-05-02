@@ -3,10 +3,12 @@
 
 #include "GrappleTarget.h"
 
+#include "DrawDebugHelpers.h"
 #include "RacingUnrealProject/GrappleSphereComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h" 
+#include "RacingUnrealProject/EnterExitTrigger.h"
 
 // Sets default values
 AGrappleTarget::AGrappleTarget()
@@ -26,9 +28,7 @@ AGrappleTarget::AGrappleTarget()
 	GrappleSphereComponent->SetupAttachment(MainMesh, FName("Grapple"));
 	GrappleSphereComponent->SetIsEnabled(false);
 
-	Trigger = CreateDefaultSubobject<UBoxComponent>(TEXT("Trigger Box Component"));
-	Trigger->SetupAttachment(GetRootComponent());
-	Trigger->SetBoxExtent(FVector(200.f));
+	
 	
 	
 }
@@ -40,7 +40,15 @@ void AGrappleTarget::BeginPlay()
 	
 	GrappleSphereComponent->OnReachedEvent.AddDynamic(this, &AGrappleTarget::OnReachedTarget);
 	GrappleSphereComponent->OnGrappleHitEvent.AddDynamic(this, &AGrappleTarget::OnGrappleTarget);
-	Trigger->OnComponentBeginOverlap.AddDynamic(this, &AGrappleTarget::OnTriggerEnter);
+
+	//enter exit
+	if (EnterTrigger) {
+		EnterTrigger->EventTriggerEnterExit.AddDynamic(this, &AGrappleTarget::OnEnterTrigger);
+	}
+
+	if (ExitTrigger) {
+		ExitTrigger->EventTriggerEnterExit.AddDynamic(this, &AGrappleTarget::OnExitTrigger);
+	}
 	
 }
 
@@ -54,27 +62,42 @@ void AGrappleTarget::Tick(float DeltaTime)
 
 }
 
-void AGrappleTarget::SetVisbility(bool bVisible)
-{
-	//Widget->SetVisibility(bVisible);
-}
+
 
 void AGrappleTarget::OnReachedTarget(float AddSpeedAmount)
 {
 	//Destroy();
-	UE_LOG(LogTemp, Warning, TEXT("Reached Grapple Target"))
+	
 }
 
 void AGrappleTarget::OnGrappleTarget(FTransform SphereCompTransfrom)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Grapple Grapple target"))
+	
 }
 
-void AGrappleTarget::OnTriggerEnter(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
+void AGrappleTarget::VisualizeTriggers() {
+	if (EnterTrigger == nullptr || ExitTrigger == nullptr) {
+		return;
+	}
+	//enter spline
+	FVector StartLoc = GetActorLocation();
+	FVector EnterTriggerLoc = EnterTrigger->GetActorLocation();
+	FVector ExitTriggerLoc = ExitTrigger->GetActorLocation();
+
+	//drawing rays
+	DrawDebugLine(GetWorld(), StartLoc, EnterTriggerLoc, FColor::Green, false, 1.f, 0,100.f);
+	DrawDebugLine(GetWorld(), StartLoc, ExitTriggerLoc, FColor::Red, false, 1.f, 0,100.f);
+}
+
+void AGrappleTarget::OnEnterTrigger() {
+	MainMesh->SetVisibility(true, false);
 	MainMesh->Play(false);
 	GrappleSphereComponent->SetIsEnabled(true);
-	UE_LOG(LogTemp, Warning, TEXT("(GrappleTarget)Activated GrappleTarget"))
+}
+
+void AGrappleTarget::OnExitTrigger() {
+	MainMesh->SetVisibility(false, false);
+	GrappleSphereComponent->SetIsEnabled(false);
+	
 }
 

@@ -6,6 +6,7 @@
 #include "ScoreAttackWidgets/ScoreCounterWidget.h"
 #include "PauseMenuWidget.h"
 #include "Components/Button.h"
+#include "RacingUnrealProject/CarPawn.h"
 #include "ScoreAttackWidgets/ScoreAttackEndMenuWidget.h"
 
 void AScoreAttackHUD::BeginPlay()
@@ -35,6 +36,12 @@ void AScoreAttackHUD::BeginPlay()
 		PauseMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
 		PauseMenuWidget->ResumeButton->OnClicked.AddDynamic(this, &AScoreAttackHUD::OnResume);
 		PauseMenuWidget->ReturnToMenuButton->OnClicked.AddDynamic(ScoreAttackEndMenuWidget, &UScoreAttackEndMenuWidget::OnBackToMenu);
+		ACarPawn* PlayerPawn = Cast<ACarPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
+		if (PlayerPawn)
+		{
+			PauseMenuWidget->ResetToCheckpoint->OnClicked.AddDynamic(PlayerPawn, &ACarPawn::ResetCarToLastCheckpoint);
+			PauseMenuWidget->ResetToCheckpoint->OnClicked.AddDynamic(this, &AScoreAttackHUD::OnResume);
+		}
 	}
 }
 

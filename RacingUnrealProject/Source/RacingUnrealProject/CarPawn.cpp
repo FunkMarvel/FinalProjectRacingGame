@@ -94,6 +94,25 @@ ACarPawn::ACarPawn()
 	
 }
 
+void ACarPawn::ResetCarToLastCheckpoint()
+{
+	ARacingUnrealProjectGameModeBase* GameMode = Cast<ARacingUnrealProjectGameModeBase>(GetWorld()->GetAuthGameMode());
+	if (GameMode && GameMode->GetLastCheckpoint())
+	{
+		ACheckpoint* CP = GameMode->GetLastCheckpoint();
+		SetActorLocation(CP->GetSpawnArrow()->GetComponentLocation());
+		SetActorRotation(CP->GetSpawnArrow()->GetComponentRotation());
+			
+		if (CP->GetCheckpointGravitySpline())
+			GravitySplineActive = CP->GetCheckpointGravitySpline();
+		else
+			DL_NORMAL( "gravity spline is selected" + CP->GetName());
+			
+		EnterState(EVehicleState::AirBorne);
+		SphereComp->SetPhysicsLinearVelocity(FVector::ZeroVector);
+	}
+}
+
 // Called when the game starts or when spawned
 void ACarPawn::BeginPlay()
 {
@@ -177,7 +196,6 @@ void ACarPawn::TiltCarMesh(FVector AsymVector)
 	FVector CarMeshUpVector = LocalUpVector;
 	if (hit.IsValidBlockingHit()) {
 		CarMeshUpVector = hit.ImpactNormal;
-		DL_NORMAL("BINGUS BANGUS YOU HIT A CHANGUS")
 	}
 
 	//creates new rotaiton
@@ -407,21 +425,7 @@ void ACarPawn::StateAirBorne()
 
 	if (IsOutOfBounds())
 	{
-		ARacingUnrealProjectGameModeBase* GameMode = Cast<ARacingUnrealProjectGameModeBase>(GetWorld()->GetAuthGameMode());
-		if (GameMode && GameMode->GetLastCheckpoint())
-		{
-			ACheckpoint* CP = GameMode->GetLastCheckpoint();
-			SetActorLocation(CP->GetSpawnArrow()->GetComponentLocation());
-			SetActorRotation(CP->GetSpawnArrow()->GetComponentRotation());
-			
-			if (CP->GetCheckpointGravitySpline())
-				GravitySplineActive = CP->GetCheckpointGravitySpline();
-			else
-				DL_NORMAL( "gravity spline is selected" + CP->GetName());
-			
-			EnterState(EVehicleState::AirBorne);
-			SphereComp->SetPhysicsLinearVelocity(FVector::ZeroVector);
-		}
+		ResetCarToLastCheckpoint();
 		
 	}
 	//shoud we be in grapple state
