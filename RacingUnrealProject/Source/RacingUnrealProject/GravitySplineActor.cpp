@@ -199,8 +199,5 @@ FVector AGravitySplineActor::GetFixedUpVectorFromLocation(FVector OrgPos)
 	return newUpVector.GetSafeNormal();
 }
 
-FVector AGravitySplineActor::GetFixedUpVectorFromDistance(float Distance)
-{
-	return FVector::ZeroVector;
-}
+
 

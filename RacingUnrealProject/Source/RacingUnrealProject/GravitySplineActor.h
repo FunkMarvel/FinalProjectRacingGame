@@ -62,8 +62,7 @@ public:
 	// 	FVector GetAdjustedUpVectorFromLocation(FVector Loc);
 	UFUNCTION(BlueprintCallable)
 		virtual FVector GetFixedUpVectorFromLocation(FVector OrgPos);
-	UFUNCTION(BlueprintCallable)
-		virtual FVector GetFixedUpVectorFromDistance(float Distance);
+	
 
 	/*UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		EGravitySplineAxis EUpVectorAxis;*/
