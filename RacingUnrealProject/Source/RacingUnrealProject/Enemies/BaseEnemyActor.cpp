@@ -100,7 +100,7 @@ bool ABaseEnemyActor::IsGrounded()
 		GetWorld()->LineTraceSingleByObjectType(
 			Hit,
 			ArrowRayCastStart->GetComponentLocation(),
-			ArrowRayCastStart->GetComponentLocation() - GravitySplineActive->GetActorUpVector() *1.125* SphereComp->GetScaledSphereRadius(),
+			ArrowRayCastStart->GetComponentLocation() - GravitySplineActive->GetFixedUpVectorFromLocation(GetActorLocation()) *1.25* SphereComp->GetScaledSphereRadius(),
 			FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldStatic),
 			TraceParams
 		);

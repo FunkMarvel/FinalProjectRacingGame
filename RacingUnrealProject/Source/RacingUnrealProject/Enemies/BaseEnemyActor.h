@@ -62,7 +62,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SetEnemyArrayIndex(int32 Index) { EnemyArrayIndex = Index; }
-	void HandleDeath();
+	virtual void HandleDeath();
 
 	void SetTargetLocation(FVector Target) { TargetLocation = Target; }
 	FEnemyDeath EnemyDeath;
