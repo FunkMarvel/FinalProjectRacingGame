@@ -17,7 +17,10 @@ class RACINGUNREALPROJECT_API UPauseMenuWidget : public UUserWidget
 public:
 	UPROPERTY(meta=(BindWidget))
 	class UButton* ResumeButton{nullptr};
-	
+
 	UPROPERTY(meta=(BindWidget))
 	class UButton* ReturnToMenuButton{nullptr};
+
+	UPROPERTY(meta=(BindWidget))
+	class UButton* ResetToCheckpoint{nullptr};
 };
