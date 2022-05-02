@@ -3,21 +3,20 @@
 
 #include "SplineWormEnemy.h"
 
+#include "DrawDebugHelpers.h"
 #include "../GrappleSphereComponent.h"
-#include "Components/BoxComponent.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
-#include "Evaluation/IMovieSceneEvaluationHook.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "RacingUnrealProject/DebugLog.h"
+#include "RacingUnrealProject/EnterExitTrigger.h"
 
 // Sets default values
 ASplineWormEnemy::ASplineWormEnemy()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-
+	
 	Spline = CreateDefaultSubobject<USplineComponent>(TEXT("Spline"));
 	SetRootComponent(Spline);
 
@@ -33,13 +32,6 @@ ASplineWormEnemy::ASplineWormEnemy()
 	WormHeadMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WormHeadMesh"));
 	WormHeadMesh->SetupAttachment(GetRootComponent());
 	WormHeadMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	TriggerBox = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerBox"));
-	TriggerBox->SetupAttachment(GetRootComponent());
-	TriggerBox->SetBoxExtent(FVector(600.f, 150.f, 600.f));
-	TriggerBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	TriggerBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-	TriggerBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
 	
 	
 }
@@ -49,8 +41,16 @@ void ASplineWormEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	GrappleSphereComponent->OnReachedEvent.AddDynamic(this, &ASplineWormEnemy::OnGrappleReaced);
-	TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &ASplineWormEnemy::OnOverlap);
-	
+
+	if (EnterTrigger) {
+		EnterTrigger->EventTriggerEnterExit.AddDynamic(this, &ASplineWormEnemy::StartWorm);
+	}
+
+	if (ExitTrigger) {
+		ExitTrigger->EventTriggerEnterExit.AddDynamic(this, &ASplineWormEnemy::ResetWorm);
+	}
+
+	ResetWorm();
 	
 }
 
@@ -275,10 +275,53 @@ void ASplineWormEnemy::OnGrappleReaced(float Addspeed)
 	// Destroy();
 }
 
-void ASplineWormEnemy::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
+void ASplineWormEnemy::StartWorm() {
+	//TODO implement
 	bPlayingAnim = true;
+	WormTargetMesh->SetVisibility(true, false);
+	WormHeadMesh->SetVisibility(true, false);
+	DL_NORMAL("StartWOrm!")
+}
+
+void ASplineWormEnemy::ResetWorm() {
+	bPlayingAnim = false;
+	bIdle = false;
+	bHasInitSpline = false;
+
+	GrappleSphereComponent->SetIsEatable(false);
+	
+	CurrentMoveTime = 0.f;
+	CurrentWormDistance = 0.f;
+
+	WormTargetMesh->SetVisibility(false, false);
+	WormHeadMesh->SetVisibility(false, false);
+
+	//deletes all segments
+
+	for (int i = 0; i < SplineMeshComponents.Num(); ++i) {
+		SplineMeshComponents[i]->DestroyComponent();
+		// SplineMeshComponents.RemoveAt(i);
+	}
+	SplineMeshComponents.Empty();
+	
+	DL_NORMAL("ResetWorm!!")
+	
+
+}
+
+void ASplineWormEnemy::VisualizeTriggers() {
+	if (EnterTrigger == nullptr || ExitTrigger == nullptr) {
+		return;
+	}
+	//enter spline
+	FVector StartLoc = GetActorLocation();
+	FVector EnterTriggerLoc = EnterTrigger->GetActorLocation();
+	FVector ExitTriggerLoc = ExitTrigger->GetActorLocation();
+
+	//drawing rays
+	DrawDebugLine(GetWorld(), StartLoc, EnterTriggerLoc, FColor::Green, false, 1.f, 0,100.f);
+	DrawDebugLine(GetWorld(), StartLoc, ExitTriggerLoc, FColor::Red, false, 1.f, 0,100.f);
+	
 }
 
 
