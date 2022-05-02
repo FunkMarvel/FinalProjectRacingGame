@@ -68,6 +68,7 @@ void ADroneActor::Tick(float DeltaSeconds)
 		AttachmentTransformRules.ScaleRule = EAttachmentRule::KeepWorld;
 		FVector SpawnLocation{GetActorLocation() - SpawnOffset*GetActorUpVector()};
 		DroppedEnemyActor = GetWorld()->SpawnActor<ASpikyBallEnemyActor>(DroppableEnemyClass, SpawnLocation, GetActorRotation());
+		if (GravitySplineActive) DroppedEnemyActor->GravitySplineActive = GravitySplineActive;
 		DroppedEnemyActor->AttachToActor(this, AttachmentTransformRules);
 		DroppedEnemyActor->ChangeState(ASpikyBallEnemyActor::Idle);
 		bHasSpawned = true;
@@ -113,6 +114,7 @@ void ADroneActor::AttackingState()
 		DroppedEnemyActor->SphereComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		DroppedEnemyActor->RotateSphereComponentToLocalUpVector();
 		DroppedEnemyActor->ChangeState(ASpikyBallEnemyActor::Airborne);
+		DroppedEnemyActor->CurrentState = ASpikyBallEnemyActor::Airborne;
 		DroppedEnemyActor = nullptr;
 	}
 	else if (DropTimer < DropTime && bDropEnemy && bHasSpawned)
