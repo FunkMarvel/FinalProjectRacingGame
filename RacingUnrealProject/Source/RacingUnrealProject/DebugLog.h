@@ -55,4 +55,6 @@ public:
 	DebugLog();
 	~DebugLog();
 	
+	// static FHitResult DL_RayCast(FVector& Start, FVector& End);
+	
 };

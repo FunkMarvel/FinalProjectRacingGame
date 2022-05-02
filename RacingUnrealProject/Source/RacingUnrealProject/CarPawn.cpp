@@ -162,18 +162,38 @@ void ACarPawn::ApplyGravity()
 void ACarPawn::TiltCarMesh(FVector AsymVector)
 {
 	//orients the mesh
-	
+
+	//get the upvector from the ground
+	FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
+
+	FVector StartLoc = SphereComp->GetComponentLocation();
+	FVector EndLoc = StartLoc - LocalUpVector * HoverHeight * 20.f;
+	FHitResult hit{};
+	GetWorld()->LineTraceSingleByObjectType(hit, StartLoc, EndLoc,
+		FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldStatic),
+		TraceParams
+	);
+
+	FVector CarMeshUpVector = LocalUpVector;
+	if (hit.IsValidBlockingHit()) {
+		CarMeshUpVector = hit.ImpactNormal;
+		DL_NORMAL("BINGUS BANGUS YOU HIT A CHANGUS")
+	}
+
+	//creates new rotaiton
 	FRotator NewRot = UKismetMathLibrary::MakeRotFromZX(
-		LocalUpVector + AsymVector * GetWorld()->GetDeltaSeconds() * 0.003f,
+		CarMeshUpVector + AsymVector * GetWorld()->GetDeltaSeconds() * 0.003f,
 		GetActorForwardVector()
 		);
-	
+
+	//sets
 	CarMesh->SetWorldRotation(
 	FMath::RInterpTo(CarMesh->GetComponentRotation(),
         NewRot,
         UGameplayStatics::GetWorldDeltaSeconds(this),
-        5.f
+        5.5f
 	));
+	
 	//clamps the roll rotation
 	const float ClampValue = 45.f;
 	FRotator LocalRot = CarMesh->GetRelativeRotation();
@@ -182,7 +202,7 @@ void ACarPawn::TiltCarMesh(FVector AsymVector)
 	
 	CarMesh->SetRelativeRotation(LocalRot);
 	
-	
+	//handles BP events
 	if (abs(LocalRot.Roll) > 41.f)
 	{
 		if (LocalRot.Roll > 0.f)
