@@ -17,10 +17,13 @@ public:
 	
 
 	UPROPERTY(EditAnywhere, Category="Trigger|Start Volume")
-		class UBoxComponent* TriggerVolume;
+		class UBoxComponent* TriggerVolume{nullptr};
 
 	UPROPERTY(EditAnywhere, Category="Trigger|End Volume")
-		class UBoxComponent* ExitVolume;
+		class UBoxComponent* ExitVolume{nullptr};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
+		class AGravitySplineActor* GravitySpline{nullptr};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
 		class UArrowComponent* SpawnPoint{nullptr};

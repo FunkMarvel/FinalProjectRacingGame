@@ -49,6 +49,7 @@ void AEnemySpawner::OnTriggerOverlapBegin(UPrimitiveComponent* OverlappedCompone
 				EnemyClassToSpawn, SpawnLocation + Alternator*((i+2-NumberOfEnemiesToSpawn%2)/2)*SidewaysOffset,
 				SpawnOrientation
 				);
+			if (GravitySpline) EnemyActors[i]->GravitySplineActive = GravitySpline;
 			EnemyActors[i]->EnemyDeath.AddDynamic(this, &AEnemySpawner::OnEnemyDeath);
 			EnemyActors[i]->SetEnemyArrayIndex(i);
 			EnemyActors[i]->SetTargetLocation(TargetLocation->GetComponentLocation());
