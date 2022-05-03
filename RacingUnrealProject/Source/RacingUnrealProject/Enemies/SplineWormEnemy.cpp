@@ -4,16 +4,23 @@
 #include "SplineWormEnemy.h"
 
 #include "DrawDebugHelpers.h"
+#include "NiagaraComponentPool.h"
+#include "NiagaraComponentPool.h"
 #include "../GrappleSphereComponent.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "RacingUnrealProject/DebugLog.h"
 #include "RacingUnrealProject/EnterExitTrigger.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraSystem.h"
+#include "NiagaraComponent.h"
+#include "RacingUnrealProject/CarPawn.h"
 
 // Sets default values
 ASplineWormEnemy::ASplineWormEnemy()
 {
+	
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
@@ -21,6 +28,7 @@ ASplineWormEnemy::ASplineWormEnemy()
 	SetRootComponent(Spline);
 
 	SplineMeshComponents.Init(nullptr, 0);
+	NiagaraComponents.Init(nullptr, 0);
 	
 	GrappleSphereComponent = CreateDefaultSubobject<UGrappleSphereComponent>(TEXT("GrappleSphereComponent"));
 	GrappleSphereComponent->SetupAttachment(GetRootComponent());
@@ -40,6 +48,8 @@ ASplineWormEnemy::ASplineWormEnemy()
 void ASplineWormEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+
+	
 	GrappleSphereComponent->OnReachedEvent.AddDynamic(this, &ASplineWormEnemy::OnGrappleReaced);
 
 	if (EnterTrigger) {
@@ -58,6 +68,17 @@ void ASplineWormEnemy::BeginPlay()
 void ASplineWormEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// APawn* CarPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+	// FVector Location = UKismetMathLibrary::InverseTransformLocation(NiagaraComponent->GetComponentTransform(),
+	// 	CarPawn->GetActorLocation());
+	// NiagaraComponent->SetVectorParameter("endLocation", CarPawn->GetActorLocation());
+	// NiagaraComponent->SetVectorParameter("startLocation", CarPawn->GetActorLocation() + FVector::UpVector * 200.f);
+	// NiagaraComponent->SetVectorParameter("startTangent",  FVector::UpVector * 1.f+ FVector::LeftVector * 1.f);
+	// NiagaraComponent->SetVectorParameter("endTangent", FVector::UpVector * -1.f + FVector::LeftVector * -1.f);
+
+	
+	
 	if (bIdle) {
 		CurrentMoveTime += DeltaTime;
 		HandleIdleAnimation();
@@ -70,11 +91,16 @@ void ASplineWormEnemy::Tick(float DeltaTime)
 	if (!bHasInitSpline) {
 		bHasInitSpline = true;
 		InitSplineSegments();
+		InitNiagaraParticleComponents(SplineMeshComponents.Num());
 	}
-	
+
+	//meshes
 	UpdateSplineMeshComponent();
 	UpdateHeadTransfrom();
 	UpdateTargetTransfrom(HeadPlacement);
+
+	//particle systems
+	UpdateNiagaraParticleComponents();
 
 	//sets the current move time
 	CurrentMoveTime += DeltaTime;
@@ -126,6 +152,50 @@ void ASplineWormEnemy::UpdateSplineMeshComponent()
 		CurrentDistance += NeckSegmentLength;
 	}
 	
+}
+
+void ASplineWormEnemy::InitNiagaraParticleComponents(int numOfComps) {
+	for (int i = 0; i < numOfComps; ++i) {
+		UNiagaraComponent* NewNiagaraComponent = NewObject<UNiagaraComponent>(this);
+		if (NewNiagaraComponent) {
+			//essensial
+			NewNiagaraComponent->RegisterComponent();
+			NewNiagaraComponent->SetMobility(EComponentMobility::Movable);
+			NewNiagaraComponent->SetAsset(NiagaraSystem);
+
+			//adds to array
+			NiagaraComponents.Emplace(NewNiagaraComponent);
+		}
+	}
+	
+}
+
+void ASplineWormEnemy::UpdateNiagaraParticleComponents() {
+
+	FVector startLocation, endLocation, startTangent, endTangent = FVector::ZeroVector;
+	float _Distance = CurrentWormDistance;
+	for (int i = 0; i < NiagaraComponents.Num(); ++i) {
+
+		startLocation = Spline->GetLocationAtDistanceAlongSpline(_Distance, CoorSpace);
+		startTangent = Spline->GetDirectionAtDistanceAlongSpline(_Distance, CoorSpace);
+		
+		_Distance += NeckSegmentLength;
+
+		endLocation = Spline->GetLocationAtDistanceAlongSpline(_Distance, CoorSpace);
+		endTangent = Spline->GetDirectionAtDistanceAlongSpline(_Distance, CoorSpace);
+
+		//scaling tangens
+		float _Scale = 0.5f;
+		endTangent *= 0.f;
+		startTangent *= _Scale;
+
+		
+		//sets parameters
+		NiagaraComponents[i]->SetVectorParameter("startLocation", startLocation);
+		NiagaraComponents[i]->SetVectorParameter("endLocation", endLocation);
+		NiagaraComponents[i]->SetVectorParameter("startTangent",  startTangent);
+		NiagaraComponents[i]->SetVectorParameter("endTangent", endTangent);
+	}
 }
 
 void ASplineWormEnemy::HandleIdleAnimation()  {
@@ -297,30 +367,38 @@ void ASplineWormEnemy::ResetWorm() {
 	WormHeadMesh->SetVisibility(false, false);
 
 	//deletes all segments
-
 	for (int i = 0; i < SplineMeshComponents.Num(); ++i) {
 		SplineMeshComponents[i]->DestroyComponent();
 		// SplineMeshComponents.RemoveAt(i);
 	}
 	SplineMeshComponents.Empty();
 	
-	DL_NORMAL("ResetWorm!!")
+
+	//deletes all particle systems
+	for (int i = 0; i < NiagaraComponents.Num(); ++i) {
+		NiagaraComponents[i]->DestroyComponent();
+	}
+	NiagaraComponents.Empty();
 	
 
+	DL_NORMAL("ResetWorm!!")
 }
 
 void ASplineWormEnemy::VisualizeTriggers() {
-	if (EnterTrigger == nullptr || ExitTrigger == nullptr) {
-		return;
-	}
 	//enter spline
 	FVector StartLoc = GetActorLocation();
-	FVector EnterTriggerLoc = EnterTrigger->GetActorLocation();
-	FVector ExitTriggerLoc = ExitTrigger->GetActorLocation();
+	
+	if (EnterTrigger) {
+		FVector EnterTriggerLoc =  EnterTrigger->GetActorLocation();
+		DrawDebugLine(GetWorld(), StartLoc, EnterTriggerLoc, FColor::Green, false, 1.f, 0,100.f);
+	}
 
-	//drawing rays
-	DrawDebugLine(GetWorld(), StartLoc, EnterTriggerLoc, FColor::Green, false, 1.f, 0,100.f);
-	DrawDebugLine(GetWorld(), StartLoc, ExitTriggerLoc, FColor::Red, false, 1.f, 0,100.f);
+	
+	if (ExitTrigger) {
+		FVector ExitTriggerLoc = ExitTrigger->GetActorLocation();
+		DrawDebugLine(GetWorld(), StartLoc, ExitTriggerLoc, FColor::Red, false, 1.f, 0,100.f);
+	}
+	return;
 	
 }
 

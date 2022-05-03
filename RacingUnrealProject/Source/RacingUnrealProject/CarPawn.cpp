@@ -116,6 +116,7 @@ void ACarPawn::ResetCarToLastCheckpoint()
 // Called when the game starts or when spawned
 void ACarPawn::BeginPlay()
 {
+	
 	Super::BeginPlay();
 	
 	// Hit and phyus

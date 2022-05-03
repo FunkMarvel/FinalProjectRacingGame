@@ -76,17 +76,20 @@ void AGrappleTarget::OnGrappleTarget(FTransform SphereCompTransfrom)
 }
 
 void AGrappleTarget::VisualizeTriggers() {
-	if (EnterTrigger == nullptr || ExitTrigger == nullptr) {
-		return;
-	}
 	//enter spline
 	FVector StartLoc = GetActorLocation();
-	FVector EnterTriggerLoc = EnterTrigger->GetActorLocation();
-	FVector ExitTriggerLoc = ExitTrigger->GetActorLocation();
+	
+	if (EnterTrigger) {
+		FVector EnterTriggerLoc =  EnterTrigger->GetActorLocation();
+		DrawDebugLine(GetWorld(), StartLoc, EnterTriggerLoc, FColor::Green, false, 1.f, 0,100.f);
+	}
 
-	//drawing rays
-	DrawDebugLine(GetWorld(), StartLoc, EnterTriggerLoc, FColor::Green, false, 1.f, 0,100.f);
-	DrawDebugLine(GetWorld(), StartLoc, ExitTriggerLoc, FColor::Red, false, 1.f, 0,100.f);
+	
+	if (ExitTrigger) {
+		FVector ExitTriggerLoc = ExitTrigger->GetActorLocation();
+		DrawDebugLine(GetWorld(), StartLoc, ExitTriggerLoc, FColor::Red, false, 1.f, 0,100.f);
+	}
+	return;
 }
 
 void AGrappleTarget::OnEnterTrigger() {

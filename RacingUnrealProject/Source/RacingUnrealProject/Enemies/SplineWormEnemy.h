@@ -31,9 +31,9 @@ public:
 	// my deseg
 public:
 	UPROPERTY(EditAnywhere, Category = "Meshes")
-	class UStaticMeshComponent* WormTargetMesh = nullptr;
+	    class UStaticMeshComponent* WormTargetMesh = nullptr;
 	UPROPERTY(EditAnywhere, Category = "Meshes")
-	class UStaticMeshComponent* WormHeadMesh = nullptr;
+	    class UStaticMeshComponent* WormHeadMesh = nullptr;
 	UPROPERTY(EditAnywhere, Category = "Spline")
 		class UGrappleSphereComponent* GrappleSphereComponent = nullptr;
 	UPROPERTY(EditAnywhere, Category = "Spline")
@@ -54,12 +54,29 @@ private:
 	//not editor visible
 	UPROPERTY()
 		TArray<class USplineMeshComponent*> SplineMeshComponents;
+	UPROPERTY()
+		TArray<class UNiagaraComponent*> NiagaraComponents;
 	
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = "Spline|Particle")
+		class UNiagaraSystem* NiagaraSystem = nullptr;
 
-
-	//funcs
+	
+	//spline mesh
+private:
+	UFUNCTION()
+		void InitSplineSegments();
 	UFUNCTION()
 		void UpdateSplineMeshComponent();
+		
+		
+	//Particle systems
+	UFUNCTION()
+		void InitNiagaraParticleComponents(int numOfComps);
+	UFUNCTION()
+		void UpdateNiagaraParticleComponents();
+private:
+	
+	
 	
 	UFUNCTION()
 		void HandleIdleAnimation();
@@ -74,8 +91,6 @@ private:
 	UFUNCTION()
 	    void UpdateHeadTransfrom();
 	
-	UFUNCTION()
-		void InitSplineSegments();
 	UFUNCTION()
 		float GetWormRealLength() const;
 public:
