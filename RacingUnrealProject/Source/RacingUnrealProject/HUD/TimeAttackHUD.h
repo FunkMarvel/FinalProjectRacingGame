@@ -43,6 +43,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets|Minimap")
 		TSubclassOf<class UUserWidget> MinimapClass;
+		
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets|In Game HUD")
+		TSubclassOf<class UUserWidget> SpeedIndicatorClass; 
 
 protected:
 	UPROPERTY()
@@ -59,4 +62,7 @@ protected:
 
 	UPROPERTY()
 		class UMinimapWidget* MinimapWidget{nullptr};
+		
+	UPROPERTY() 
+		class USpeedIndicatorWidget* SpeedIndicatorWidget{nullptr};
 };

@@ -11,6 +11,7 @@ struct FPlayerData
 {
 	GENERATED_BODY()
 
+	
 	// FString PlayerName{};
 	float PlayerTime{};
 	int32 PlayerScore{};
@@ -63,5 +64,11 @@ public:
 
 protected:
 	TArray<FPlayerData> PlayerArray;
+
+
+	//this should stop pure virutal function form being called (Thanks Bjørn Joachim Olsen!!!)
+	virtual void Init() override;
+	virtual void Shutdown() override;
+	virtual void StartGameInstance() override;
 	
 };

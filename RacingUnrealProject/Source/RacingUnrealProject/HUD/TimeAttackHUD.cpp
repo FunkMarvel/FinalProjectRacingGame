@@ -8,6 +8,7 @@
 #include "Components/Button.h"
 #include "RacingUnrealProject/CarPawn.h"
 #include "RacingUnrealProject/GameModes/TimeAttackGameModeBase.h"
+#include "RacingUnrealProject/Widget/SpeedIndicatorWidget.h"
 #include "TimeAttackWidgets/MinimapWidget.h"
 #include "TimeAttackWidgets/RaceTimerWidget.h"
 #include "TimeAttackWidgets/TimeAttackEndMenuWidget.h"
@@ -57,6 +58,16 @@ void ATimeAttackHUD::BeginPlay()
 		MinimapWidget->SetVisibility(ESlateVisibility::Visible);
 		MinimapWidget->CarPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
 		MinimapWidget->PlayerStartLocation = MinimapWidget->CarPawn->GetActorLocation();
+	}
+
+	if (SpeedIndicatorClass) {
+		SpeedIndicatorWidget = CreateWidget<USpeedIndicatorWidget>(GetWorld(), SpeedIndicatorClass);
+		SpeedIndicatorWidget->AddToViewport();
+		SpeedIndicatorWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
+		if (GetWorld()->GetFirstPlayerController()->GetPawn()->IsA(ACarPawn::StaticClass())) {
+			SpeedIndicatorWidget->CarPawn = Cast<ACarPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
+			
+		}
 	}
 }
 

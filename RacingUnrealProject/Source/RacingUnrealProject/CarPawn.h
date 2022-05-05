@@ -128,6 +128,12 @@ private:
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Movment")
 	float AsymForce = 300000.f;
 
+	//gettes for movment
+public:
+	UFUNCTION()
+		float GetMaxSpeed() const {return MaxSpeed; }
+
+	
 	//Camera
 private:
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Camera")

@@ -43,3 +43,15 @@ FPlayerData* URacingGameInstance::GetBestScorePlayer()
 	return nullptr;
 }
 
+void URacingGameInstance::Init() {
+	Super::Init();
+}
+
+void URacingGameInstance::Shutdown() {
+	Super::Shutdown();
+}
+
+void URacingGameInstance::StartGameInstance() {
+	Super::StartGameInstance();
+}
+

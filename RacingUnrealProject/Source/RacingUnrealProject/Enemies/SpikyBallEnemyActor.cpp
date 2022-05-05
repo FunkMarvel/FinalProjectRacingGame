@@ -53,7 +53,7 @@ void ASpikyBallEnemyActor::Tick(float DeltaSeconds)
 		SpikedState();
 		break;
 	case EBallState::Idle:
-		DL_NORMAL(TEXT("Idle"));
+		// DL_NORMAL(TEXT("Idle"));
 		break;
 	}
 }
@@ -98,7 +98,7 @@ void ASpikyBallEnemyActor::AirborneState()
 	if (bEnteringState) bEnteringState = false;
 	if (IsGrounded()) ChangeState(EBallState::OnGround);
 	ApplyGravity();
-	DL_NORMAL(TEXT("Airborne"));
+	// DL_NORMAL(TEXT("Airborne"));
 }
 
 void ASpikyBallEnemyActor::GroundedState()
@@ -116,7 +116,7 @@ void ASpikyBallEnemyActor::GroundedState()
 	}
 	LookAtPlayer();
 	ApplyGravity();
-	DL_NORMAL(TEXT("Grounded"));
+	// DL_NORMAL(TEXT("Grounded"));
 }
 
 void ASpikyBallEnemyActor::SpikedState()
@@ -128,7 +128,7 @@ void ASpikyBallEnemyActor::SpikedState()
 	Move();
 	ApplyGravity();
 	// UE_LOG(LogTemp, Warning, TEXT("Spiked"));
-	DL_NORMAL(TEXT("Spiked"));
+	// DL_NORMAL(TEXT("Spiked"));
 }
 
 void ASpikyBallEnemyActor::LookAtPlayer()

@@ -13,7 +13,8 @@ UCLASS()
 class RACINGUNREALPROJECT_API UPauseMenuWidget : public UUserWidget
 {
 	GENERATED_BODY()
-
+	// UPauseMenuWidget(){ }
+	
 public:
 	UPROPERTY(meta=(BindWidget))
 	class UButton* ResumeButton{nullptr};
@@ -24,3 +25,5 @@ public:
 	UPROPERTY(meta=(BindWidget))
 	class UButton* ResetToCheckpoint{nullptr};
 };
+
+

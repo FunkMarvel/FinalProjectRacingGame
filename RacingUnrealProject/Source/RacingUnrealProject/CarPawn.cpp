@@ -816,7 +816,15 @@ FVector ACarPawn::GetUpVectorFromUnderCar()
 void ACarPawn::OnHitt(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	HitGroundBpEvent(SphereComp->GetPhysicsLinearVelocity().Size());
-	
+
+	//shoudl we die?
+	FVector Vel = SphereComp->GetPhysicsLinearVelocity();
+	if (Vel.Size() > MaxSpeed) {
+		if (abs(FVector::DotProduct(Vel.GetSafeNormal(), NormalImpulse.GetSafeNormal())) < 0.4f) {
+			ResetCarToLastCheckpoint();
+		}
+		DL_NORMAL(FString::SanitizeFloat(abs(FVector::DotProduct(Vel.GetSafeNormal(), NormalImpulse.GetSafeNormal()))))
+	}
 }
 
 void ACarPawn::OnBeginOverLap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
