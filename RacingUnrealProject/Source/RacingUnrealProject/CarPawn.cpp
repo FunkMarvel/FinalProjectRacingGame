@@ -595,6 +595,13 @@ float ACarPawn::SignedAngleAxis(FVector v1, FVector v2, FVector axis)
 	
 }
 
+
+/**
+ * @brief Vectors are normalized
+ * @param v1 
+ * @param v2 
+ * @return angles in degs
+ */
 float ACarPawn::UnsignedAngle(FVector v1, FVector v2)
 {
 	v1.Normalize();
@@ -817,13 +824,15 @@ void ACarPawn::OnHitt(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimiti
 {
 	HitGroundBpEvent(SphereComp->GetPhysicsLinearVelocity().Size());
 
-	//shoudl we die?
-	FVector Vel = SphereComp->GetPhysicsLinearVelocity();
-	if (Vel.Size() > MaxSpeed) {
-		if (abs(FVector::DotProduct(Vel.GetSafeNormal(), NormalImpulse.GetSafeNormal())) < 0.4f) {
-			ResetCarToLastCheckpoint();
-		}
-		DL_NORMAL(FString::SanitizeFloat(abs(FVector::DotProduct(Vel.GetSafeNormal(), NormalImpulse.GetSafeNormal()))))
+	//is the normal impule great enoguh, and is the impule not coming mainly from below the car
+	if (NormalImpulse.Size() > 400000.f && UnsignedAngle(NormalImpulse, LocalUpVector) > 70.f) {
+		ResetCarToLastCheckpoint();
+		return;
+	}
+
+
+	if (OtherActor->ActorHasTag("lethal")) {
+		ResetCarToLastCheckpoint();
 	}
 }
 
