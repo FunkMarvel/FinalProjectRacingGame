@@ -830,8 +830,8 @@ void ACarPawn::OnHitt(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimiti
 		return;
 	}
 
-
-	if (OtherActor->ActorHasTag("lethal")) {
+	
+	if (OtherActor != nullptr && OtherActor->ActorHasTag("lethal")) {
 		ResetCarToLastCheckpoint();
 	}
 }
