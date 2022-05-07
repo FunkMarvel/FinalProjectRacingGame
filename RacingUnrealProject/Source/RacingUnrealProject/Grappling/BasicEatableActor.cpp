@@ -3,7 +3,10 @@
 
 #include "BasicEatableActor.h"
 
+#include "DrawDebugHelpers.h"
 #include "../GrappleSphereComponent.h"
+#include "Components/BoxComponent.h"
+#include "RacingUnrealProject/EnterExitTrigger.h"
 
 // Sets default values
 ABasicEatableActor::ABasicEatableActor()
@@ -27,8 +30,12 @@ ABasicEatableActor::ABasicEatableActor()
 void ABasicEatableActor::BeginPlay()
 {
 	Super::BeginPlay();
-
+	StartLocation = GetActorLocation();
 	GrappleSphereComponent->OnReachedEvent.AddDynamic(this, &ABasicEatableActor::OnReached);
+
+	if (RespawnTrigger) {
+		RespawnTrigger->EventTriggerEnterExit.AddDynamic(this, &ABasicEatableActor::Respawn);
+	}
 }
 
 // Called every frame
@@ -38,8 +45,29 @@ void ABasicEatableActor::Tick(float DeltaTime)
 
 }
 
+void ABasicEatableActor::VisualizeTrigger() {
+	if (RespawnTrigger == nullptr)
+		return;
+
+	//enter spline
+	const FVector StartLoc = GetActorLocation();
+	const FVector EnterTriggerLoc =  RespawnTrigger->GetActorLocation();
+	DrawDebugLine(GetWorld(), StartLoc, EnterTriggerLoc, FColor::Green, false, 1.f, 0,100.f);
+	
+}
+
 void ABasicEatableActor::OnReached(float AddSpeedAmount)
 {
-	Destroy();
+	MainMesh->SetVisibility(false);
+	GrappleSphereComponent->SetIsEatable(false);
+	GrappleSphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
+}
+
+void ABasicEatableActor::Respawn() {
+	SetActorLocation(StartLocation);
+	MainMesh->SetVisibility(true);
+	GrappleSphereComponent->SetIsEatable(true);
+	GrappleSphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
