@@ -15,6 +15,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraSystem.h"
 #include "NiagaraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "RacingUnrealProject/CarPawn.h"
 
 // Sets default values
@@ -29,6 +30,7 @@ ASplineWormEnemy::ASplineWormEnemy()
 
 	SplineMeshComponents.Init(nullptr, 0);
 	NiagaraComponents.Init(nullptr, 0);
+	StaticMeshComponents.Init(nullptr, 0);
 	
 	GrappleSphereComponent = CreateDefaultSubobject<UGrappleSphereComponent>(TEXT("GrappleSphereComponent"));
 	GrappleSphereComponent->SetupAttachment(GetRootComponent());
@@ -40,6 +42,11 @@ ASplineWormEnemy::ASplineWormEnemy()
 	WormHeadMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WormHeadMesh"));
 	WormHeadMesh->SetupAttachment(GetRootComponent());
 	WormHeadMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	ColliderCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
+	ColliderCapsule->SetupAttachment(GetRootComponent());
+	ColliderCapsule->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	ColliderCapsule->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	
 	
 }
@@ -48,7 +55,7 @@ ASplineWormEnemy::ASplineWormEnemy()
 void ASplineWormEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	
 	GrappleSphereComponent->OnReachedEvent.AddDynamic(this, &ASplineWormEnemy::OnGrappleReaced);
 
@@ -62,40 +69,41 @@ void ASplineWormEnemy::BeginPlay()
 
 	ResetWorm();
 	
+	CarPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+
+	//sets collider capsule size
+	float MaxX = NeckSegment->GetBoundingBox().Max.X - NeckSegment->GetBoundingBox().Min.X;
+	ColliderCapsule->SetCapsuleHalfHeight(MaxX * 3.f);
+	ColliderCapsule->SetCapsuleRadius(MaxX / 2.f);
 }
 
 // Called every frame
 void ASplineWormEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	// APawn* CarPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
-	// FVector Location = UKismetMathLibrary::InverseTransformLocation(NiagaraComponent->GetComponentTransform(),
-	// 	CarPawn->GetActorLocation());
-	// NiagaraComponent->SetVectorParameter("endLocation", CarPawn->GetActorLocation());
-	// NiagaraComponent->SetVectorParameter("startLocation", CarPawn->GetActorLocation() + FVector::UpVector * 200.f);
-	// NiagaraComponent->SetVectorParameter("startTangent",  FVector::UpVector * 1.f+ FVector::LeftVector * 1.f);
-	// NiagaraComponent->SetVectorParameter("endTangent", FVector::UpVector * -1.f + FVector::LeftVector * -1.f);
+	
 
 	
 	
-	if (bIdle) {
+	if (CurrentWormState == EWormState::Idle) {
 		CurrentMoveTime += DeltaTime;
 		HandleIdleAnimation();
+		UpdateColliderCapsule();
 	}
+	else if (CurrentWormState == EWormState::UnInitialized) {
+		return;
+	}
+
+	//if we reach here this means we splineWormEnemy is active
+
 
 	
-	if (!bPlayingAnim)
-		return;
-
-	if (!bHasInitSpline) {
-		bHasInitSpline = true;
-		InitSplineSegments();
-		InitNiagaraParticleComponents(SplineMeshComponents.Num());
-	}
-
+	//Collider Capsule
+	UpdateColliderCapsule();
+	
 	//meshes
 	UpdateSplineMeshComponent();
+	// UpdateStaticMeshComponents();
 	UpdateHeadTransfrom();
 	UpdateTargetTransfrom(HeadPlacement);
 
@@ -107,52 +115,19 @@ void ASplineWormEnemy::Tick(float DeltaTime)
 	CurrentWormDistance = MovmentCurveFloat->GetFloatValue(CurrentMoveTime / WormMoveDuration);
 	CurrentWormDistance *= Spline->GetSplineLength();
 	CurrentWormDistance -= GetWormRealLength(); // converts to the movment is based on the end of the worm
-		
+
+	
     // checking if we have reached the end
     if ( Spline->GetSplineLength() < SplineMeshComponents.Num() *
     	NeckSegmentLength + SplineMeshOverLap + CurrentWormDistance)
     {
-	    bPlayingAnim = false;
-    	bIdle = true;
+	    CurrentWormState = EWormState::Idle;
     	GrappleSphereComponent->SetIsEnabled(true);
     }
 	
 }
 
-void ASplineWormEnemy::UpdateSplineMeshComponent()
-{
-	
-	float CurrentDistance = CurrentWormDistance;
 
-	FVector Offset = FVector::ZeroVector;
-	
-	for (int32 i = 0; i < SplineMeshComponents.Num(); ++i)
-	{
-		
-
-		
-		//setting the values
-		SplineMeshComponents[i]->SetStartPosition(Offset + Spline->GetLocationAtDistanceAlongSpline(CurrentDistance, CoorSpace), false);
-		SplineMeshComponents[i]->SetStartTangent(Spline->GetDirectionAtDistanceAlongSpline(CurrentDistance, CoorSpace), false);
-
-		const float OffsetDistance = CurrentDistance+ NeckSegmentLength + SplineMeshOverLap;
-
-		//offset animation
-		float SinValue = sin( CurrentDistanceAffector * CurrentDistance + CurrentMoveTime * CurrentMoveTimeAffector);
-		float CosValue = cos( CurrentDistanceAffector * CurrentDistance + CurrentMoveTime * CurrentMoveTimeAffector);
-		Offset = Spline->GetRightVectorAtDistanceAlongSpline(CurrentDistance, CoorSpace) * CosValue +
-			Spline->GetUpVectorAtDistanceAlongSpline(CurrentDistance, CoorSpace) * SinValue;
-		Offset *= MoveAmplitude;
-		
-		SplineMeshComponents[i]->SetEndPosition(Offset + Spline->GetLocationAtDistanceAlongSpline(OffsetDistance, 
-		CoorSpace), false);
-		SplineMeshComponents[i]->SetEndTangent(Spline->GetDirectionAtDistanceAlongSpline(OffsetDistance, 
-		CoorSpace), true);
-		
-		CurrentDistance += NeckSegmentLength;
-	}
-	
-}
 
 void ASplineWormEnemy::InitNiagaraParticleComponents(int numOfComps) {
 	for (int i = 0; i < numOfComps; ++i) {
@@ -196,6 +171,99 @@ void ASplineWormEnemy::UpdateNiagaraParticleComponents() {
 		NiagaraComponents[i]->SetVectorParameter("startTangent",  startTangent);
 		NiagaraComponents[i]->SetVectorParameter("endTangent", endTangent);
 	}
+}
+
+void ASplineWormEnemy::InitStaticMeshComponents() {
+	//init spline segmensts
+	int SegmentsToCreate = (WormGoalLength / NeckSegmentLength) - StaticMeshComponents.Num();
+
+	DL_NORMAL("segments to create : " + FString::FromInt(SegmentsToCreate))
+	
+	for (int32 i = 0; i < SegmentsToCreate; i++)
+	{
+		UStaticMeshComponent* NewStaticMesh = NewObject<UStaticMeshComponent>(this);
+		if (NewStaticMesh)
+		{
+			//essensial
+			NewStaticMesh->RegisterComponent();
+			NewStaticMesh->SetMobility(EComponentMobility::Movable);
+			NewStaticMesh->SetStaticMesh(NeckSegment);
+
+			//other
+			NewStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			// NewSplineMesh->SetMaterial(0, WormBodyMaterial);
+			
+			//adds to array
+			StaticMeshComponents.Emplace(NewStaticMesh);
+		}
+	}
+		
+	
+
+
+	//setting the sizes on each spline mesh segment
+	//this cpould be optimized, but since its only called once per worm, i think its fine for now
+	
+	const float TotalLength = GetWormRealLength();
+	for (int i = 0; i < StaticMeshComponents.Num(); ++i) {
+		//setting sclae
+		//start
+		float CurveTime = (i * NeckSegmentLength) / TotalLength;
+		float Size = WormSizeCurve->GetFloatValue(CurveTime);
+		StaticMeshComponents[i]->SetWorldScale3D(FVector(Size));
+		
+		
+		// //setting random roll
+		// float randomRoll = FMath::RandRange(-RandomRotationAmoundt, RandomRotationAmoundt);
+		// StaticMeshComponents[i]->SetEndRoll(randomRoll);
+		// StaticMeshComponents[i]->SetStartRoll(randomRoll);
+	}
+}
+
+void ASplineWormEnemy::UpdateStaticMeshComponents() {
+	float CurrentDistancee = CurrentWormDistance;
+	FVector Offset = FVector::ZeroVector;
+	for (int i = 0; i < StaticMeshComponents.Num(); ++i) {
+
+		DL_NORMAL("Update static mesh")
+		
+		//offset animation
+		float SinValue = sin( CurrentDistanceAffector * CurrentDistancee + CurrentMoveTime * CurrentMoveTimeAffector);
+		float CosValue = cos( CurrentDistanceAffector * CurrentDistancee + CurrentMoveTime * CurrentMoveTimeAffector);
+		Offset = Spline->GetRightVectorAtDistanceAlongSpline(CurrentDistancee, CoorSpace) * CosValue +
+			Spline->GetUpVectorAtDistanceAlongSpline(CurrentDistancee, CoorSpace) * SinValue;
+		Offset *= MoveAmplitude;
+
+		// Location
+		FVector Location = Spline->GetLocationAtDistanceAlongSpline(CurrentDistancee, CoorSpace);
+		StaticMeshComponents[i]->SetWorldLocation(Location + Offset);
+
+		// Rotation
+		FRotator Rotation = Spline->GetRotationAtDistanceAlongSpline(CurrentDistancee, CoorSpace);
+		StaticMeshComponents[i]->SetWorldRotation(Rotation);
+		
+		CurrentDistancee += NeckSegmentLength;
+	}
+}
+
+void ASplineWormEnemy::UpdateColliderCapsule() {
+	//updating capsule collisiton
+	
+	float Distance = Spline->GetDistanceAlongSplineAtSplineInputKey(Spline->FindInputKeyClosestToWorldLocation(CarPawn->GetActorLocation()));
+	if (Distance < CurrentWormDistance)
+		Distance = CurrentWormDistance;
+	else if (Distance > CurrentWormDistance + GetWormRealLength())
+		Distance = CurrentWormDistance + GetWormRealLength();
+	
+	//location
+	FVector Location = Spline->GetLocationAtDistanceAlongSpline(Distance, CoorSpace);
+	ColliderCapsule->SetWorldLocation(Location);
+	
+	//rotation
+	FRotator CapsuleRotation = UKismetMathLibrary::MakeRotFromZX(Spline->GetDirectionAtDistanceAlongSpline(Distance, CoorSpace), FVector::UpVector);
+	ColliderCapsule->SetWorldRotation(CapsuleRotation);
+	
+	// DrawDebugSphere(GetWorld(), Location, 500.f, 32, FColor::Red);
 }
 
 void ASplineWormEnemy::HandleIdleAnimation()  {
@@ -276,7 +344,7 @@ void ASplineWormEnemy::UpdateHeadTransfrom() {
 	WormHeadMesh->SetWorldRotation(Rotation);
 }
 
-void ASplineWormEnemy::InitSplineSegments() {
+void ASplineWormEnemy::InitSplineMeshSegments() {
 	//init spline segmensts
 	int SegmentsToCreate = (WormGoalLength / NeckSegmentLength) - SplineMeshComponents.Num();
 
@@ -334,6 +402,39 @@ void ASplineWormEnemy::InitSplineSegments() {
 	}
 }
 
+void ASplineWormEnemy::UpdateSplineMeshComponent()
+{
+	
+	float CurrentDistance = CurrentWormDistance;
+
+	FVector Offset = FVector::ZeroVector;
+	
+	for (int32 i = 0; i < SplineMeshComponents.Num(); ++i)
+	{
+		//setting the values
+		SplineMeshComponents[i]->SetStartPosition(Offset + Spline->GetLocationAtDistanceAlongSpline(CurrentDistance, CoorSpace), false);
+		SplineMeshComponents[i]->SetStartTangent(Spline->GetDirectionAtDistanceAlongSpline(CurrentDistance, CoorSpace), false);
+
+		const float OffsetDistance = CurrentDistance + NeckSegmentLength + SplineMeshOverLap;
+
+		//offset animation
+		float SinValue = sin( CurrentDistanceAffector * CurrentDistance + CurrentMoveTime * CurrentMoveTimeAffector);
+		float CosValue = cos( CurrentDistanceAffector * CurrentDistance + CurrentMoveTime * CurrentMoveTimeAffector);
+		Offset = Spline->GetRightVectorAtDistanceAlongSpline(CurrentDistance, CoorSpace) * CosValue +
+			Spline->GetUpVectorAtDistanceAlongSpline(CurrentDistance, CoorSpace) * SinValue;
+		Offset *= MoveAmplitude;
+
+		//end position
+		SplineMeshComponents[i]->SetEndPosition(Offset + Spline->GetLocationAtDistanceAlongSpline(OffsetDistance, 
+		CoorSpace), false);
+		SplineMeshComponents[i]->SetEndTangent(Spline->GetDirectionAtDistanceAlongSpline(OffsetDistance, 
+		CoorSpace), true);
+		
+		CurrentDistance += NeckSegmentLength;
+	}
+	
+}
+
 float ASplineWormEnemy::GetWormRealLength() const
 {
 	return SplineMeshComponents.Num() * NeckSegmentLength + SplineMeshOverLap;
@@ -342,21 +443,24 @@ float ASplineWormEnemy::GetWormRealLength() const
 void ASplineWormEnemy::OnGrappleReaced(float Addspeed)
 {
 	DL_NORMAL("Finished grappling worm!")
+	ColliderCapsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	// Destroy();
 }
 
 void ASplineWormEnemy::StartWorm() {
 	//TODO implement
-	bPlayingAnim = true;
+	CurrentWormState = EWormState::Active;
 	WormTargetMesh->SetVisibility(true, false);
 	WormHeadMesh->SetVisibility(true, false);
+	ColliderCapsule->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	InitSplineMeshSegments();
+	// InitStaticMeshComponents();
+	InitNiagaraParticleComponents(SplineMeshComponents.Num());
 	DL_NORMAL("StartWOrm!")
 }
 
 void ASplineWormEnemy::ResetWorm() {
-	bPlayingAnim = false;
-	bIdle = false;
-	bHasInitSpline = false;
+	CurrentWormState = EWormState::UnInitialized;
 
 	GrappleSphereComponent->SetIsEatable(false);
 	

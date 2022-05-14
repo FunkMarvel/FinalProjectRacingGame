@@ -54,7 +54,7 @@ public:
 	UFUNCTION()
 		int32 GetClosestSplinePoint(class USplineComponent* splineEval, FVector Location);
 	UFUNCTION(BlueprintCallable)
-		virtual void VisualiseUpVectors(int Segments, USplineComponent* SplineToUse);
+		virtual void VisualiseUpVectors(int Segments, USplineComponent* SplineToUse, float UpVectorLength);
 
 
 	// spline up vec
