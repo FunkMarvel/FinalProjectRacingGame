@@ -119,6 +119,8 @@ public:
 		float HeadDistanceFromBody = 500.f;
 	UPROPERTY(EditAnywhere, Category = "Spline")
 		ESplineWormHeadAxis CurrentHeadAxis = ESplineWormHeadAxis::Right;
+	UPROPERTY(EditAnywhere, Category = "Spline", meta = (ToolTip = "How many degrees to rotate the target Forward vector as axis vector"))
+		float RotateHeadAxis = 0.f;
 	UPROPERTY(meta = (ToolTip = "If the Upvector for the CarPawn is upside down at the end of the grapple, Use this to invert"),
 		EditAnywhere, Category = "Spline")
 	bool bInvertUpHeadAxis = false;
@@ -139,6 +141,8 @@ public:
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Spline|IdleAnimation")
 	float IdleAmplitude = 30.f;
 
+	
+	
 	//other
 	ESplineCoordinateSpace::Type CoorSpace = ESplineCoordinateSpace::World;
 private:

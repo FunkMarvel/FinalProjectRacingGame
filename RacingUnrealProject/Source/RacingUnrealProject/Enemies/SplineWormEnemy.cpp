@@ -30,7 +30,7 @@ ASplineWormEnemy::ASplineWormEnemy()
 
 	SplineMeshComponents.Init(nullptr, 0);
 	NiagaraComponents.Init(nullptr, 0);
-	StaticMeshComponents.Init(nullptr, 0);
+	// StaticMeshComponents.Init(nullptr, 0);
 	
 	GrappleSphereComponent = CreateDefaultSubobject<UGrappleSphereComponent>(TEXT("GrappleSphereComponent"));
 	GrappleSphereComponent->SetupAttachment(GetRootComponent());
@@ -329,6 +329,9 @@ void ASplineWormEnemy::UpdateTargetTransfrom(float RatioOnSnake)
 	if (bInvertUpHeadAxis)
 		Up = -Up;
 	
+	Up = UKismetMathLibrary::RotateAngleAxis(Up, RotateHeadAxis, Forward);
+	
+	
 	FRotator Rotation = UKismetMathLibrary::MakeRotFromXZ(-Forward, Up);
 	GrappleSphereComponent->SetWorldRotation(Rotation);
 }
@@ -448,7 +451,8 @@ void ASplineWormEnemy::OnGrappleReaced(float Addspeed)
 }
 
 void ASplineWormEnemy::StartWorm() {
-	//TODO implement
+	ResetWorm();
+	
 	CurrentWormState = EWormState::Active;
 	WormTargetMesh->SetVisibility(true, false);
 	WormHeadMesh->SetVisibility(true, false);

@@ -99,6 +99,9 @@ void ACarPawn::ResetCarToLastCheckpoint()
 	ARacingUnrealProjectGameModeBase* GameMode = Cast<ARacingUnrealProjectGameModeBase>(GetWorld()->GetAuthGameMode());
 	if (GameMode && GameMode->GetLastCheckpoint())
 	{
+		SphereComp->SetSimulatePhysics(true);
+		SphereComp->SetPhysicsLinearVelocity(FVector::ZeroVector);
+		
 		ACheckpoint* CP = GameMode->GetLastCheckpoint();
 		SetActorLocation(CP->GetSpawnArrow()->GetComponentLocation());
 		SetActorRotation(CP->GetSpawnArrow()->GetComponentRotation());
@@ -107,9 +110,10 @@ void ACarPawn::ResetCarToLastCheckpoint()
 			GravitySplineActive = CP->GetCheckpointGravitySpline();
 		else
 			DL_NORMAL( "gravity spline is selected" + CP->GetName());
-			
+
+		
+		// SphereComp->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
 		EnterState(EVehicleState::AirBorne);
-		SphereComp->SetPhysicsLinearVelocity(FVector::ZeroVector);
 	}
 }
 
@@ -246,7 +250,7 @@ void ACarPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-
+	StateTime += DeltaTime;
 	// state machine
 	switch (CurrentVehicleState)
 	{
@@ -256,8 +260,8 @@ void ACarPawn::Tick(float DeltaTime)
 	case EVehicleState::AirBorne:
 		StateAirBorne();
 		break;
-	case EVehicleState::Dashing:
-		StateDashing();
+	case EVehicleState::Dying:
+		StateDying();
 		break;
 	case EVehicleState::Grappling:
 		StateGrappling();
@@ -309,6 +313,7 @@ void ACarPawn::UpdateCameraBoomLength()
 void ACarPawn::EnterState(EVehicleState NewState)
 {
 	bEnterState = true;
+	StateTime = 0.f;
 	CurrentVehicleState = NewState;
 }
 
@@ -384,16 +389,16 @@ void ACarPawn::StateGrappling()
 		SphereComp->SetWorldRotation(NewRot);
 	}
 	CameraBoom->SetRelativeRotation(FRotator(-5.f, 0.f, 0.f));
+
 	
 	//psudo on exit
 	if (PhysicsGrappleComponent->ValidGrappleState() == false)
 	{
 		// sets velocity
-		SphereComp->SetSimulatePhysics(true);
 		FVector NewVel = PhysicsGrappleComponent->GetOnHookedDirection() * PhysicsGrappleComponent->GetOnHookedVelocitySize();
-		//CameraEffectComponent->PlayCameraEffect();
+		SphereComp->SetSimulatePhysics(true);
 		SphereComp->SetPhysicsLinearVelocity(NewVel);
-
+		DL_NORMAL("GrappleExit!")
 		//sets rotation speed
 		// CameraBoom->CameraLagSpeed = OnStartCameraLag.X;
 		// CameraBoom->CameraRotationLagSpeed = OnStartCameraLag.Y;
@@ -408,6 +413,8 @@ void ACarPawn::StateAirBorne()
 	if (bEnterState)
 	{
 		bEnterState = false;
+		// SphereComp->SetSimulatePhysics(true);
+		// SphereComp->SetPhysicsLinearVelocity(FVector::ZeroVector);
 		
 	}
 	SetUpVectorAsSplineUpAxis();
@@ -437,12 +444,30 @@ void ACarPawn::StateAirBorne()
 	
 }
 
-void ACarPawn::StateDashing()
+void ACarPawn::StateDying()
 {
 	if (bEnterState)
 	{
 		bEnterState = false;
+		SphereComp->SetSimulatePhysics(false);
+		CarMesh->SetVisibility(false);
+		GrappleHookMesh->SetVisibility(false);
+
+		//particle
+		if (DeathParticleSystem)
+			UGameplayStatics::SpawnEmitterAtLocation(this, DeathParticleSystem, GetActorLocation(), GetActorRotation());
+		else
+			DL_ERROR("No death particle system selcted!")
+		
 	}
+
+	if (StateTime > 3.f) {
+		CarMesh->SetVisibility(true);
+		GrappleHookMesh->SetVisibility(true);
+		ResetCarToLastCheckpoint();
+	}
+
+	
 }
 
 void ACarPawn::ToggleGrappleHook()
@@ -826,13 +851,14 @@ void ACarPawn::OnHitt(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimiti
 
 	//is the normal impule great enoguh, and is the impule not coming mainly from below the car
 	if (NormalImpulse.Size() > 400000.f && UnsignedAngle(NormalImpulse, LocalUpVector) > 70.f) {
-		ResetCarToLastCheckpoint();
+		EnterState(EVehicleState::Dying);
 		return;
 	}
 
 	
 	if (OtherActor != nullptr && OtherActor->ActorHasTag("lethal")) {
-		ResetCarToLastCheckpoint();
+		EnterState(EVehicleState::Dying);
+		return;
 	}
 }
 
