@@ -56,9 +56,13 @@ public:
 	 * @param _bEnable  
 	 */
 	void SetIsEnabled(bool _bEnable) {bEnabled = _bEnable; }
-	
+
 	UFUNCTION()
-		bool IsEnabled() const {return bEnabled; }
+	/**
+	 * @brief is the grappaple ready to be grappled?
+	 * @return 
+	 */
+	bool IsEnabled() const {return bEnabled; }
 
 	// speed
 	UFUNCTION()

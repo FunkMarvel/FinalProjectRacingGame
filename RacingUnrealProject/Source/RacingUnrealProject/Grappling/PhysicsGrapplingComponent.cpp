@@ -61,16 +61,20 @@ void UPhysicsGrapplingComponent::HandleTargetHomingComp()
 		}
 	}
 	
-
 	if (GrappableSphereComponents.Num() > 0)
 	{
-		DL_NORMAL("Bigger than 0!")
-		if (GrappableSphereComponents[0]->IsEnabled())
-		{
-			
-			TargetGrappableComponent = GrappableSphereComponents[0];
-			CarPawn->GrappableWidgetComponent->PlaceWidget(TargetGrappableComponent);
-			FoundHomingTargetEvent.Broadcast(TargetGrappableComponent);
+
+		for (int i = 0; i < GrappableSphereComponents.Num(); ++i) {
+			if (GrappableSphereComponents[i]->IsEnabled()) {
+
+				TargetGrappableComponent = GrappableSphereComponents[i];
+				CarPawn->GrappableWidgetComponent->PlaceWidget(TargetGrappableComponent);
+				FoundHomingTargetEvent.Broadcast(TargetGrappableComponent);
+				
+				// returnn early if we find a valid target
+				//TODO make it instead based on closed target.
+				return;
+			}
 		}
 	}
 	else // array size 0

@@ -461,7 +461,7 @@ void ACarPawn::StateDying()
 		
 	}
 
-	if (StateTime > 3.f) {
+	if (StateTime > 2.5f) {
 		CarMesh->SetVisibility(true);
 		GrappleHookMesh->SetVisibility(true);
 		ResetCarToLastCheckpoint();
