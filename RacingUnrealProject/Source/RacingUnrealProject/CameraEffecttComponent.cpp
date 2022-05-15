@@ -43,6 +43,9 @@ void UCameraEffecttComponent::BeginPlay()
 	
 	BoostCameraModifier = UGameplayStatics::GetPlayerCameraManager(this, 0)->AddNewCameraModifier(BoostCameraModifierClass);
 	BoostCameraModifier->DisableModifier(true);
+
+	GrappleCameraModifier = UGameplayStatics::GetPlayerCameraManager(this, 0)->AddNewCameraModifier(GrappleCameraModifierClass);
+	GrappleCameraModifier->DisableModifier(true);
 	
 	//setting up speed camera shake
 

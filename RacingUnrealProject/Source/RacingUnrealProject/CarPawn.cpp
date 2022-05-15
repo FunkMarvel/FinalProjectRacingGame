@@ -322,7 +322,6 @@ void ACarPawn::StateDriving()
 	if (bEnterState)
 	{
 		bEnterState = false;
-		//CameraEffectComponent->BoostCameraModifier->DisableModifier(false);
 	}
 	ApplyGravity();
 	SetUpVectorAsSplineUpAxis();
@@ -364,7 +363,7 @@ void ACarPawn::StateGrappling()
 		
 		// CameraBoom->CameraLagSpeed = GrapplingCameraLag.X;
 		// CameraBoom->CameraRotationLagSpeed = GrapplingCameraLag.Y;
-		CameraEffectComponent->BoostCameraModifier->EnableModifier();
+		CameraEffectComponent->GrappleCameraModifier->EnableModifier();
 		// UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraEffectComponent->CameraShake, SphereComp->GetComponentLocation(),
 		// 	  0.f, 1000.f, 1.f);
 		

@@ -34,10 +34,6 @@ private:
 	UPROPERTY()
 		class ACarPawn* CarPawn = nullptr;
 
-	//single run cameraModifier
-	UPROPERTY(meta = (AllowPrivateAccess = "true"),EditAnywhere, Category = "Camera|Boost")
-		TSubclassOf<class UCameraModifier> BoostCameraModifierClass = nullptr;
-
 	
 	UPROPERTY(meta = (AllowPrivateAccess = "true"),EditAnywhere, Category = "Camera|Speed")
 		TSubclassOf<class UCameraShakeBase> SpeedCameraShakeClass = nullptr;
@@ -47,9 +43,19 @@ private:
 		float MaxFOV = 150.f;
 	UPROPERTY()
 		class UCameraShakeBase* SpeedCameraShake = nullptr;
+
+
+	
+	//single run cameraModifier
+	UPROPERTY(meta = (AllowPrivateAccess = "true"),EditAnywhere, Category = "Camera|Boost")
+		TSubclassOf<class UCameraModifier> BoostCameraModifierClass = nullptr;
+	UPROPERTY(meta = (AllowPrivateAccess = "true"),EditAnywhere, Category = "Camera|Boost")
+		TSubclassOf<class UCameraModifier> GrappleCameraModifierClass = nullptr;
 public:
 	UPROPERTY()
 		class UCameraModifier* BoostCameraModifier = nullptr;
+	UPROPERTY()
+		class UCameraModifier* GrappleCameraModifier = nullptr;
 
 	
 	UFUNCTION()

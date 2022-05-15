@@ -8,11 +8,13 @@
 #include "RacingUnrealProject/GravitySplineActor.h"
 #include "RacingUnrealProject/NeckComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Camera/CameraModifier.h"
 #include "Components/SphereComponent.h"
 #include "Components/SplineComponent.h"
 #include "RacingUnrealProject/Grappling/GrappableWidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "RacingUnrealProject/CameraEffecttComponent.h"
 #include "RacingUnrealProject/DebugLog.h"
 
 // Sets default values for this component's properties
@@ -536,9 +538,11 @@ void UPhysicsGrapplingComponent::HookedEatableState()
 
 	if (distanceSqr < 1000.f* 1000.f) // when its at us!
 	{
-		TargetGrappableComponent->OnReached();
-		CarPawn->SphereComp->AddImpulse(CarPawn->SphereComp->GetForwardVector() * TargetGrappableComponent->GetSpeed(), NAME_None, true);
-		
+		TargetGrappableComponent->OnReached(); //invoke event
+		CarPawn->SphereComp->AddImpulse(CarPawn->SphereComp->GetForwardVector() * TargetGrappableComponent->GetSpeed(), NAME_None, true); // adds speed
+
+		//camera effect
+		CarPawn->CameraEffectComponent->BoostCameraModifier->EnableModifier();
 		EnterState(EGrappleStates::InActive);
 	}
 	
