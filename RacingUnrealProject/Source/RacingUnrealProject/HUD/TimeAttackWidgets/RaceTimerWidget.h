@@ -29,4 +29,6 @@ protected:
 
 	UPROPERTY(meta=(BindWidget))
 		class UTextBlock* LapCounter{nullptr};
+
+
 };

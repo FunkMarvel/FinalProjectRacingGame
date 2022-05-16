@@ -315,9 +315,12 @@ void UPhysicsGrapplingComponent::TravelingState()
 	CarPawn->NeckComponent->UpdateSplineMesh();
 
 	//if no grapple target try to find one
-	if (TargetGrappableComponent != nullptr)
+	if (TargetGrappableComponent == nullptr)
 	{
 		HandleTargetHomingComp();
+		if (TargetGrappableComponent) {
+			CarPawn->GrappableWidgetComponent->PlayAnimation();
+		}
 	}
 
 	
