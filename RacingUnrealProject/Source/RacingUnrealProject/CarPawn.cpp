@@ -624,7 +624,6 @@ float ACarPawn::SignedAngleAxis(FVector v1, FVector v2, FVector axis)
 	
 }
 
-
 /**
  * @brief Vectors are normalized
  * @param v1 
