@@ -43,6 +43,9 @@ void UCameraEffecttComponent::BeginPlay()
 	
 	BoostCameraModifier = UGameplayStatics::GetPlayerCameraManager(this, 0)->AddNewCameraModifier(BoostCameraModifierClass);
 	BoostCameraModifier->DisableModifier(true);
+
+	GrappleCameraModifier = UGameplayStatics::GetPlayerCameraManager(this, 0)->AddNewCameraModifier(GrappleCameraModifierClass);
+	GrappleCameraModifier->DisableModifier(true);
 	
 	//setting up speed camera shake
 
@@ -67,7 +70,7 @@ void UCameraEffecttComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	{
 		Speed = 10000.f;
 	}
-	float TargetFOV = Speed / 300.f + StartFOV;
+	float TargetFOV = Speed / 500.f + StartFOV;
 	TargetFOV = FMath::Clamp(TargetFOV, 0.f, MaxFOV);
 
 	TargetFOV = FMath::FInterpTo(CameraCurrent->FieldOfView, TargetFOV, GetWorld()->GetDeltaSeconds(), 5.f);

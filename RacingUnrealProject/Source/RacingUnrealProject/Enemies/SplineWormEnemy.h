@@ -126,7 +126,10 @@ public:
 	bool bInvertUpHeadAxis = false;
 	UPROPERTY(EditAnywhere, Category = "Spline", meta = (ClampMin = 0.f, ClampMax = 180.f))
 		float RandomRotationAmoundt = 20.f;
+	UPROPERTY(EditAnywhere, Category = "Spline", meta = (ClampMin = 0.f))
+		float PreActivateTargetTime = 0.6f;
 
+	
 	//move animation varibales
 	UPROPERTY(EditAnywhere, Category = "Spline|MoveAnimation")
 	float CurrentDistanceAffector = 0.001f;

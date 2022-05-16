@@ -116,18 +116,21 @@ void ASplineWormEnemy::Tick(float DeltaTime)
 	CurrentWormDistance *= Spline->GetSplineLength();
 	CurrentWormDistance -= GetWormRealLength(); // converts to the movment is based on the end of the worm
 
+	//activate grapple target?
+	if (CurrentMoveTime + PreActivateTargetTime > WormMoveDuration)
+	{
+		GrappleSphereComponent->SetIsEnabled(true);
+	}
 	
     // checking if we have reached the end
     if ( Spline->GetSplineLength() < SplineMeshComponents.Num() *
     	NeckSegmentLength + SplineMeshOverLap + CurrentWormDistance)
     {
 	    CurrentWormState = EWormState::Idle;
-    	GrappleSphereComponent->SetIsEnabled(true);
+    	
     }
 	
 }
-
-
 
 void ASplineWormEnemy::InitNiagaraParticleComponents(int numOfComps) {
 	for (int i = 0; i < numOfComps; ++i) {
