@@ -90,12 +90,10 @@ private:
 		void UpdateColliderCapsule();
 	
 	///other
-	
-	
-	
 	UFUNCTION()
 		void HandleIdleAnimation();
-	
+	void GetTargetUpRightVector(FVector& Up, FVector& Forward, FVector& Location, float WormDistance);
+
 	UFUNCTION()
 		void UpdateTargetTransfrom(float RatioOnSnake);
 
@@ -190,6 +188,8 @@ private:
 		void ResetWorm();
 	UFUNCTION(BlueprintCallable)
 		void VisualizeTriggers();
+	UFUNCTION(BlueprintCallable)
+		void VisualizeWormEnemy();
 };
 
 

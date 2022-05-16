@@ -291,18 +291,9 @@ void ASplineWormEnemy::HandleIdleAnimation()  {
 	}
 }
 
-void ASplineWormEnemy::UpdateTargetTransfrom(float RatioOnSnake)
-{	
-
-	//location
-	float Distance = CurrentWormDistance + GetWormRealLength() * RatioOnSnake;
-	FVector Location = Spline->GetLocationAtDistanceAlongSpline(Distance, CoorSpace);
-	
-
-	//rotation
-	FVector Up;
-	FVector Forward;
-
+void ASplineWormEnemy::GetTargetUpRightVector(FVector& Up, FVector& Forward, FVector& Location, float WormDistance) {
+	float Distance = WormDistance + GetWormRealLength() * HeadPlacement;
+	Location = Spline->GetLocationAtDistanceAlongSpline(Distance, CoorSpace);
 	switch (CurrentHeadAxis) {
 	case ESplineWormHeadAxis::Right:
 		Up = Spline->GetUpVectorAtDistanceAlongSpline(Distance, CoorSpace);
@@ -320,22 +311,34 @@ void ASplineWormEnemy::UpdateTargetTransfrom(float RatioOnSnake)
 		Up = -Spline->GetRightVectorAtDistanceAlongSpline(Distance, CoorSpace);
 		Forward = Spline->GetUpVectorAtDistanceAlongSpline(Distance, CoorSpace);
 		break;
-		default:
+	default:
 		Up = Spline->GetUpVectorAtDistanceAlongSpline(Distance, CoorSpace);
 		Forward = -Spline->GetRightVectorAtDistanceAlongSpline(Distance, CoorSpace);
-			break;
+		break;
 	}
+
 	
-	Location += Forward * HeadDistanceFromBody;
-	GrappleSphereComponent->SetWorldLocation(Location);
 
 	if (bInvertUpHeadAxis)
 		Up = -Up;
-	
+
 	Up = UKismetMathLibrary::RotateAngleAxis(Up, RotateHeadAxis, Forward);
-	
+}
+
+void ASplineWormEnemy::UpdateTargetTransfrom(float RatioOnSnake)
+{	
+
+	//rotation
+	FVector Up;
+	FVector Forward;
+	FVector Location;
+	GetTargetUpRightVector(Up, Forward, Location, CurrentWormDistance);
+
+	Location += Forward * HeadDistanceFromBody;
+	GrappleSphereComponent->SetWorldLocation(Location);
 	
 	FRotator Rotation = UKismetMathLibrary::MakeRotFromXZ(-Forward, Up);
+	
 	GrappleSphereComponent->SetWorldRotation(Rotation);
 }
 
@@ -443,7 +446,9 @@ void ASplineWormEnemy::UpdateSplineMeshComponent()
 
 float ASplineWormEnemy::GetWormRealLength() const
 {
-	return SplineMeshComponents.Num() * NeckSegmentLength + SplineMeshOverLap;
+	int TotalSegments = (WormGoalLength / NeckSegmentLength);
+	return float(TotalSegments) * NeckSegmentLength + SplineMeshOverLap;
+	// return SplineMeshComponents.Num() * NeckSegmentLength + SplineMeshOverLap;
 }
 
 void ASplineWormEnemy::OnGrappleReaced(float Addspeed)
@@ -468,7 +473,7 @@ void ASplineWormEnemy::StartWorm() {
 
 void ASplineWormEnemy::ResetWorm() {
 	CurrentWormState = EWormState::UnInitialized;
-
+	ColliderCapsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GrappleSphereComponent->SetIsEatable(false);
 	
 	CurrentMoveTime = 0.f;
@@ -510,6 +515,23 @@ void ASplineWormEnemy::VisualizeTriggers() {
 		DrawDebugLine(GetWorld(), StartLoc, ExitTriggerLoc, FColor::Red, false, 1.f, 0,100.f);
 	}
 	return;
+	
+}
+
+void ASplineWormEnemy::VisualizeWormEnemy() {
+	//drawing the direction the player will be sent
+	float DistanceOnWorm = Spline->GetSplineLength() - GetWormRealLength();
+	FVector Up, Forward, Location;
+	GetTargetUpRightVector(Up, Forward, Location, DistanceOnWorm);
+	GrappleSphereComponent->SetWorldLocation(Location);
+	GrappleSphereComponent->SetWorldRotation(UKismetMathLibrary::MakeRotFromXZ(-Forward, Up));
+
+	
+	UWorld* World = GetWorld();
+	// forward -> Direction of player when finished grappling
+	DrawDebugLine(World, Location, Location - Forward * 4000.f, FColor::Cyan, false, 1.2f, 0, 200.f);
+	// up
+	DrawDebugLine(World, Location, Location + Up * 1000.f, FColor::Red, false, 1.2f, 0, 200.f);
 	
 }
 
