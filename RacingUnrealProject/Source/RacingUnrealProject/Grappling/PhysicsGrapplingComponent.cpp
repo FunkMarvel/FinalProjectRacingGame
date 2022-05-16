@@ -51,7 +51,8 @@ void UPhysicsGrapplingComponent::HandleTargetHomingComp()
 	
 	TArray<UGrappleSphereComponent*> GrappableSphereComponents;
 	GrappableSphereComponents.Init(nullptr, 0);
-	
+
+	//find all grappables / eatables
 	for (int32 i = 0; i < OverlappingComponents.Num(); i++)
 	{
 		if (OverlappingComponents[i]->IsA(UGrappleSphereComponent::StaticClass()))
@@ -60,15 +61,20 @@ void UPhysicsGrapplingComponent::HandleTargetHomingComp()
 		}
 	}
 	
-
 	if (GrappableSphereComponents.Num() > 0)
 	{
-		if (GrappableSphereComponents[0]->IsEnabled())
-		{
-			
-			TargetGrappableComponent = GrappableSphereComponents[0];
-			CarPawn->GrappableWidgetComponent->PlaceWidget(TargetGrappableComponent);
-			FoundHomingTargetEvent.Broadcast(TargetGrappableComponent);
+
+		for (int i = 0; i < GrappableSphereComponents.Num(); ++i) {
+			if (GrappableSphereComponents[i]->IsEnabled()) {
+
+				TargetGrappableComponent = GrappableSphereComponents[i];
+				CarPawn->GrappableWidgetComponent->PlaceWidget(TargetGrappableComponent);
+				FoundHomingTargetEvent.Broadcast(TargetGrappableComponent);
+				
+				// returnn early if we find a valid target
+				//TODO make it instead based on closed target.
+				return;
+			}
 		}
 	}
 	else // array size 0
@@ -229,12 +235,14 @@ void UPhysicsGrapplingComponent::InActiveState()
 		//CarPawn->GrappleSensor->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		
 	}
+
+	//update spline and spline mesh for shark neck
 	FVector BaseSplineLocation = CarPawn->SphereComp->GetComponentLocation();
 	CarPawn->NeckComponent->UpdateSplinePointsLocations(BaseSplineLocation, BaseSplineLocation, false);
 	CarPawn->NeckComponent->UpdateSplinePointsTangents(FVector::ZeroVector, FVector::ZeroVector, false);
 	CarPawn->NeckComponent->UpdateSplineMesh();
 
-	// setting the Sensor mesh to match the camera forward vector
+	// Grapple sensor orientation
 	FRotator NewSensorRot = CarPawn->MainCamera->GetForwardVector().Rotation();
 	CarPawn->GrappleSensor->SetWorldRotation(NewSensorRot);
 	

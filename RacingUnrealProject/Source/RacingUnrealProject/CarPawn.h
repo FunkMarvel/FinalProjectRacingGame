@@ -172,6 +172,8 @@ private:
 	//state machince
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Car|State")
 	EVehicleState CurrentVehicleState = EVehicleState::AirBorne;
+	UPROPERTY()
+	float StateTime = 0.f;
 
 	bool bEnterState = false;
 	UFUNCTION()
@@ -190,7 +192,7 @@ private:
 	void StateAirBorne();
 
 	UFUNCTION()
-	void StateDashing();
+	void StateDying();
 
 	UFUNCTION()
 	void ToggleGrappleHook();
@@ -233,14 +235,9 @@ private:
 	// TODO debug remove end
 	// #endif
 
-	//events
-	// public:
-	// 	FSpacePressedEvent SpacePressedEvent;
-	// 	UFUNCTION()
-	// 	void OnSpacePressed(){
-	// 		UE_LOG(LogTemp, Warning, TEXT("SKIP!!!"))
-	// 		SpacePressedEvent.Broadcast();
-	// 	}
+	//patricles
+	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Car|ParticleSystem")
+		class UParticleSystem* DeathParticleSystem = nullptr;
 
 
 public:
