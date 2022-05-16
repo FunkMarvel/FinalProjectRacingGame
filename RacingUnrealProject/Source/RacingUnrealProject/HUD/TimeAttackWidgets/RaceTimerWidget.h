@@ -32,7 +32,7 @@ protected:
 
 	UPROPERTY(meta=(BindWidget))
 		class UTextBlock* LapCounter{nullptr};
-
+	
 	UPROPERTY(meta=(BindWidget))
 		class UTextBlock* SpeedOMeter{nullptr};
 };
