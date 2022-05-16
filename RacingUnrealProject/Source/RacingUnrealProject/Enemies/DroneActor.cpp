@@ -52,14 +52,6 @@ void ADroneActor::Tick(float DeltaSeconds)
 		if (PlayerPawn && GravitySplineActive) ChangeState(Intercepting);
 		break;
 	}
-	// if (!PlayerPawn)
-	// {
-	// 	PlayerPawn = Cast<ACarPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	// }
-	// else if (!GravitySplineActive)
- //    {
- //    	GravitySplineActive = PlayerPawn->GravitySplineActive;
- //    }
 
 	if (DroppableEnemyClass && bDropEnemy && !bHasSpawned)
 	{
