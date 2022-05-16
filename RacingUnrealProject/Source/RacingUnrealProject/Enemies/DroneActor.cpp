@@ -31,7 +31,6 @@ void ADroneActor::BeginPlay()
 	GrappleSphereComponent->OnGrappleHitEvent.AddDynamic(this, &ADroneActor::Grappled);
 	GrappleSphereComponent->OnReachedEvent.AddDynamic(this, &ADroneActor::Reached);
 	SensorSphere->OnComponentBeginOverlap.AddDynamic(this, &ADroneActor::OnOverlap);
-	// ScoreValue = 100;
 }
 
 void ADroneActor::Tick(float DeltaSeconds)
@@ -126,7 +125,7 @@ void ADroneActor::Reached(float AddSpeedAmount)
 void ADroneActor::HandleDeath()
 {
 	if (DroppedEnemyActor) DroppedEnemyActor->Destroy();
-	Super::HandleDeath();
+	if (this) Super::HandleDeath();
 }
 
 void ADroneActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

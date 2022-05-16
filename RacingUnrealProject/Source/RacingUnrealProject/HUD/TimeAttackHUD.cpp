@@ -6,6 +6,7 @@
 #include "PauseMenuWidget.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
+#include "Components/SphereComponent.h"
 #include "RacingUnrealProject/CarPawn.h"
 #include "RacingUnrealProject/GameModes/TimeAttackGameModeBase.h"
 #include "RacingUnrealProject/Widget/SpeedIndicatorWidget.h"
@@ -44,7 +45,7 @@ void ATimeAttackHUD::BeginPlay()
 		PauseMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
 		PauseMenuWidget->ResumeButton->OnClicked.AddDynamic(this, &ATimeAttackHUD::OnResume);
 		PauseMenuWidget->ReturnToMenuButton->OnClicked.AddDynamic(TimeAttackEndMenuWidget, &UTimeAttackEndMenuWidget::OnBackToMenu);
-		ACarPawn* PlayerPawn = Cast<ACarPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
+		PlayerPawn = Cast<ACarPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
 		if (PlayerPawn)
 		{
 			PauseMenuWidget->ResetToCheckpoint->OnClicked.AddDynamic(PlayerPawn, &ACarPawn::ResetCarToLastCheckpoint);
@@ -64,11 +65,13 @@ void ATimeAttackHUD::BeginPlay()
 		SpeedIndicatorWidget = CreateWidget<USpeedIndicatorWidget>(GetWorld(), SpeedIndicatorClass);
 		SpeedIndicatorWidget->AddToViewport();
 		SpeedIndicatorWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
-		if (GetWorld()->GetFirstPlayerController()->GetPawn()->IsA(ACarPawn::StaticClass())) {
-			SpeedIndicatorWidget->CarPawn = Cast<ACarPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
-		}
+		// if (GetWorld()->GetFirstPlayerController()->GetPawn()->IsA(ACarPawn::StaticClass())) {
+		// 	SpeedIndicatorWidget->CarPawn = Cast<ACarPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
+		//
+		// }
+		if (PlayerPawn) SpeedIndicatorWidget->CarPawn = PlayerPawn;
+
 		SpeedIndicatorWidget->PsudoBeginPlay();
-		
 	}
 }
 
@@ -77,6 +80,7 @@ void ATimeAttackHUD::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 	if (GameModeBase->IsTiming()) GameModeBase->RaceTimer += DeltaSeconds;
 	if (RaceTimerWidget) RaceTimerWidget->UpdateTimer(GameModeBase->RaceTimer);
+	if (RaceTimerWidget) RaceTimerWidget->SetSpeedOMeter(PlayerPawn->GetCurrentForwardSpeed());
 }
 
 void ATimeAttackHUD::SetLapCounter(int32 CurrentLap, int32 MaxNumLaps)

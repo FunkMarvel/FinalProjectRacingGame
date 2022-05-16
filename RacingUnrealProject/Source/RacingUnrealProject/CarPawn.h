@@ -133,6 +133,9 @@ public:
 	UFUNCTION()
 		float GetMaxSpeed() const {return MaxSpeed; }
 
+	UFUNCTION()
+		float GetCurrentForwardSpeed();
+
 	
 	//Camera
 private:

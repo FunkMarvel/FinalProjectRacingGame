@@ -303,6 +303,11 @@ void ACarPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	// PlayerInputComponent->BindAction("Space", EInputEvent::IE_Pressed, this, &ACarPawn::OnSpacePressed);
 }
 
+float ACarPawn::GetCurrentForwardSpeed()
+{
+	return	FVector::DotProduct(SphereComp->GetPhysicsLinearVelocity(), SphereComp->GetForwardVector());
+}
+
 void ACarPawn::UpdateCameraBoomLength()
 {
 	float newVal = FMath::FInterpTo(CameraBoom->TargetArmLength, TargetCameraBoomLength, GetWorld()->GetDeltaSeconds(), 5.f);

@@ -20,6 +20,7 @@ void AScoreAttackHUD::BeginPlay()
 		ScoreCounterWidget->AddToViewport();
 		ScoreCounterWidget->SetVisibility(ESlateVisibility::Visible);
 		ScoreCounterWidget->UpdateLapCounter(GameModeBase->CurrentLap, GameModeBase->NumberOfLaps);
+		SetScore(0);
 	}
 
 	if (ScoreAttackEndMenuClass)

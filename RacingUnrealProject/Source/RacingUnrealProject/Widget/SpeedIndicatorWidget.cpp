@@ -14,7 +14,8 @@ void USpeedIndicatorWidget::NativeTick(const FGeometry& MyGeometry, float InDelt
 
 
 	if (CarPawn) {
-		float Percent = CarPawn->SphereComp->GetPhysicsLinearVelocity().Size() / CarPawn->GetMaxSpeed();
+		// float Percent = CarPawn->SphereComp->GetPhysicsLinearVelocity().Size() / CarPawn->GetMaxSpeed();
+		float Percent = CarPawn->GetCurrentForwardSpeed() / CarPawn->GetMaxSpeed();
 		//scaling down by 30% this means if we are over 30% speed we hit the max max speed and change speed icon
 		Percent *= 0.7f;
 
