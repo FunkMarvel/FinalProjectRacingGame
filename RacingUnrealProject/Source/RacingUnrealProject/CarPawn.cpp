@@ -850,8 +850,8 @@ void ACarPawn::OnHitt(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimiti
 
 	//is the normal impule great enoguh, and is the impule not coming mainly from below the car
 	if (NormalImpulse.Size() > 400000.f && UnsignedAngle(NormalImpulse, LocalUpVector) > 70.f) {
-		EnterState(EVehicleState::Dying);
-		return;
+		/*EnterState(EVehicleState::Dying);
+		return;*/
 	}
 
 	
