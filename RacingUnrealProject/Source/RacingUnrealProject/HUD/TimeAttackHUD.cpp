@@ -66,8 +66,9 @@ void ATimeAttackHUD::BeginPlay()
 		SpeedIndicatorWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
 		if (GetWorld()->GetFirstPlayerController()->GetPawn()->IsA(ACarPawn::StaticClass())) {
 			SpeedIndicatorWidget->CarPawn = Cast<ACarPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
-			
 		}
+		SpeedIndicatorWidget->PsudoBeginPlay();
+		
 	}
 }
 

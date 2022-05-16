@@ -7,6 +7,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/SphereComponent.h"
 #include "RacingUnrealProject/CarPawn.h"
+#include "RacingUnrealProject/DebugLog.h"
 
 void USpeedIndicatorWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime) {
 	Super::NativeTick(MyGeometry, InDeltaTime);
@@ -21,13 +22,20 @@ void USpeedIndicatorWidget::NativeTick(const FGeometry& MyGeometry, float InDelt
 		float Lerp = FMath::Lerp(SpeedProgressBar->Percent, Percent, GetWorld()->GetDeltaSeconds() * fProgressBarChangeSpeed);
 		
 		SetPercentage(Lerp);
-
-
+		
 		//handling image
 		bool bMaxSpeed = Lerp >= 1.f ? true : false;
 		SetMaxSpeedIndicatorOn(bMaxSpeed);
+
+		
 		
 	}
+}
+
+void USpeedIndicatorWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+	OuterImageInstanceDynamic = UMaterialInstanceDynamic::Create(OuterImageMaterial, this);
 }
 
 void USpeedIndicatorWidget::SetMaxSpeedIndicatorOn(bool bMaxSpeed) {
@@ -46,4 +54,12 @@ void USpeedIndicatorWidget::SetMaxSpeedIndicatorOn(bool bMaxSpeed) {
 
 void USpeedIndicatorWidget::SetPercentage(const float Percent) {
 	SpeedProgressBar->SetPercent(Percent);
+	OuterImageInstanceDynamic->SetScalarParameterValue("Percent", Percent);
+	
+}
+
+void USpeedIndicatorWidget::PsudoBeginPlay() {
+	OuterImage->SetBrushFromMaterial(OuterImageInstanceDynamic);
+	// OuterImage->Brush.SetResourceObject(OuterImageMaterial);
+	
 }
