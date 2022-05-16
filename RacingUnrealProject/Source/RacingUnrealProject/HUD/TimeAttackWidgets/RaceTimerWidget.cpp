@@ -13,7 +13,7 @@ void URaceTimerWidget::NativeConstruct()
 	
 	if (Timer) Timer->SetText(FText::FromString("00:00:00"));
 	if (LapCounter) LapCounter->SetText(FText::FromString("0/0"));
-	if (SpeedOMeter) SpeedOMeter->SetText(FText::FromString("0"));
+	if (SpeedOMeter) SpeedOMeter->SetText(FText::FromString("000 KM/H"));
 }
 
 void URaceTimerWidget::UpdateTimer(float CurrentTime)
