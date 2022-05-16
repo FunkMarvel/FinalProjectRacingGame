@@ -20,10 +20,6 @@ public:
 	virtual void BeginPlay() override;
 	void Tick(float DeltaSeconds) override;
 
-	// FVector LocalUpVector{};
-
-	void OnBeginOverLap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 
 protected:
 	void SetUpVectorAsSplineUpAxis();
