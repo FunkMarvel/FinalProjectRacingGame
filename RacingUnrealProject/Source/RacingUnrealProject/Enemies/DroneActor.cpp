@@ -74,9 +74,6 @@ void ADroneActor::InterceptingState()
 		InterceptSpeed = (TargetLocation-GetActorLocation()).Size()/InterceptTime;
 		bEnteringState = false;
 	}
-	// TargetLocation = FVector::DotProduct(TargetLocation, PlayerPawn->GetActorForwardVector())*PlayerPawn->GetActorForwardVector() +
-	// 	FVector::DotProduct(TargetLocation, PlayerPawn->GetActorRightVector())*PlayerPawn->GetActorRightVector() +
-	// 		FVector::DotProduct(GetActorLocation(), PlayerPawn->GetActorUpVector())*PlayerPawn->GetActorUpVector();
 	
 	SetActorRotation((TargetLocation - GetActorLocation()).Rotation());
 	Move(TargetLocation);
