@@ -40,7 +40,9 @@ void UPhysicsGrapplingComponent::BeginPlay()
 	MaxGrappleDistance = CarPawn->GrappleSensor->GetStaticMesh()->GetBoundingBox().GetSize().X;
 }
 
-
+/**
+ * @brief Gets all overlaping actors, and sorts them, sets the first valid to grapple target
+ */
 void UPhysicsGrapplingComponent::HandleTargetHomingComp()
 {
 	//Handle TargetGraooableComponent
@@ -310,6 +312,13 @@ void UPhysicsGrapplingComponent::TravelingState()
 	//updates spline mesh
 	CarPawn->NeckComponent->UpdateSplineMesh();
 
+	//if no grapple target try to find one
+	if (TargetGrappableComponent != nullptr)
+	{
+		HandleTargetHomingComp();
+	}
+
+	
 	//this also handles the entering of states
 	HandleRayTraceLogic();
 	
