@@ -64,28 +64,38 @@ void UPhysicsGrapplingComponent::HandleTargetHomingComp()
 			GrappableSphereComponents.Add(Cast<UGrappleSphereComponent>(OverlappingComponents[i]));		
 		}
 	}
+
+	
 	
 	if (GrappableSphereComponents.Num() > 0)
 	{
-
+		float ClosestDistance = 10000000000;
+		int ClosestIterator = -1;
+		
 		for (int i = 0; i < GrappableSphereComponents.Num(); ++i) {
-			if (GrappableSphereComponents[i]->IsEnabled()) {
-
-				TargetGrappableComponent = GrappableSphereComponents[i];
-				CarPawn->GrappableWidgetComponent->PlaceWidget(TargetGrappableComponent);
-				FoundHomingTargetEvent.Broadcast(TargetGrappableComponent);
+			UGrappleSphereComponent* GrapComp = GrappableSphereComponents[i];
+			if (GrapComp->IsEnabled()) {
+				float ForDistance = (GrapComp->GetComponentLocation() - CarPawn->SphereComp->GetComponentLocation()).Size();
+				if (ForDistance < ClosestDistance)
+				{
+					ClosestIterator = i;
+					ClosestDistance = ForDistance;
+				}
 				
-				// returnn early if we find a valid target
-				//TODO make it instead based on closed target.
-				return;
 			}
 		}
+		if (ClosestIterator != -1)
+		{
+			TargetGrappableComponent = GrappableSphereComponents[ClosestIterator];
+			CarPawn->GrappableWidgetComponent->PlaceWidget(TargetGrappableComponent);
+			FoundHomingTargetEvent.Broadcast(TargetGrappableComponent);
+			return;
+		}
 	}
-	else // array size 0
-	{
-		TargetGrappableComponent = nullptr;
-		LostHomingTargetEvent.Broadcast();
-	}
+	
+	TargetGrappableComponent = nullptr;
+	LostHomingTargetEvent.Broadcast();
+	
 }
 
 // Called every frame

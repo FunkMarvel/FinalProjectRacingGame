@@ -46,7 +46,7 @@ public:
 		bool IsOverrideReleaseVelocity() const { return bOverrideReleaseVelocity; }
 	
 	UFUNCTION()
-		void SetIsEatable(bool bEnable) {bEatable = bEnable; }
+		void SetIsEatable(bool _bEnable) {bEatable = _bEnable; }
 	UFUNCTION()
 		bool IsEatable() const {return bEatable; }
 
