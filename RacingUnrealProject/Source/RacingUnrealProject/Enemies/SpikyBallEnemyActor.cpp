@@ -144,10 +144,9 @@ void ASpikyBallEnemyActor::Move()
 {
 	FVector MoveDir{(PlayerPawn->GetActorLocation() - GetActorLocation()).GetSafeNormal()};
 	// MoveDir.Z = 0.f;
-	if (SphereComp->GetPhysicsLinearVelocity().Size() <= MaxSpeed)
-	{
-		SphereComp->AddForce(MoveDir * Acceleration, NAME_None, true);
-	}
+	SphereComp->AddForce(MoveDir * Acceleration, NAME_None, true);
+	FVector VelVec{SphereComp->GetPhysicsLinearVelocity()};
+	SphereComp->SetPhysicsLinearVelocity(VelVec.GetClampedToMaxSize(MaxSpeed));
 }
 
 void ASpikyBallEnemyActor::ApplyGravity()
