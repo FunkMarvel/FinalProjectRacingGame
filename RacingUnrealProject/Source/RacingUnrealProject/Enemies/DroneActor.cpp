@@ -125,7 +125,7 @@ void ADroneActor::Reached(float AddSpeedAmount)
 void ADroneActor::HandleDeath()
 {
 	if (DroppedEnemyActor) DroppedEnemyActor->Destroy();
-	Super::HandleDeath();
+	if (this) Super::HandleDeath();
 }
 
 void ADroneActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
