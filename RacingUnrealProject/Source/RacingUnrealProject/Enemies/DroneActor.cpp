@@ -15,7 +15,7 @@ ADroneActor::ADroneActor()
 	GrappleSphereComponent = CreateDefaultSubobject<UGrappleSphereComponent>(TEXT("GrappleSphereComponent"));
 	GrappleSphereComponent->SetupAttachment(GetRootComponent());
 	GrappleSphereComponent->SetIsEnabled(true);
-	GrappleSphereComponent->SetIsEatable(false);
+	GrappleSphereComponent->SetIsEatable(true);
 
 	SensorSphere = CreateDefaultSubobject<USphereComponent>(TEXT("SensorSphere"));
 	SensorSphere->SetupAttachment(GetRootComponent());
