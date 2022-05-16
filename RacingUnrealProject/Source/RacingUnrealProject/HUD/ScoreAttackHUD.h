@@ -28,6 +28,8 @@ public:
 
 	void TogglePauseMenu(bool bShowMenu);
 
+	virtual void Tick(float DeltaSeconds) override;
+
 	UFUNCTION()
 		void OnResume();
 	
@@ -51,4 +53,7 @@ protected:
 
 	UPROPERTY()
 		class UScoreAttackEndMenuWidget* ScoreAttackEndMenuWidget{nullptr};
+
+	UPROPERTY()
+		class ACarPawn* PlayerPawn{nullptr};
 };
