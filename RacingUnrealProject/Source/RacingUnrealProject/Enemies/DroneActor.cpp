@@ -15,7 +15,7 @@ ADroneActor::ADroneActor()
 	GrappleSphereComponent = CreateDefaultSubobject<UGrappleSphereComponent>(TEXT("GrappleSphereComponent"));
 	GrappleSphereComponent->SetupAttachment(GetRootComponent());
 	GrappleSphereComponent->SetIsEnabled(true);
-	GrappleSphereComponent->SetIsEatable(false);
+	GrappleSphereComponent->SetIsEatable(true);
 
 	SensorSphere = CreateDefaultSubobject<USphereComponent>(TEXT("SensorSphere"));
 	SensorSphere->SetupAttachment(GetRootComponent());
@@ -52,14 +52,6 @@ void ADroneActor::Tick(float DeltaSeconds)
 		if (PlayerPawn && GravitySplineActive) ChangeState(Intercepting);
 		break;
 	}
-	// if (!PlayerPawn)
-	// {
-	// 	PlayerPawn = Cast<ACarPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	// }
-	// else if (!GravitySplineActive)
- //    {
- //    	GravitySplineActive = PlayerPawn->GravitySplineActive;
- //    }
 
 	if (DroppableEnemyClass && bDropEnemy && !bHasSpawned)
 	{
@@ -82,9 +74,6 @@ void ADroneActor::InterceptingState()
 		InterceptSpeed = (TargetLocation-GetActorLocation()).Size()/InterceptTime;
 		bEnteringState = false;
 	}
-	// TargetLocation = FVector::DotProduct(TargetLocation, PlayerPawn->GetActorForwardVector())*PlayerPawn->GetActorForwardVector() +
-	// 	FVector::DotProduct(TargetLocation, PlayerPawn->GetActorRightVector())*PlayerPawn->GetActorRightVector() +
-	// 		FVector::DotProduct(GetActorLocation(), PlayerPawn->GetActorUpVector())*PlayerPawn->GetActorUpVector();
 	
 	SetActorRotation((TargetLocation - GetActorLocation()).Rotation());
 	Move(TargetLocation);
