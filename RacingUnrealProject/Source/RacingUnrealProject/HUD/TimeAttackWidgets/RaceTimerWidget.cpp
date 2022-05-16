@@ -13,6 +13,7 @@ void URaceTimerWidget::NativeConstruct()
 	
 	if (Timer) Timer->SetText(FText::FromString("00:00:00"));
 	if (LapCounter) LapCounter->SetText(FText::FromString("0/0"));
+	if (SpeedOMeter) SpeedOMeter->SetText(FText::FromString("0"));
 }
 
 void URaceTimerWidget::UpdateTimer(float CurrentTime)
@@ -28,4 +29,10 @@ void URaceTimerWidget::UpdateLapCounter(int32 CurrentNumLaps, int32 MaxNumLaps)
 {
 	FString LapString{FString::Printf(TEXT("%01d/%01d"), CurrentNumLaps, MaxNumLaps)};
 	if (LapCounter) LapCounter->SetText(FText::FromString(LapString));
+}
+
+void URaceTimerWidget::SetSpeedOMeter(float InSpeed)
+{
+	FString SpeedString{FString::Printf(TEXT("%03.0f KM/H"), 0.01*InSpeed*3.6)};
+	if (SpeedOMeter) SpeedOMeter->SetText(FText::FromString(SpeedString));
 }
