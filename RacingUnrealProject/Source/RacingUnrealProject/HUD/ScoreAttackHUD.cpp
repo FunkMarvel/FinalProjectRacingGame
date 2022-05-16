@@ -37,7 +37,8 @@ void AScoreAttackHUD::BeginPlay()
 		PauseMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
 		PauseMenuWidget->ResumeButton->OnClicked.AddDynamic(this, &AScoreAttackHUD::OnResume);
 		PauseMenuWidget->ReturnToMenuButton->OnClicked.AddDynamic(ScoreAttackEndMenuWidget, &UScoreAttackEndMenuWidget::OnBackToMenu);
-		ACarPawn* PlayerPawn = Cast<ACarPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
+		
+		PlayerPawn = Cast<ACarPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
 		if (PlayerPawn)
 		{
 			PauseMenuWidget->ResetToCheckpoint->OnClicked.AddDynamic(PlayerPawn, &ACarPawn::ResetCarToLastCheckpoint);
@@ -95,6 +96,12 @@ void AScoreAttackHUD::TogglePauseMenu(bool bShowMenu)
 			PauseMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
 		}
 	}
+}
+
+void AScoreAttackHUD::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	if (ScoreCounterWidget) ScoreCounterWidget->SetSpeedOMeter(PlayerPawn->GetCurrentForwardSpeed());
 }
 
 void AScoreAttackHUD::OnResume()
