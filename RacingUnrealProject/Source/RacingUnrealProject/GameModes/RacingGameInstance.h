@@ -66,6 +66,12 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Levels")
 		TArray<FName> LevelNames{};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Goals")
+		TArray<float> TimesToBeat{};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Goals")
+		TArray<int32> ScoresToBeat{};
 	
 	void ChangeLevel(FName LevelName);
 	

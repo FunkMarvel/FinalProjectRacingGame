@@ -17,6 +17,7 @@
 #include "NiagaraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "RacingUnrealProject/CarPawn.h"
+#include "RacingUnrealProject/RacingUnrealProjectGameModeBase.h"
 
 // Sets default values
 ASplineWormEnemy::ASplineWormEnemy()
@@ -70,6 +71,8 @@ void ASplineWormEnemy::BeginPlay()
 	ResetWorm();
 	
 	CarPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+
+	GameModeBase = Cast<ARacingUnrealProjectGameModeBase>(GetWorld()->GetAuthGameMode());
 
 	//sets collider capsule size
 	float MaxX = NeckSegment->GetBoundingBox().Max.X - NeckSegment->GetBoundingBox().Min.X;
@@ -457,6 +460,7 @@ float ASplineWormEnemy::GetWormRealLength() const
 void ASplineWormEnemy::OnGrappleReaced(float Addspeed)
 {
 	DL_NORMAL("Finished grappling worm!")
+	if (GameModeBase) GameModeBase->AddScore(ScoreValue);
 	ColliderCapsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	// Destroy();
 }
