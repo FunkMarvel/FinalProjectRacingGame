@@ -40,6 +40,13 @@ public:
 		class USplineComponent* Spline = nullptr;
 	UPROPERTY(EditAnywhere, Category = "Spline")
 		class UCapsuleComponent* ColliderCapsule = nullptr;
+
+	// score attack
+	UPROPERTY(EditAnywhere, Category="Score")
+		int32 ScoreValue{200};
+
+	UPROPERTY()
+		class ARacingUnrealProjectGameModeBase* GameModeBase{nullptr};
 	
 private:
 	
