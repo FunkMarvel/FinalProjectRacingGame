@@ -362,7 +362,6 @@ void ACarPawn::StateGrappling()
 	
 	
 	//orients the sphere comp
-	
 	float StartDistance = (PhysicsGrappleComponent->GetOnHookedVehicleTransform().GetLocation() -  GrappleHookMesh->GetComponentLocation()).Size();
 	float CurrentDistance = (SphereComp->GetComponentLocation() -  GrappleHookMesh->GetComponentLocation()).Size();
 	float lerpFactor = CurrentDistance / StartDistance; // at start will be 1, and will progress towards 0
@@ -370,11 +369,19 @@ void ACarPawn::StateGrappling()
 
 	if (PhysicsGrappleComponent->GetTargetComponent())
 	{
-		FRotator NewRot = UKismetMathLibrary::RLerp(
+		/*FRotator NewRot = UKismetMathLibrary::RLerp(
 			PhysicsGrappleComponent->GetOnHookedVehicleTransform().Rotator(),
 			PhysicsGrappleComponent->GetTargetComponent()->GetComponentRotation(),
 			lerpFactor,
 			true);
+		SphereComp->SetWorldRotation(NewRot);*/
+		FVector Up, Forward;
+		Up = UKismetMathLibrary::VLerp(PhysicsGrappleComponent->GetOnHookedUpVector(), PhysicsGrappleComponent->GetTargetComponent()->GetUpVector(), lerpFactor);
+		Forward = NeckSpline->FindDirectionClosestToWorldLocation(SphereComp->GetComponentLocation(), ESplineCoordinateSpace::World);
+		
+		
+		FRotator NewRot = UKismetMathLibrary::MakeRotFromXZ(Forward, Up);
+		// FRotator NewRot = UKismetMathLibrary::MakeRotFromZX(Up, Forward);
 		SphereComp->SetWorldRotation(NewRot);
 	}
 	CameraBoom->SetRelativeRotation(FRotator(-5.f, 0.f, 0.f));
@@ -552,7 +559,8 @@ void ACarPawn::MoveYAxis(float Value)
 	
 	FVector Forwardd = SphereComp->GetForwardVector();
 	FVector Upp = SphereComp->GetUpVector();
-	Forwardd =Forwardd.RotateAngleAxis(Value * TurnSpeed * UGameplayStatics::GetWorldDeltaSeconds(this), Upp);
+	YAxisValue = Value * TurnSpeed * UGameplayStatics::GetWorldDeltaSeconds(this);
+	Forwardd =Forwardd.RotateAngleAxis(YAxisValue, Upp);
 
 	FRotator NewRot = UKismetMathLibrary::MakeRotFromXZ(Forwardd, Upp);
 	SphereComp->SetWorldRotation(NewRot);

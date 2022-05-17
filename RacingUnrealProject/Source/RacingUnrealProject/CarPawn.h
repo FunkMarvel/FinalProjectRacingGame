@@ -129,13 +129,17 @@ private:
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Movment")
 	float AsymForce = 300000.f;
 
+	UPROPERTY()
+	float YAxisValue = 0.f;
+	
 	//gettes for movment
 public:
 	UFUNCTION()
 		float GetMaxSpeed() const {return MaxSpeed; }
-
 	UFUNCTION()
 		float GetCurrentForwardSpeed();
+	UFUNCTION()
+		float GetYAxisValue() const {return YAxisValue; }
 
 	
 	//Camera

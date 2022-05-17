@@ -11,6 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/ArrowComponent.h"
 #include "GameFramework/SpringArmComponent.h" 
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values for this component's properties
 UCameraEffecttComponent::UCameraEffecttComponent()
@@ -76,6 +77,14 @@ void UCameraEffecttComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	{
 		SpeedCameraShake->ShakeScale = CarPawn->SphereComp->GetPhysicsLinearVelocity().Size() * (1.f/SpeedShakeInverseIntensity);
 	}
+
+	//rotate camera
+	FRotator CurrentCameraRot = CarPawn->MainCamera->GetRelativeRotation();
+
+	FRotator TargetCameraRot = FRotator(0.f, 0.f, CarPawn->GetYAxisValue() * 7.f);
+	FRotator NewRot = UKismetMathLibrary::RInterpTo(CurrentCameraRot, TargetCameraRot, DeltaTime, 8.f);
+	CarPawn->MainCamera->SetRelativeRotation(NewRot);
+	
 
 
 	

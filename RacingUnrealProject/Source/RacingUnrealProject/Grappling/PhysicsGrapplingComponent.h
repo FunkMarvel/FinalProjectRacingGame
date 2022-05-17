@@ -84,6 +84,8 @@ private:
 		FVector OnHookedDirection = FVector::ZeroVector;
 	UPROPERTY()
 		FTransform OnHookedVehicleTransfrom = FTransform::Identity;
+	UPROPERTY()
+		FVector OnHookedUpVector = FVector::ZeroVector;
 	
 	UPROPERTY()
 		float MoveToTargetModifier = 1.f;
@@ -140,6 +142,8 @@ public:
 		FVector GetOnHookedDirection() const { return OnHookedDirection; }
 	UFUNCTION()
 		FTransform GetOnHookedVehicleTransform(){return OnHookedVehicleTransfrom; }
+	UFUNCTION()
+		FVector GetOnHookedUpVector() const {return OnHookedUpVector; }
 	UFUNCTION()
 		UGrappleSphereComponent* GetTargetComponent() const {return TargetGrappableComponent; }
 	UFUNCTION()
