@@ -18,7 +18,7 @@ public:
 	virtual void NativeConstruct() override;
 
 	UFUNCTION()
-	void UpdateScore(int32 CurrentScore);
+	void UpdateScore(int32 CurrentScore, int32 CurrentGoalScore, FSlateColor &CurrentColor);
 
 	UFUNCTION()
 	void UpdateLapCounter(int32 CurrentNumLaps, int32 MaxNumLaps);

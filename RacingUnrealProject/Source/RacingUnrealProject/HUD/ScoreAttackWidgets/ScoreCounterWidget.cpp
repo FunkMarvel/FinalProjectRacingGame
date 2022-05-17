@@ -13,10 +13,11 @@ void UScoreCounterWidget::NativeConstruct()
 	if (SpeedOMeter) SpeedOMeter->SetText(FText::FromString("000 KM/H"));
 }
 
-void UScoreCounterWidget::UpdateScore(int32 CurrentScore)
+void UScoreCounterWidget::UpdateScore(int32 CurrentScore, int32 CurrentGoalScore, FSlateColor &CurrentColor)
 {
-	FString ScoreString{FString::Printf(TEXT("%05d"), CurrentScore)};
+	FString ScoreString{FString::Printf(TEXT("Goal: %05d\nScore: %05d"), CurrentGoalScore, CurrentScore)};
 	Score->SetText(FText::FromString(ScoreString));
+	Score->SetColorAndOpacity(CurrentColor);
 }
 
 void UScoreCounterWidget::UpdateLapCounter(int32 CurrentNumLaps, int32 MaxNumLaps)

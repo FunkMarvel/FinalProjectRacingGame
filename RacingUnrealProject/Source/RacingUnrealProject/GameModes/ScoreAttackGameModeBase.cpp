@@ -79,6 +79,18 @@ void AScoreAttackGameModeBase::GameEndState()
 void AScoreAttackGameModeBase::AddScore(int32 Score)
 {
 	Super::AddScore(Score);
+	
+	int32 CurrentGoalScore{};
+	FSlateColor SlateColor = ChangeGoalColor(EGoals::None);
+
 	CurrentScore += Score;
-	AttackHUD->SetScore(CurrentScore);
+
+	if (RacingGameInstance->ScoresToBeat.Num() > EGoals::Gold)
+	{
+		if (CurrentScore >= RacingGameInstance->ScoresToBeat[CurrentBestGoal]) ++CurrentBestGoal;
+		CurrentGoalScore = RacingGameInstance->ScoresToBeat[CurrentBestGoal];
+		SlateColor = ChangeGoalColor(CurrentBestGoal);
+	}
+	
+	AttackHUD->SetScore(CurrentScore, CurrentGoalScore, SlateColor);
 }

@@ -27,6 +27,12 @@ public:
 
 	virtual void AddScore(int32 Score) override;
 
+	int32 GetCurrentGoalScore()
+	{
+		if (RacingGameInstance) return RacingGameInstance->ScoresToBeat[CurrentBestGoal];
+		return 0;
+	}
+
 protected:
 	int32 CurrentScore{};
 

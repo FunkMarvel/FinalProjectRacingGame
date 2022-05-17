@@ -20,7 +20,9 @@ void AScoreAttackHUD::BeginPlay()
 		ScoreCounterWidget->AddToViewport();
 		ScoreCounterWidget->SetVisibility(ESlateVisibility::Visible);
 		ScoreCounterWidget->UpdateLapCounter(GameModeBase->CurrentLap, GameModeBase->NumberOfLaps);
-		SetScore(0);
+
+		FSlateColor SlateColor{GameModeBase->ChangeGoalColor(EGoals::None)};
+		ScoreCounterWidget->UpdateScore(0, GameModeBase->GetCurrentGoalScore(), SlateColor);
 	}
 
 	if (ScoreAttackEndMenuClass)
@@ -52,9 +54,9 @@ void AScoreAttackHUD::SetLapCounter(int32 CurrentLap, int32 MaxNumLaps)
 	ScoreCounterWidget->UpdateLapCounter(CurrentLap, MaxNumLaps);
 }
 
-void AScoreAttackHUD::SetScore(int32 CurrentScore)
+void AScoreAttackHUD::SetScore(int32 CurrentScore, int32 CurrentGoalScore, FSlateColor &CurrentColor)
 {
-	ScoreCounterWidget->UpdateScore(CurrentScore);
+	ScoreCounterWidget->UpdateScore(CurrentScore, CurrentGoalScore, CurrentColor);
 }
 
 void AScoreAttackHUD::SetBestScore(int32 CurrentScore, int32 BestScore)
