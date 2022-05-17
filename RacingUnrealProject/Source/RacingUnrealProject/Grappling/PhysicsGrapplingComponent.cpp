@@ -247,8 +247,8 @@ void UPhysicsGrapplingComponent::InActiveState()
 		ResetTemporalVariables();
 		CarPawn->GrappleHookMesh->SetRelativeRotation(FRotator::ZeroRotator);
 
-		//CarPawn->GrappleSensor->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		
+		//event
+		OpenHead.Broadcast(false);
 	}
 
 	//update spline and spline mesh for shark neck
@@ -283,11 +283,11 @@ void UPhysicsGrapplingComponent::TravelingState()
 		CarPawn->GrappleHookMesh->SetRelativeScale3D(FVector(10.f));
 
 		//event
-		if (TargetGrappableComponent)
-		{
-			BeginHomingEvent.Broadcast();
-			
-		}
+		if (TargetGrappableComponent){
+			BeginHomingEvent.Broadcast();}
+
+		
+		OpenHead.Broadcast(true);
 		
 	}
 	

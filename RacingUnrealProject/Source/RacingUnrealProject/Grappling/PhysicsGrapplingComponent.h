@@ -14,6 +14,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FFoundHomingTarget, USceneComponent*, UGrappleSphereComponent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBeginHoming);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLostHomingTarget);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOpennHead, bool, bOpen);
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -44,6 +45,8 @@ public:
 		FBeginHoming BeginHomingEvent;
 	UPROPERTY(BlueprintAssignable, Category = "Event")
 		FLostHomingTarget LostHomingTargetEvent;
+	UPROPERTY(BlueprintAssignable, Category = "Event")
+		FOpennHead OpenHead;
 	
 private:
 	UPROPERTY()
