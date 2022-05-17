@@ -63,6 +63,7 @@ void USpeedIndicatorWidget::SetPercentage(const float Percent) {
 
 void USpeedIndicatorWidget::PsudoBeginPlay() {
 	OuterImage->SetBrushFromMaterial(OuterImageInstanceDynamic);
+	
 	// OuterImage->Brush.SetResourceObject(OuterImageMaterial);
 	
 }

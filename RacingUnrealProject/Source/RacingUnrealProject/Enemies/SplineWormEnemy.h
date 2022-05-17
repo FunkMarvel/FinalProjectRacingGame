@@ -169,6 +169,7 @@ private:
 		float CurrentMoveTime = 0.f;
 	UPROPERTY()
 		APawn* CarPawn = nullptr;
+	
 
 
 	//grapple events

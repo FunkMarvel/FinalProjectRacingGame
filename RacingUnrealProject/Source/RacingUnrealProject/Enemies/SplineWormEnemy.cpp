@@ -127,9 +127,7 @@ void ASplineWormEnemy::Tick(float DeltaTime)
     	NeckSegmentLength + SplineMeshOverLap + CurrentWormDistance)
     {
 	    CurrentWormState = EWormState::Idle;
-    	
-    }
-	
+    }	
 }
 
 void ASplineWormEnemy::InitNiagaraParticleComponents(int numOfComps) {
@@ -368,9 +366,11 @@ void ASplineWormEnemy::InitSplineMeshSegments() {
 				NewSplineMesh->RegisterComponent();
 				NewSplineMesh->SetMobility(EComponentMobility::Movable);
 				NewSplineMesh->SetStaticMesh(NeckSegment);
+				
 
 				//other
 				NewSplineMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+				NewSplineMesh->SetVisibility(false); // sets it to invisible, will be made visible after they are placed
 				// NewSplineMesh->SetMaterial(0, WormBodyMaterial);
 				
 				//adds to array
@@ -408,6 +408,8 @@ void ASplineWormEnemy::InitSplineMeshSegments() {
 		float randomRoll = FMath::RandRange(-RandomRotationAmoundt, RandomRotationAmoundt);
 		SplineMeshComponents[i]->SetEndRoll(randomRoll);
 		SplineMeshComponents[i]->SetStartRoll(randomRoll);
+
+		
 	}
 }
 
@@ -462,12 +464,24 @@ void ASplineWormEnemy::StartWorm() {
 	ResetWorm();
 	
 	CurrentWormState = EWormState::Active;
-	WormTargetMesh->SetVisibility(true, false);
-	WormHeadMesh->SetVisibility(true, false);
 	ColliderCapsule->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	InitSplineMeshSegments();
 	// InitStaticMeshComponents();
 	InitNiagaraParticleComponents(SplineMeshComponents.Num());
+
+	//make enemy visible
+	
+	FTimerDelegate Callback;
+	FTimerHandle Handle;
+	Callback.BindLambda([this]
+	{
+		WormTargetMesh->SetVisibility(true, false);
+		WormHeadMesh->SetVisibility(true, false);
+
+		for (int i = 0; i < SplineMeshComponents.Num(); ++i) { SplineMeshComponents[i]->SetVisibility(true); }
+	});
+	GetWorld()->GetTimerManager().SetTimer(Handle, Callback, 0.04f, false);
+	
 	DL_NORMAL("StartWOrm!")
 }
 

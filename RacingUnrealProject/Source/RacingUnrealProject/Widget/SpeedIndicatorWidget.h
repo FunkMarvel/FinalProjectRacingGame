@@ -38,7 +38,8 @@ private:
 		class UMaterial* OuterImageMaterial = nullptr;
 	UPROPERTY()
 		class UMaterialInstanceDynamic* OuterImageInstanceDynamic = nullptr;
-
+	
+	
 	//variables
 	UPROPERTY(meta = (AllowPrivateAccess = "true"))
 		float fProgressBarChangeSpeed = 1.f;

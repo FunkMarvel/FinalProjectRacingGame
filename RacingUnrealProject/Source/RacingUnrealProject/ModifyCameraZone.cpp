@@ -53,7 +53,7 @@ void AModifyCameraZone::OnOverLap(UPrimitiveComponent* OverlappedComponent, AAct
 		
 		if (bAddative)
 		{
-			CarPawn->SetTargetCameraBoomLength(CarPawn->GetStartCameraBoomLength() + CameraBoomLength);
+			CarPawn->SetTargetCameraBoomLength(CarPawn->GetTargetCameraBoomLength() + CameraBoomLength);
 		}
 		else
 		{
@@ -71,7 +71,7 @@ void AModifyCameraZone::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, A
 	if (OtherActor->IsA(ACarPawn::StaticClass()) && CarPawn != nullptr)
 	{
 		//resets to origninal cameraBoomLength
-		CarPawn->SetTargetCameraBoomLength(CarPawn->GetStartCameraBoomLength());
+		CarPawn->SetTargetCameraBoomLength(CarPawn->GetTargetCameraBoomLength());
 		CarPawn = nullptr;
 	}
 }

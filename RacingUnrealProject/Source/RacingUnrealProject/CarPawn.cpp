@@ -134,11 +134,6 @@ void ACarPawn::BeginPlay()
 
 	//deathzone variables
 	StartPlayerLocation = GetActorLocation();
-	
-	//setting camera lag
-	OnStartCameraLag = FVector2D(CameraBoom->CameraLagSpeed, CameraBoom->CameraRotationLagSpeed);
-	StartCameraBoomLength = CameraBoom->TargetArmLength;
-	TargetCameraBoomLength = StartCameraBoomLength;
 
 	//neck
 	//detaches the neck spline so it dosent follow
@@ -308,13 +303,6 @@ float ACarPawn::GetCurrentForwardSpeed()
 	return	FVector::DotProduct(SphereComp->GetPhysicsLinearVelocity(), SphereComp->GetForwardVector());
 }
 
-void ACarPawn::UpdateCameraBoomLength()
-{
-	float newVal = FMath::FInterpTo(CameraBoom->TargetArmLength, TargetCameraBoomLength, GetWorld()->GetDeltaSeconds(), 5.f);
-	CameraBoom->TargetArmLength = newVal;
-	return;
-}
-
 void ACarPawn::EnterState(EVehicleState NewState)
 {
 	bEnterState = true;
@@ -347,8 +335,7 @@ void ACarPawn::StateDriving()
 	{
 		EnterState(EVehicleState::AirBorne);
 	}
-
-	UpdateCameraBoomLength();
+	
 	//HandleMaxTurnWithSpline();
 	//DrawDebugLine(GetWorld(), SphereComp->GetComponentLocation(), SphereComp->GetComponentLocation() + LocalUpVector * 10000.f, FColor::Red, false);
 	
@@ -366,8 +353,6 @@ void ACarPawn::StateGrappling()
 		bEnterState = false;
 		SphereComp->SetSimulatePhysics(false);
 		
-		// CameraBoom->CameraLagSpeed = GrapplingCameraLag.X;
-		// CameraBoom->CameraRotationLagSpeed = GrapplingCameraLag.Y;
 		CameraEffectComponent->GrappleCameraModifier->EnableModifier();
 		// UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraEffectComponent->CameraShake, SphereComp->GetComponentLocation(),
 		// 	  0.f, 1000.f, 1.f);
@@ -403,9 +388,6 @@ void ACarPawn::StateGrappling()
 		SphereComp->SetSimulatePhysics(true);
 		SphereComp->SetPhysicsLinearVelocity(NewVel);
 		DL_NORMAL("GrappleExit!")
-		//sets rotation speed
-		// CameraBoom->CameraLagSpeed = OnStartCameraLag.X;
-		// CameraBoom->CameraRotationLagSpeed = OnStartCameraLag.Y;
 		
 		EnterState(EVehicleState::AirBorne);
 	}

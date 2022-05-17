@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Enums/Enums.h"
 #include "GameFramework/Pawn.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "CarPawn.generated.h"
 
 //DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHitGround, float, Speed);
@@ -141,30 +142,19 @@ public:
 private:
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Camera")
 	float CameraLookSpeed = 70.f; //gets set at begin play
-	UPROPERTY()
-	float StartCameraBoomLength = 0.f; //gets set at begin play
-	UPROPERTY()
-	float TargetCameraBoomLength = 0.f;
-	UPROPERTY()
-	FVector2D OnStartCameraLag = FVector2D::ZeroVector;
-	UPROPERTY(meta = (AllowPrivateAccess = "true", ToolTip = "X is CameraLag,  Y is CameraRotationLag"),
-		EditDefaultsOnly, Category = "Car|Camera")
-	FVector2D GrapplingCameraLag = FVector2D::ZeroVector;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Car|Camera")
 	float MaxYawLookAngle = 90.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Car|Camera")
 	float MaxPichLookAngle = 45.f;
+
+	//getters setters for Cameraboom
 public:
-	//camera boom
 	UFUNCTION()
-	float GetStartCameraBoomLength() const { return StartCameraBoomLength; }
-
+	void SetTargetCameraBoomLength(float NewCameraboomLength){CameraBoom->TargetArmLength = NewCameraboomLength; }
 	UFUNCTION()
-	void SetTargetCameraBoomLength(float NewCameraBoomLength) { TargetCameraBoomLength = NewCameraBoomLength; }
+		float GetTargetCameraBoomLength() const {return CameraBoom->TargetArmLength; }
 
-	UFUNCTION()
-	void UpdateCameraBoomLength();
-
+	
 
 	//Deathzone
 private:
@@ -208,6 +198,9 @@ private:
 	FVector CalcAsymVector();
 	float CaltAsymForce();
 
+	
+
+	
 	//action funcs
 	void MoveXAxis(float TimeAdjustedValue);
 	void MoveYAxis(float Value);
