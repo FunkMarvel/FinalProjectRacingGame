@@ -547,7 +547,7 @@ void ASplineWormEnemy::VisualizeWormEnemy() {
 	DrawDebugLine(World, Location, Location - Forward * 4000.f, FColor::Cyan, false, 1.2f, 0, 200.f);
 	// up
 	DrawDebugLine(World, Location, Location + Up * 1000.f, FColor::Red, false, 1.2f, 0, 200.f);
-	DL_ERROR("Visualizing Worm!")
+	// DL_ERROR("Visualizing Worm!")
 }
 
 
