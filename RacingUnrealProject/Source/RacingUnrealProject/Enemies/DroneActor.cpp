@@ -114,6 +114,7 @@ void ADroneActor::AttackingState()
 void ADroneActor::Grappled(FTransform SphereCompTransform)
 {
 	//TODO: Add behaviour for being grappled.
+	if (GameModeBase) GameModeBase->AddScore(ScoreValue/2);
 }
 
 void ADroneActor::Reached(float AddSpeedAmount)
