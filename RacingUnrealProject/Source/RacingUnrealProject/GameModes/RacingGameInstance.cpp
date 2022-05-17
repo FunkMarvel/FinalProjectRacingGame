@@ -7,7 +7,7 @@
 
 URacingGameInstance::URacingGameInstance()
 {
-	PlayerArray.Reserve(1);
+	PlayerArray.Init(FPlayerData(3600, 0), 1);
 }
 
 void URacingGameInstance::ChangeLevel(FName LevelName)
@@ -37,7 +37,7 @@ FPlayerData* URacingGameInstance::GetBestScorePlayer()
 	if (PlayerArray.Num() > 0)
 	{
 		Algo::Sort(PlayerArray, [](const FPlayerData A, const FPlayerData B) { return A.PlayerScore > B.PlayerScore; });
-
+		
 		return &PlayerArray[0];
 	}
 	return nullptr;
