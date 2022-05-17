@@ -85,7 +85,15 @@ ACarPawn::ACarPawn()
 	NeckSpline = CreateDefaultSubobject<USplineComponent>(TEXT("NeckSpline"));
 	NeckSpline->SetupAttachment(SphereComp);
 	
+	//skeletal meshes
+	SharkBodyMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SharkBodyMesh"));
+	SharkBodyMesh->SetupAttachment(SphereComp);
+	SharkBodyMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	SharkHeadMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SharkHeadMesh"));
+	SharkHeadMesh->SetupAttachment(GrappleHookSphereComponent);
+	SharkHeadMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
 	// actor componentns
     PhysicsGrappleComponent = CreateDefaultSubobject<UPhysicsGrapplingComponent>(TEXT("PhysicsGrappleComponent"));
 	CameraEffectComponent = CreateDefaultSubobject<UCameraEffecttComponent>(TEXT("CameraEffectComponent"));
@@ -266,12 +274,13 @@ void ACarPawn::Tick(float DeltaTime)
 
 
 	SphereComp->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
-	//sets bEnterstate to false so it wont run until we enter a new state
-	//bEnterState = false;
-	
-	//DrawDebugLine(GetWorld(), SphereComp->GetComponentLocation(), SphereComp->GetComponentLocation() + SphereComp->GetUpVector() * 300.f, FColor::Green, false, 0.5f);
-	//DrawDebugLine(GetWorld(), SphereComp->GetComponentLocation(), SphereComp->GetComponentLocation() + SphereComp->GetRightVector() * 300.f, FColor::Green, false, 0.5f);
-	
+
+	//bp event
+	if (SphereComp->IsSimulatingPhysics()) {
+		float ScaledSpeed = SphereComp->GetPhysicsLinearVelocity().Size();
+		ScaledSpeed = (ScaledSpeed/MaxSpeed) * 70.f;
+		BPECarSpeed(ScaledSpeed);
+	}
 
 }
 
