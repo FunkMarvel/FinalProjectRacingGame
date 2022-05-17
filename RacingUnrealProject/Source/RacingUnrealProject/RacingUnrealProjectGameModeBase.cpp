@@ -82,3 +82,24 @@ bool ARacingUnrealProjectGameModeBase::LoadGame()
 	}
 	return false;
 }
+
+FSlateColor ARacingUnrealProjectGameModeBase::ChangeGoalColor(EGoals CurrentGoal)
+{
+	FSlateColor SlateColor;
+	switch (CurrentBestGoal)
+	{
+	case EGoals::None:
+		SlateColor = FSlateColor(FLinearColor(FColorList::White));
+		break;
+	case EGoals::Bronze:
+		SlateColor = FSlateColor(FLinearColor(FColorList::Bronze));
+		break;
+	case EGoals::Silver:
+		SlateColor = FSlateColor(FLinearColor(FColorList::Silver));
+		break;
+	case EGoals::Gold:
+		SlateColor = FSlateColor(FLinearColor(FColorList::Gold));
+		break;
+	}
+	return SlateColor;
+}

@@ -7,6 +7,43 @@
 #include "GameModes/RacingGameInstance.h"
 #include "RacingUnrealProjectGameModeBase.generated.h"
 
+UENUM()
+enum EGoals
+{
+	None,
+	Bronze,
+	Silver,
+	Gold
+};
+
+inline EGoals& operator++(EGoals& CurrentGoal) { switch (CurrentGoal)
+{
+case EGoals::None:
+	return CurrentGoal = EGoals::Bronze;
+case EGoals::Bronze:
+	return CurrentGoal = EGoals::Silver;
+case EGoals::Silver:
+	return CurrentGoal = EGoals::Gold;
+case EGoals::Gold:
+	return CurrentGoal = EGoals::Gold;
+}
+	return CurrentGoal;
+}
+
+inline EGoals& operator--(EGoals& CurrentGoal) { switch (CurrentGoal)
+{
+case EGoals::None:
+	return CurrentGoal = EGoals::None;
+case EGoals::Bronze:
+	return CurrentGoal = EGoals::None;
+case EGoals::Silver:
+	return CurrentGoal = EGoals::Bronze;
+case EGoals::Gold:
+	return CurrentGoal = EGoals::Silver;
+}
+	return CurrentGoal;
+}
+
 /**
  * 
  */
@@ -41,6 +78,8 @@ public:
 		int32 NumberOfLaps{3};
 	int32 CurrentLap{1};
 	
+	EGoals CurrentBestGoal{EGoals::None};
+	
 	bool bGamePaused{false};
 	
 	virtual void BeginPlay() override;
@@ -70,4 +109,7 @@ public:
 
 	UFUNCTION()
 		bool LoadGame();
+
+	UFUNCTION()
+		FSlateColor ChangeGoalColor(EGoals CurrentGoal);
 };
