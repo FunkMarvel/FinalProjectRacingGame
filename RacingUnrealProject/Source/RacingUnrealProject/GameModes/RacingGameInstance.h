@@ -13,7 +13,10 @@ struct FPlayerData
 
 	
 	// FString PlayerName{};
+	UPROPERTY()
 	float PlayerTime{};
+
+	UPROPERTY()
 	int32 PlayerScore{};
 
 	FPlayerData() {}
@@ -39,6 +42,15 @@ class RACINGUNREALPROJECT_API URacingGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 
+protected:
+	TArray<FPlayerData> PlayerArray;
+
+
+	//this should stop pure virutal function form being called (Thanks Bjørn Joachim Olsen!!!)
+	virtual void Init() override;
+	virtual void Shutdown() override;
+	virtual void StartGameInstance() override;
+	
 public:
 	URacingGameInstance();
 
@@ -48,6 +60,9 @@ public:
 		TimeAttack,
 		ScoreAttack
 	};
+
+	const FString DefaultSaveSlotName{TEXT("DefaultSaveSlot")};
+	const uint32 DefaultSaveSlotIndex{0};
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Levels")
 		TArray<FName> LevelNames{};
@@ -61,14 +76,5 @@ public:
 	
 	FPlayerData* GetBestTimePlayer();
 	FPlayerData* GetBestScorePlayer();
-
-protected:
-	TArray<FPlayerData> PlayerArray;
-
-
-	//this should stop pure virutal function form being called (Thanks Bjørn Joachim Olsen!!!)
-	virtual void Init() override;
-	virtual void Shutdown() override;
-	virtual void StartGameInstance() override;
-	
+	TArray<FPlayerData> GetPlayerDataArray() { return PlayerArray; }
 };

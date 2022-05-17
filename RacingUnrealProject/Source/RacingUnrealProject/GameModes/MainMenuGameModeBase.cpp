@@ -3,6 +3,8 @@
 
 #include "MainMenuGameModeBase.h"
 
+#include "RacingUnrealProject/DebugLog.h"
+
 AMainMenuGameModeBase::AMainMenuGameModeBase()
 {
 }
@@ -17,5 +19,10 @@ void AMainMenuGameModeBase::BeginPlay()
 		FInputModeUIOnly InputMode{};
 		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
 		PlayerController->SetInputMode(InputMode);
+	}
+
+	if (RacingGameInstance)
+	{
+		if (LoadGame()) { DL_NORMAL("LoadSuccesful"); }
 	}
 }

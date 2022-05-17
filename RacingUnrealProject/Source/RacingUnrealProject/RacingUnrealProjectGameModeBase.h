@@ -33,6 +33,7 @@ protected:
 
 	FPlayerData CurrentPlayerData{};
 	bool bFirstLap{true};
+	bool bGameEnded{false};
 	
 public:
 
@@ -63,4 +64,10 @@ public:
 
 	UFUNCTION()
 		virtual void AddScore(int32 Score);
+
+	UFUNCTION()
+		bool SaveGame();
+
+	UFUNCTION()
+		bool LoadGame();
 };

@@ -4,6 +4,7 @@
 #include "ScoreAttackGameModeBase.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "RacingUnrealProject/DebugLog.h"
 #include "RacingUnrealProject/HUD/ScoreAttackHUD.h"
 
 AScoreAttackGameModeBase::AScoreAttackGameModeBase()
@@ -72,6 +73,7 @@ void AScoreAttackGameModeBase::GameEndState()
 		AttackHUD->SetBestScore(CurrentPlayerData.PlayerScore, CurrentPlayerData.PlayerScore);
 	}
 	RacingGameInstance->SavePlayerData(CurrentPlayerData);
+	if(SaveGame()) DL_NORMAL("Save Succesful");
 }
 
 void AScoreAttackGameModeBase::AddScore(int32 Score)
