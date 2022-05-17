@@ -18,7 +18,7 @@ public:
 	virtual void NativeConstruct() override;
 
 	UFUNCTION()
-	void UpdateTimer(float CurrentTime);
+	void UpdateTimer(float CurrentTime, float CurrentGoalTime, FSlateColor &SlateColor);
 
 	UFUNCTION()
 	void UpdateLapCounter(int32 CurrentNumLaps, int32 MaxNumLaps);

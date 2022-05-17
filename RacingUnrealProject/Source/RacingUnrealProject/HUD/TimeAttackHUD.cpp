@@ -29,6 +29,7 @@ void ATimeAttackHUD::BeginPlay()
 		RaceTimerWidget = CreateWidget<URaceTimerWidget>(GetWorld(), TimerWidgetClass);
 		RaceTimerWidget->AddToViewport();
 		RaceTimerWidget->UpdateLapCounter(GameModeBase->CurrentLap, GameModeBase->NumberOfLaps);
+		CurrentGoalColor = GameModeBase->ChangeGoalColor(GameModeBase->CurrentBestGoal);
 	}
 
 	if (TimeAttackEndMenuClass)
@@ -79,7 +80,14 @@ void ATimeAttackHUD::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	if (GameModeBase->IsTiming()) GameModeBase->RaceTimer += DeltaSeconds;
-	if (RaceTimerWidget) RaceTimerWidget->UpdateTimer(GameModeBase->RaceTimer);
+
+	if (GameModeBase->RaceTimer >= GameModeBase->GetCurrentGoalTime())
+	{
+		--GameModeBase->CurrentBestGoal;
+		CurrentGoalColor = GameModeBase->ChangeGoalColor(GameModeBase->CurrentBestGoal);
+	}
+	
+	if (RaceTimerWidget) RaceTimerWidget->UpdateTimer(GameModeBase->RaceTimer, GameModeBase->GetCurrentGoalTime(), CurrentGoalColor);
 	if (RaceTimerWidget) RaceTimerWidget->SetSpeedOMeter(PlayerPawn->GetCurrentForwardSpeed());
 }
 

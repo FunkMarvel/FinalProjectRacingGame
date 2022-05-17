@@ -34,6 +34,7 @@ void ATimeAttackGameModeBase::BeginPlay()
 	}
 
 	TimeAttackHUD = Cast<ATimeAttackHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+	CurrentBestGoal = EGoals::Gold;
 }
 
 void ATimeAttackGameModeBase::BeginTimer()

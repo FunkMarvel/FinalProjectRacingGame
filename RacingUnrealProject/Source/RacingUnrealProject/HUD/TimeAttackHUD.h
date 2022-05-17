@@ -68,4 +68,7 @@ protected:
 
 	UPROPERTY()
 		class ACarPawn* PlayerPawn{nullptr};
+
+	UPROPERTY()
+		struct FSlateColor CurrentGoalColor{};
 };
