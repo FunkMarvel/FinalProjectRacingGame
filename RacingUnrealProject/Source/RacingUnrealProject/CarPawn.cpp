@@ -465,7 +465,7 @@ void ACarPawn::StateDying()
 		
 	}
 
-	if (StateTime > 2.5f) {
+	if (StateTime > 1.3f) {
 		CarMesh->SetVisibility(true);
 		GrappleHookMesh->SetVisibility(true);
 		ResetCarToLastCheckpoint();
@@ -853,11 +853,16 @@ void ACarPawn::OnHitt(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimiti
 	HitGroundBpEvent(SphereComp->GetPhysicsLinearVelocity().Size());
 
 	//is the normal impule great enoguh, and is the impule not coming mainly from below the car
-	if (NormalImpulse.Size() > 400000.f && UnsignedAngle(NormalImpulse, LocalUpVector) > 70.f) {
+	/*if (NormalImpulse.Size() > 400000.f && UnsignedAngle(NormalImpulse, LocalUpVector) > 70.f) {
 		/*EnterState(EVehicleState::Dying);
-		return;*/
-	}
+		return;#1#
+	}*/
 
+	if (UnsignedAngle(-NormalImpulse.GetSafeNormal(), SphereComp->GetForwardVector()) < 40.f)
+	{
+		EnterState(EVehicleState::Dying);
+		return;
+	}
 	
 	if (OtherActor != nullptr && OtherActor->ActorHasTag("lethal")) {
 		EnterState(EVehicleState::Dying);
