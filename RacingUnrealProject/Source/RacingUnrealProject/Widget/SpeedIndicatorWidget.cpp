@@ -56,7 +56,7 @@ void USpeedIndicatorWidget::SetMaxSpeedIndicatorOn(bool bMaxSpeed) {
 void USpeedIndicatorWidget::SetPercentage(const float Percent) {
 	SpeedProgressBar->SetPercent(Percent);
 	//TODO REACTIVATE
-	OuterImageInstanceDynamic->SetScalarParameterValue("Percent", 0.f);
+	OuterImageInstanceDynamic->SetScalarParameterValue("Percent", Percent);
 	
 	
 }

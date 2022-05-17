@@ -64,6 +64,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Car")
 	class UNeckComponent* NeckComponent = nullptr;
 
+	//skeletal meshes
+	UPROPERTY(EditDefaultsOnly, Category = "Car", BlueprintReadWrite)
+	class USkeletalMeshComponent* SharkBodyMesh = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = "Car", BlueprintReadWrite)
+	class USkeletalMeshComponent* SharkHeadMesh = nullptr;
+	
 	//Grapple widget comp
 	UPROPERTY(EditDefaultsOnly, Category = "Car|Widget")
 	class UGrappableWidgetComponent* GrappableWidgetComponent = nullptr;
@@ -129,13 +135,17 @@ private:
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditDefaultsOnly, Category = "Car|Movment")
 	float AsymForce = 300000.f;
 
+	UPROPERTY()
+	float YAxisValue = 0.f;
+	
 	//gettes for movment
 public:
 	UFUNCTION()
 		float GetMaxSpeed() const {return MaxSpeed; }
-
 	UFUNCTION()
 		float GetCurrentForwardSpeed();
+	UFUNCTION()
+		float GetYAxisValue() const {return YAxisValue; }
 
 	
 	//Camera
@@ -258,4 +268,6 @@ public:
 	void NotMaxTurnBpEvent();
 	UFUNCTION(BlueprintImplementableEvent)
 	void HitGroundBpEvent(float Speed);
+	UFUNCTION(BlueprintImplementableEvent)
+	void BPECarSpeed(float Speed);
 };

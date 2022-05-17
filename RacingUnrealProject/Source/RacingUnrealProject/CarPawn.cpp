@@ -85,7 +85,15 @@ ACarPawn::ACarPawn()
 	NeckSpline = CreateDefaultSubobject<USplineComponent>(TEXT("NeckSpline"));
 	NeckSpline->SetupAttachment(SphereComp);
 	
+	//skeletal meshes
+	SharkBodyMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SharkBodyMesh"));
+	SharkBodyMesh->SetupAttachment(SphereComp);
+	SharkBodyMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	SharkHeadMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SharkHeadMesh"));
+	SharkHeadMesh->SetupAttachment(GrappleHookSphereComponent);
+	SharkHeadMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
 	// actor componentns
     PhysicsGrappleComponent = CreateDefaultSubobject<UPhysicsGrapplingComponent>(TEXT("PhysicsGrappleComponent"));
 	CameraEffectComponent = CreateDefaultSubobject<UCameraEffecttComponent>(TEXT("CameraEffectComponent"));
@@ -266,12 +274,13 @@ void ACarPawn::Tick(float DeltaTime)
 
 
 	SphereComp->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
-	//sets bEnterstate to false so it wont run until we enter a new state
-	//bEnterState = false;
-	
-	//DrawDebugLine(GetWorld(), SphereComp->GetComponentLocation(), SphereComp->GetComponentLocation() + SphereComp->GetUpVector() * 300.f, FColor::Green, false, 0.5f);
-	//DrawDebugLine(GetWorld(), SphereComp->GetComponentLocation(), SphereComp->GetComponentLocation() + SphereComp->GetRightVector() * 300.f, FColor::Green, false, 0.5f);
-	
+
+	//bp event
+	if (SphereComp->IsSimulatingPhysics()) {
+		float ScaledSpeed = SphereComp->GetPhysicsLinearVelocity().Size();
+		ScaledSpeed = (ScaledSpeed/MaxSpeed) * 70.f;
+		BPECarSpeed(ScaledSpeed);
+	}
 
 }
 
@@ -362,7 +371,6 @@ void ACarPawn::StateGrappling()
 	
 	
 	//orients the sphere comp
-	
 	float StartDistance = (PhysicsGrappleComponent->GetOnHookedVehicleTransform().GetLocation() -  GrappleHookMesh->GetComponentLocation()).Size();
 	float CurrentDistance = (SphereComp->GetComponentLocation() -  GrappleHookMesh->GetComponentLocation()).Size();
 	float lerpFactor = CurrentDistance / StartDistance; // at start will be 1, and will progress towards 0
@@ -370,11 +378,19 @@ void ACarPawn::StateGrappling()
 
 	if (PhysicsGrappleComponent->GetTargetComponent())
 	{
-		FRotator NewRot = UKismetMathLibrary::RLerp(
+		/*FRotator NewRot = UKismetMathLibrary::RLerp(
 			PhysicsGrappleComponent->GetOnHookedVehicleTransform().Rotator(),
 			PhysicsGrappleComponent->GetTargetComponent()->GetComponentRotation(),
 			lerpFactor,
 			true);
+		SphereComp->SetWorldRotation(NewRot);*/
+		FVector Up, Forward;
+		Up = UKismetMathLibrary::VLerp(PhysicsGrappleComponent->GetOnHookedUpVector(), PhysicsGrappleComponent->GetTargetComponent()->GetUpVector(), lerpFactor);
+		Forward = NeckSpline->FindDirectionClosestToWorldLocation(SphereComp->GetComponentLocation(), ESplineCoordinateSpace::World);
+		
+		
+		FRotator NewRot = UKismetMathLibrary::MakeRotFromXZ(Forward, Up);
+		// FRotator NewRot = UKismetMathLibrary::MakeRotFromZX(Up, Forward);
 		SphereComp->SetWorldRotation(NewRot);
 	}
 	CameraBoom->SetRelativeRotation(FRotator(-5.f, 0.f, 0.f));
@@ -552,7 +568,8 @@ void ACarPawn::MoveYAxis(float Value)
 	
 	FVector Forwardd = SphereComp->GetForwardVector();
 	FVector Upp = SphereComp->GetUpVector();
-	Forwardd =Forwardd.RotateAngleAxis(Value * TurnSpeed * UGameplayStatics::GetWorldDeltaSeconds(this), Upp);
+	YAxisValue = Value * TurnSpeed * UGameplayStatics::GetWorldDeltaSeconds(this);
+	Forwardd =Forwardd.RotateAngleAxis(YAxisValue, Upp);
 
 	FRotator NewRot = UKismetMathLibrary::MakeRotFromXZ(Forwardd, Upp);
 	SphereComp->SetWorldRotation(NewRot);
