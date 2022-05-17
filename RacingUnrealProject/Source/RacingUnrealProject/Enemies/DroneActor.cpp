@@ -120,7 +120,7 @@ void ADroneActor::Grappled(FTransform SphereCompTransform)
 void ADroneActor::Reached(float AddSpeedAmount)
 {
 	//TODO: Add animation for destruction.
-	HandleDeath();
+	if (this) HandleDeath();
 }
 
 void ADroneActor::HandleDeath()
