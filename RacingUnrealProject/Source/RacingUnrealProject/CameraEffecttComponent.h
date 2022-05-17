@@ -38,7 +38,7 @@ private:
 	UPROPERTY(meta = (AllowPrivateAccess = "true"),EditAnywhere, Category = "Camera|Speed")
 		TSubclassOf<class UCameraShakeBase> SpeedCameraShakeClass = nullptr;
 	UPROPERTY(meta = (AllowPrivateAccess = "true", ToolTip = "Higher means less shake"),EditAnywhere, Category = "Camera|Speed")
-		float SpeedShakeInverseIntensity = 10000.f;
+		float SpeedShakeInverseIntensity = 12000.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"),EditAnywhere, Category = "Camera")
 		float MaxFOV = 150.f;
 	UPROPERTY()
@@ -46,11 +46,12 @@ private:
 
 
 	
-	//single run cameraModifier
+	//single run cameraModifiers
 	UPROPERTY(meta = (AllowPrivateAccess = "true"),EditAnywhere, Category = "Camera|Boost")
 		TSubclassOf<class UCameraModifier> BoostCameraModifierClass = nullptr;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"),EditAnywhere, Category = "Camera|Boost")
 		TSubclassOf<class UCameraModifier> GrappleCameraModifierClass = nullptr;
+	
 public:
 	UPROPERTY()
 		class UCameraModifier* BoostCameraModifier = nullptr;

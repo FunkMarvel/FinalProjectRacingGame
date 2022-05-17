@@ -92,7 +92,7 @@ private:
 	///other
 	UFUNCTION()
 		void HandleIdleAnimation();
-	void GetTargetUpRightVector(FVector& Up, FVector& Forward, FVector& Location, float WormDistance);
+	void GetTargetUpRightVector(FVector& Up, FVector& Forward, FVector& Location, float WormDistance, float _HeadRatio);
 
 	UFUNCTION()
 		void UpdateTargetTransfrom(float RatioOnSnake);
@@ -159,6 +159,8 @@ private:
 	
 	UPROPERTY(meta = (AllowPrivateAccess = "true", ToolTip = "1 means at head, 0 is a back", ClampMin = 0.f, ClampMax = 1.f), EditAnywhere, Category = "Spline")
 		float HeadPlacement = 0.5f;
+	UPROPERTY()
+		float CurrentHeadPlacement = 1.f;
 	
 	
        

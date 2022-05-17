@@ -96,16 +96,21 @@ void ASplineWormEnemy::Tick(float DeltaTime)
 
 	//if we reach here this means we splineWormEnemy is active
 
-
+	//activate grapple target?
+	if (CurrentMoveTime + PreActivateTargetTime > WormMoveDuration)
+	{
+		GrappleSphereComponent->SetIsEnabled(true);
+		CurrentHeadPlacement=  UKismetMathLibrary::FInterpTo_Constant(CurrentHeadPlacement, HeadPlacement, DeltaTime, 0.7f);
+		
+	}
+	UpdateTargetTransfrom(CurrentHeadPlacement);
 	
 	//Collider Capsule
 	UpdateColliderCapsule();
 	
 	//meshes
 	UpdateSplineMeshComponent();
-	// UpdateStaticMeshComponents();
 	UpdateHeadTransfrom();
-	UpdateTargetTransfrom(HeadPlacement);
 
 	//particle systems
 	UpdateNiagaraParticleComponents();
@@ -116,11 +121,7 @@ void ASplineWormEnemy::Tick(float DeltaTime)
 	CurrentWormDistance *= Spline->GetSplineLength();
 	CurrentWormDistance -= GetWormRealLength(); // converts to the movment is based on the end of the worm
 
-	//activate grapple target?
-	if (CurrentMoveTime + PreActivateTargetTime > WormMoveDuration)
-	{
-		GrappleSphereComponent->SetIsEnabled(true);
-	}
+	
 	
     // checking if we have reached the end
     if ( Spline->GetSplineLength() < SplineMeshComponents.Num() *
@@ -289,8 +290,8 @@ void ASplineWormEnemy::HandleIdleAnimation()  {
 	}
 }
 
-void ASplineWormEnemy::GetTargetUpRightVector(FVector& Up, FVector& Forward, FVector& Location, float WormDistance) {
-	float Distance = WormDistance + GetWormRealLength() * HeadPlacement;
+void ASplineWormEnemy::GetTargetUpRightVector(FVector& Up, FVector& Forward, FVector& Location, float WormDistance, float _HeadRatio) {
+	float Distance = WormDistance + GetWormRealLength() * _HeadRatio;
 	Location = Spline->GetLocationAtDistanceAlongSpline(Distance, CoorSpace);
 	switch (CurrentHeadAxis) {
 	case ESplineWormHeadAxis::Right:
@@ -330,7 +331,7 @@ void ASplineWormEnemy::UpdateTargetTransfrom(float RatioOnSnake)
 	FVector Up;
 	FVector Forward;
 	FVector Location;
-	GetTargetUpRightVector(Up, Forward, Location, CurrentWormDistance);
+	GetTargetUpRightVector(Up, Forward, Location, CurrentWormDistance, RatioOnSnake);
 
 	Location += Forward * HeadDistanceFromBody;
 	GrappleSphereComponent->SetWorldLocation(Location);
@@ -511,7 +512,7 @@ void ASplineWormEnemy::ResetWorm() {
 	NiagaraComponents.Empty();
 	
 
-	DL_NORMAL("ResetWorm!!")
+	// DL_NORMAL("ResetWorm!!")
 }
 
 void ASplineWormEnemy::VisualizeTriggers() {
@@ -536,7 +537,7 @@ void ASplineWormEnemy::VisualizeWormEnemy() {
 	//drawing the direction the player will be sent
 	float DistanceOnWorm = Spline->GetSplineLength() - GetWormRealLength();
 	FVector Up, Forward, Location;
-	GetTargetUpRightVector(Up, Forward, Location, DistanceOnWorm);
+	GetTargetUpRightVector(Up, Forward, Location, DistanceOnWorm, HeadPlacement);
 	GrappleSphereComponent->SetWorldLocation(Location);
 	GrappleSphereComponent->SetWorldRotation(UKismetMathLibrary::MakeRotFromXZ(-Forward, Up));
 
@@ -546,7 +547,7 @@ void ASplineWormEnemy::VisualizeWormEnemy() {
 	DrawDebugLine(World, Location, Location - Forward * 4000.f, FColor::Cyan, false, 1.2f, 0, 200.f);
 	// up
 	DrawDebugLine(World, Location, Location + Up * 1000.f, FColor::Red, false, 1.2f, 0, 200.f);
-	
+	DL_ERROR("Visualizing Worm!")
 }
 
 

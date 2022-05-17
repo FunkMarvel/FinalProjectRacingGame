@@ -842,8 +842,8 @@ void ACarPawn::OnHitt(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimiti
 
 	if (UnsignedAngle(-NormalImpulse.GetSafeNormal(), SphereComp->GetForwardVector()) < 40.f)
 	{
-		EnterState(EVehicleState::Dying);
-		return;
+		// EnterState(EVehicleState::Dying);
+		// return;
 	}
 	
 	if (OtherActor != nullptr && OtherActor->ActorHasTag("lethal")) {
