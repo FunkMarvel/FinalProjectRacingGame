@@ -43,7 +43,8 @@ void AEnterExitTrigger::Tick(float DeltaTime)
 void AEnterExitTrigger::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (bCooldown == false && OtherActor->IsA(ACarPawn::StaticClass()) && OtherComp->IsA(USphereComponent::StaticClass())) {
+	if (bCooldown == false && OtherActor->IsA(ACarPawn::StaticClass()) &&
+		OtherComp->IsA(USphereComponent::StaticClass())) {
 		EventTriggerEnterExit.Broadcast();
 
 		// cooldown lambda / callback
