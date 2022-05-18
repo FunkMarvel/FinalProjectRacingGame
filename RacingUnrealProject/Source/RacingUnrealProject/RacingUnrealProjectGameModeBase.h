@@ -112,4 +112,8 @@ public:
 
 	UFUNCTION()
 		FSlateColor ChangeGoalColor(EGoals CurrentGoal);
+	
+protected:
+	
+	
 };

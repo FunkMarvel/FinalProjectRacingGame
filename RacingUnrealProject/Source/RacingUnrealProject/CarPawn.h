@@ -82,6 +82,12 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Car|spline")
 	class AGravitySplineActor* GravitySplineActive = nullptr;
 
+	//music comp
+	UPROPERTY(EditAnywhere, Category = "Car|Spline")
+	class UMusicComponent* MusicComponent = nullptr;
+
+	//values
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car|Hover")
 	float HoverHeight{100.f};
 

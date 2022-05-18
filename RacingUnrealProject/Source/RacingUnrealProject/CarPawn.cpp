@@ -22,6 +22,7 @@
 #include "Checkpoint/Checkpoint.h"
 #include "Components/SplineComponent.h"
 // #include "EnvironmentQuery/EnvQueryTypes.h"
+#include "MusicComponent.h"
 #include "Grappling/GrappableWidgetComponent.h"
 
 
@@ -99,6 +100,8 @@ ACarPawn::ACarPawn()
 	CameraEffectComponent = CreateDefaultSubobject<UCameraEffecttComponent>(TEXT("CameraEffectComponent"));
 	NeckComponent = CreateDefaultSubobject<UNeckComponent>(TEXT("NeckSplineComponent"));
 	GrappableWidgetComponent = CreateDefaultSubobject<UGrappableWidgetComponent>(TEXT("GrappableWidgetComponent"));
+	MusicComponent = CreateDefaultSubobject<UMusicComponent>(TEXT("MusicComponent"));
+	
 	
 }
 
