@@ -20,6 +20,9 @@ public:
 	virtual void BeginPlay() override;
 	void Tick(float DeltaSeconds) override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
+	class USkeletalMeshComponent* CosmeticBallMesh{nullptr};
+
 
 protected:
 	void SetUpVectorAsSplineUpAxis();
