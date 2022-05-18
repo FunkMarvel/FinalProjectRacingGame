@@ -161,7 +161,8 @@ public:
 		void ResetTemporalVariables();
 	UFUNCTION()
 		void OnGrappleHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-	
+
+	//state machine for grapple
 	UFUNCTION()
 		void EnterState(EGrappleStates NewState);
 	UFUNCTION()
@@ -177,6 +178,11 @@ public:
 	UFUNCTION()
 		void ReturningState();
 
+	//on Shark swtich state
+	UFUNCTION()
+		void OnSharkChangeState(EVehicleState _NewState);
+
+	//other
 	UFUNCTION()
 		void MoveTowardsGrapple(float LengthAtSpline);
 	UFUNCTION()

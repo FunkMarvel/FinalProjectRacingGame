@@ -10,6 +10,7 @@
 
 //DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHitGround, float, Speed);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSpacePressedEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FEnterNewStateEvent, EVehicleState, _NewState);
 
 UCLASS(config=Game, BlueprintType, Blueprintable)
 class RACINGUNREALPROJECT_API ACarPawn : public APawn
@@ -172,9 +173,14 @@ public:
 
 	
 
-	//state
+	//State machine
 	UFUNCTION()
 	void EnterState(EVehicleState NewState);
+		//state machine evnets
+	UPROPERTY(BlueprintAssignable, Category = "Event")
+	FEnterNewStateEvent EnterNewStateEvent;
+	UFUNCTION(BlueprintImplementableEvent)
+		void BPEOnEnterNewState(EVehicleState _NewState);
 private:
 	UPROPERTY()
 	FVector StartPlayerLocation = FVector::ZeroVector;
@@ -203,6 +209,8 @@ private:
 
 	UFUNCTION()
 	void StateDying();
+	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Car|State|Dying", BlueprintReadOnly)
+	float DyingDuration = 1.3f;
 
 	UFUNCTION()
 	void StateFinished();

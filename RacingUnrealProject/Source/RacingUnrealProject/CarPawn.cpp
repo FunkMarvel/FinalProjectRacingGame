@@ -309,6 +309,8 @@ void ACarPawn::EnterState(EVehicleState NewState)
 	bEnterState = true;
 	StateTime = 0.f;
 	CurrentVehicleState = NewState;
+	EnterNewStateEvent.Broadcast(NewState);
+	BPEOnEnterNewState(NewState);
 }
 
 void ACarPawn::StateDriving()
@@ -454,14 +456,11 @@ void ACarPawn::StateDying()
 			DL_ERROR("No death particle system selcted!")
 		
 	}
-
-	if (StateTime > 1.3f) {
+	if (StateTime > DyingDuration) {
 		SharkBodyMesh->SetVisibility(true);
 		SharkHeadMesh->SetVisibility(true);
 		ResetCarToLastCheckpoint();
 	}
-
-	
 }
 
 void ACarPawn::StateFinished() {

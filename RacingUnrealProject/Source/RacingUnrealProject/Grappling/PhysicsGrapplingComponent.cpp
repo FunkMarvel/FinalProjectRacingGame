@@ -40,6 +40,10 @@ void UPhysicsGrapplingComponent::BeginPlay()
 
 	//sets the max grapple distance equal to the grapplesensor length size.
 	MaxGrappleDistance = CarPawn->GrappleSensor->GetStaticMesh()->GetBoundingBox().GetSize().X;
+
+
+	//events
+	CarPawn->EnterNewStateEvent.AddDynamic(this, &UPhysicsGrapplingComponent::OnSharkChangeState);
 }
 
 /**
@@ -616,6 +620,12 @@ void UPhysicsGrapplingComponent::ReturningState()
 	//set the scale of the SharkHeadMesh
 	FVector NewHeadScale = UKismetMathLibrary::VLerp(CarPawn->SharkHeadMesh->GetRelativeScale3D(), FVector(1.f), GetWorld()->GetDeltaSeconds() * 10.f);
 	CarPawn->SharkHeadMesh->SetRelativeScale3D(NewHeadScale);
+}
+
+void UPhysicsGrapplingComponent::OnSharkChangeState(EVehicleState _NewState) {
+	if (_NewState == EVehicleState::Dying) {
+		EnterState(EGrappleStates::Returning);
+	}
 }
 
 void UPhysicsGrapplingComponent::MoveTowardsGrapple(float LengthAtSpline)

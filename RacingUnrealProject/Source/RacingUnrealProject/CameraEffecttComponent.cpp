@@ -41,12 +41,17 @@ void UCameraEffecttComponent::BeginPlay()
 
 
 	// this is all the setup you ned for the boost modifier, it will de activate itself when being enabled
-	
-	BoostCameraModifier = UGameplayStatics::GetPlayerCameraManager(this, 0)->AddNewCameraModifier(BoostCameraModifierClass);
-	BoostCameraModifier->DisableModifier(true);
+	if (BoostCameraModifierClass) {
+		BoostCameraModifier = UGameplayStatics::GetPlayerCameraManager(this, 0)->AddNewCameraModifier(BoostCameraModifierClass);
+		BoostCameraModifier->DisableModifier(true);
+		
+	}
 
-	GrappleCameraModifier = UGameplayStatics::GetPlayerCameraManager(this, 0)->AddNewCameraModifier(GrappleCameraModifierClass);
-	GrappleCameraModifier->DisableModifier(true);
+	if (GrappleCameraModifierClass) {
+		GrappleCameraModifier = UGameplayStatics::GetPlayerCameraManager(this, 0)->AddNewCameraModifier(GrappleCameraModifierClass);
+		GrappleCameraModifier->DisableModifier(true);
+		
+	}
 	
 	//setting up speed camera shake
 
