@@ -23,6 +23,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
 	class USkeletalMeshComponent* CosmeticBallMesh{nullptr};
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh|Animations")
+	class UAnimationAsset* IdleAnimation{nullptr};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh|Animations")
+	class UAnimationAsset* SpikeDeployAnimation{nullptr};
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Mesh")
+	float RetractedSize{250.f};
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Mesh")
+	float DeployedSize{445.f};
+
 
 protected:
 	void SetUpVectorAsSplineUpAxis();
@@ -53,6 +65,9 @@ protected:
 	void GroundedState();
 	void SpikedState();
 
+	float Duration{0.42f};
+	float DeployTimer{};
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement|Rolling")
 		float Acceleration{1500};
 
@@ -69,5 +84,6 @@ protected:
 
 inline void ASpikyBallEnemyActor::TriggerSpikes()
 {
+	CosmeticBallMesh->PlayAnimation(SpikeDeployAnimation, false);
 	ChangeState(EBallState::Spiked);
 }
