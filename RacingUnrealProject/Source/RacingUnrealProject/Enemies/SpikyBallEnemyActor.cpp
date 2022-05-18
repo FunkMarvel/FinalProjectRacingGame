@@ -17,6 +17,12 @@ ASpikyBallEnemyActor::ASpikyBallEnemyActor() : ABaseEnemyActor()
 	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
 	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECollisionResponse::ECR_Block);
 	SphereComp->SetSphereRadius(200.f);
+
+	CosmeticMesh->SetVisibility(false);
+
+	CosmeticBallMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CosmeticBallMesh"));
+	CosmeticBallMesh->SetupAttachment(GetRootComponent());
+	CosmeticBallMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void ASpikyBallEnemyActor::BeginPlay()
