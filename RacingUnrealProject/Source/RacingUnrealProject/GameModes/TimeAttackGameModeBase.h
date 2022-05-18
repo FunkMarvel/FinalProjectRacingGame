@@ -47,7 +47,7 @@ public:
 
 	float GetCurrentGoalTime()
 	{
-		if (RacingGameInstance) return RacingGameInstance->TimesToBeat[CurrentBestGoal];
+		if (RacingGameInstance) return RacingGameInstance->TimesToBeat[CurrentBestGoal]*RacingGameInstance->NumberOfLaps;
 		return 0.f;
 	}
 };
