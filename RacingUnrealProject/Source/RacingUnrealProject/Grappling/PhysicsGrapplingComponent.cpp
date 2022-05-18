@@ -247,7 +247,7 @@ void UPhysicsGrapplingComponent::InActiveState()
 
 		//Shark head mesh
 		CarPawn->SharkHeadMesh->SetRelativeScale3D(FVector::OneVector);
-		
+		UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHUD();
 		//event
 		OpenHead.Broadcast(false);
 	}
