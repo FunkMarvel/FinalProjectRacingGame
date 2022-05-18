@@ -3,6 +3,7 @@
 
 #include "RacingUnrealProjectGameModeBase.h"
 
+#include "CarPawn.h"
 #include "DebugLog.h"
 #include "Checkpoint/Checkpoint.h"
 #include "Components/ArrowComponent.h"
@@ -13,7 +14,7 @@
 void ARacingUnrealProjectGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
-	PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+	PlayerPawn = Cast<ACarPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	RacingGameInstance = Cast<URacingGameInstance>(GetGameInstance());
 	PlayerController = GetWorld()->GetFirstPlayerController();
 	if (RacingGameInstance)
@@ -46,6 +47,7 @@ void ARacingUnrealProjectGameModeBase::GameEndState()
 {
 	if (bGameEnded) return;
 	bGameEnded = true;
+	PlayerPawn->EnterState(EVehicleState::Finished);
 }
 
 void ARacingUnrealProjectGameModeBase::OnPressPause()

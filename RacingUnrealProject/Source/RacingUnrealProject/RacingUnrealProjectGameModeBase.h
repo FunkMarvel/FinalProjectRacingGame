@@ -60,7 +60,7 @@ protected:
 		class ACheckpoint* GoalCheckpoint{nullptr};
 
 	UPROPERTY()
-		class APawn* PlayerPawn{nullptr};
+		class ACarPawn* PlayerPawn{nullptr};
 
 	UPROPERTY()
 		class APlayerController* PlayerController{nullptr};
