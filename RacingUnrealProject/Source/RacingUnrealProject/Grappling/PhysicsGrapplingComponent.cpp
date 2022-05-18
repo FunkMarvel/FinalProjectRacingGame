@@ -183,8 +183,6 @@ void UPhysicsGrapplingComponent::ResetTemporalVariables()
 	MoveToTargetModifier = 1.f;
 	CurrentHookedTime = 0.f;
 	KnockOffHitResult =	FHitResult();
-
-	CarPawn->SharkHeadMesh->SetRelativeScale3D(FVector(3.f));
 	
 }
 
@@ -279,8 +277,6 @@ void UPhysicsGrapplingComponent::TravelingState()
 		CarPawn->GrappleHookSphereComponent->SetPhysicsLinearVelocity(CarPawn->MainCamera->GetForwardVector() * FireGrappleSpeed);
 		//CarPawn->GrappleHookSphereComponent->AddImpulse(CarPawn->MainCamera->GetForwardVector() * FireGrappleSpeed, NAME_None, true);
 		CarPawn->GrappleSensor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-
-		CarPawn->SharkHeadMesh->SetRelativeScale3D(FVector(10.f));
 
 		//event
 		if (TargetGrappableComponent){

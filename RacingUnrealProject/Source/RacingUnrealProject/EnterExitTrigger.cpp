@@ -53,7 +53,7 @@ void AEnterExitTrigger::OnOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 		{
 			bCooldown = false;
 		});
-		GetWorld()->GetTimerManager().SetTimer(Handle, Callback, 1.f, false);
+		GetWorld()->GetTimerManager().SetTimer(Handle, Callback, 4.f, false);
 	}
 	
 }
