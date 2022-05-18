@@ -172,7 +172,9 @@ public:
 
 	
 
-	//Deathzone
+	//state
+	UFUNCTION()
+	void EnterState(EVehicleState NewState);
 private:
 	UPROPERTY()
 	FVector StartPlayerLocation = FVector::ZeroVector;
@@ -183,10 +185,9 @@ private:
 	EVehicleState CurrentVehicleState = EVehicleState::AirBorne;
 	UPROPERTY()
 	float StateTime = 0.f;
-
+	UPROPERTY()
 	bool bEnterState = false;
-	UFUNCTION()
-	void EnterState(EVehicleState NewState);
+
 
 
 	UFUNCTION()
@@ -194,7 +195,7 @@ private:
 
 	UFUNCTION()
 	void StateGrappling();
-	UPROPERTY(EditAnywhere, Category = "Car|State")
+	UPROPERTY(EditAnywhere, Category = "Car|State|Grapple")
 	float FinishGrappleDistance = 100.f;
 
 	UFUNCTION()
@@ -204,8 +205,21 @@ private:
 	void StateDying();
 
 	UFUNCTION()
+	void StateFinished();
+	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Car|State|Finished")
+	float StateFinishedTurnSpeed = 100.f;
+
+	UFUNCTION()
 	void ToggleGrappleHook();
 
+	//is valid X state
+	UFUNCTION()
+		bool IsValidDriveState() const;
+	UFUNCTION()
+		bool IsValidTurnState() const;
+	UFUNCTION()
+		bool IsValidLookState() const;
+	
 	//TODO orgenize these :)
 
 

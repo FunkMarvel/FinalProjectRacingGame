@@ -39,13 +39,6 @@ ACarPawn::ACarPawn()
 	SphereComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	SphereComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Ignore);
-	//SphereComp->BodyInstance.bLockRotation = true;
-
-	// CarMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Car Mesh"));
-	// CarMesh->SetupAttachment(GetRootComponent());
-	// CarMesh->SetSimulatePhysics(false);
-	// //SetRootComponent(CarMesh);
-	// CarMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("Camera Boom"));
 	CameraBoom->SetupAttachment(GetRootComponent());
@@ -69,11 +62,6 @@ ACarPawn::ACarPawn()
 	GrappleHookSphereComponent->SetupAttachment(GetRootComponent());
 	GrappleHookSphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GrappleHookSphereComponent->SetNotifyRigidBodyCollision(true);
-	
-	// GrappleHookMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GrapplingHookMesh"));
-	// GrappleHookMesh->SetupAttachment(GrappleHookSphereComponent);
-	// GrappleHookMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	// GrappleHookMesh->SetEnableGravity(false);
 
 	GrappleSensor = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GrappleSensor"));
 	GrappleSensor->SetupAttachment(GrappleHookSphereComponent);
@@ -121,9 +109,7 @@ void ACarPawn::ResetCarToLastCheckpoint()
 			GravitySplineActive = CP->GetCheckpointGravitySpline();
 		else
 			DL_NORMAL( "gravity spline is selected" + CP->GetName());
-
 		
-		// SphereComp->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
 		EnterState(EVehicleState::AirBorne);
 	}
 }
@@ -141,24 +127,24 @@ void ACarPawn::BeginPlay()
 
 	GrappleHookSphereComponent->OnComponentHit.AddDynamic(PhysicsGrappleComponent, &UPhysicsGrapplingComponent::OnGrappleHit);
 	
-	// CameraEffectComponent->SetCameraCurrent(MainCamera);
-
 	//deathzone variables
 	StartPlayerLocation = GetActorLocation();
 
-	//neck
-	//detaches the neck spline so it dosent follow
-	
-	
-	//UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.4f);
+
+	// //TODO REMOVE TEMP
+	// FTimerHandle Handle;
+	//
+	// FTimerDelegate Callback;
+	// Callback.BindLambda([this]
+	// {
+	// 	EnterState(EVehicleState::Finished);
+	// });
+	//
+	// GetWorld()->GetTimerManager().SetTimer(Handle, Callback, 5.f, false);
 }
 
 void ACarPawn::RotateSphereCompToLocalUpVector()
 {
-	//rotates sphere
-	// FRotator NewSphereRot = UKismetMathLibrary::MakeRotFromZX(LocalUpVector, GetActorForwardVector());
-	// SphereComp->SetWorldRotation(NewSphereRot);
-
 	FRotator TargetRot = UKismetMathLibrary::MakeRotFromZX(LocalUpVector, GetActorForwardVector());
 	FRotator NewRotation = FMath::RInterpTo(SphereComp->GetComponentRotation(), TargetRot,
 		GetWorld()->GetDeltaSeconds(), 2.f);
@@ -271,6 +257,9 @@ void ACarPawn::Tick(float DeltaTime)
 		break;
 	case EVehicleState::Grappling:
 		StateGrappling();
+		break;
+	case EVehicleState::Finished:
+		StateFinished();
 		break;
 		
 	}
@@ -475,6 +464,19 @@ void ACarPawn::StateDying()
 	
 }
 
+void ACarPawn::StateFinished() {
+	if (bEnterState) {
+		bEnterState = false;
+		SphereComp->SetLinearDamping(1.f);
+		CameraBoom->SetRelativeRotation(FRotator(-25.f, 0.f, 0.f));
+		// CameraBoom->SetRelativeLocation(FVector);
+	}
+
+	CameraBoom->SetRelativeRotation(FRotator(-25.f, StateTime * StateFinishedTurnSpeed, 0.f));
+	
+	TiltCarMesh(FVector::ZeroVector);
+}
+
 void ACarPawn::ToggleGrappleHook()
 {
 	if (PhysicsGrappleComponent->GetCurrentGrappleState() == EGrappleStates::InActive)
@@ -488,6 +490,35 @@ void ACarPawn::ToggleGrappleHook()
 		PhysicsGrappleComponent->RetractGrapplingHook();
 	}
 	
+}
+
+/**
+ * @brief 
+ * @return Should we be able to drive and turn in the curernt state? the same as valid look state until further development
+ */
+bool ACarPawn::IsValidDriveState() const {
+	if (CurrentVehicleState == EVehicleState::Driving) {
+		return true;
+	}
+	return false;
+}
+
+bool ACarPawn::IsValidTurnState() const {
+	if (CurrentVehicleState == EVehicleState::Driving || CurrentVehicleState == EVehicleState::AirBorne) {
+		return true;
+	}
+	return false;
+}
+
+/**
+ * @brief 
+ * @return Shoudl we be able to look in the current state? the same as valid drive state until further development
+ */
+bool ACarPawn::IsValidLookState() const {
+	if (CurrentVehicleState == EVehicleState::Driving || CurrentVehicleState == EVehicleState::AirBorne) {
+		return true;
+	}
+	return false;
 }
 
 FVector ACarPawn::CalcAsymVector()
@@ -518,8 +549,7 @@ float ACarPawn::CaltAsymForce()
 void ACarPawn::MoveXAxis(const float Value)
 {
 	//guard cluase
-	if (CurrentVehicleState != EVehicleState::Driving)
-	{
+	if (IsValidDriveState() == false) {
 		return;
 	}
 	
@@ -564,9 +594,9 @@ void ACarPawn::MoveXAxis(const float Value)
 void ACarPawn::MoveYAxis(float Value)
 {
 	//guard cluase
-	if (CurrentVehicleState != EVehicleState::Driving)
-	{
-		//return;
+	if (IsValidTurnState() == false){
+		YAxisValue = 0.f;
+		return;
 	}
 	
 	FVector Forwardd = SphereComp->GetForwardVector();
@@ -582,6 +612,10 @@ void ACarPawn::MoveYAxis(float Value)
 
 void ACarPawn::LookXAxis(float Value)
 {
+	if (IsValidLookState() == false) {
+		return;
+	}
+	
 	FRotator OldRotation = CameraBoom->GetRelativeRotation();
 	float Yaw = OldRotation.Yaw + CameraLookSpeed* Value * UGameplayStatics::GetWorldDeltaSeconds(this);
 	Yaw = FMath::Clamp(Yaw, -MaxYawLookAngle, MaxYawLookAngle);
@@ -592,6 +626,10 @@ void ACarPawn::LookXAxis(float Value)
 
 void ACarPawn::LookYAxis(float Value)
 {
+	if (IsValidLookState() == false) {
+		return;
+	}
+	
 	FRotator OldRotation = CameraBoom->GetRelativeRotation();
 	float Pitch = OldRotation.Pitch + CameraLookSpeed* Value * UGameplayStatics::GetWorldDeltaSeconds(this);
 	Pitch = FMath::Clamp(Pitch, -MaxPichLookAngle, MaxPichLookAngle);
