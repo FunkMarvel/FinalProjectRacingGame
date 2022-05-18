@@ -495,7 +495,7 @@ void ASplineWormEnemy::ResetWorm() {
 	CurrentWormState = EWormState::UnInitialized;
 	ColliderCapsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GrappleSphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GrappleSphereComponent->SetIsEatable(false);
+	GrappleSphereComponent->SetIsEnabled(false);
 	
 	CurrentMoveTime = 0.f;
 	CurrentWormDistance = 0.f;
