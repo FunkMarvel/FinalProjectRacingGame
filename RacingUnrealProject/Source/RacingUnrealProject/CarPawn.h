@@ -268,6 +268,6 @@ public:
 	void NotMaxTurnBpEvent();
 	UFUNCTION(BlueprintImplementableEvent)
 	void HitGroundBpEvent(float Speed);
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent, meta = (ToolTip = "0 -> 1 max speed"))
 	void BPECarSpeed(float Speed);
 };

@@ -278,7 +278,7 @@ void ACarPawn::Tick(float DeltaTime)
 	//bp event
 	if (SphereComp->IsSimulatingPhysics()) {
 		float ScaledSpeed = SphereComp->GetPhysicsLinearVelocity().Size();
-		ScaledSpeed = (ScaledSpeed/MaxSpeed) * 70.f;
+		ScaledSpeed = (ScaledSpeed/MaxSpeed);
 		BPECarSpeed(ScaledSpeed);
 	}
 
