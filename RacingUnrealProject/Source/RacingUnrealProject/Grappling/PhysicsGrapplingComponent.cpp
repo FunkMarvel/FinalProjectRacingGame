@@ -245,6 +245,9 @@ void UPhysicsGrapplingComponent::InActiveState()
 		ResetTemporalVariables();
 		CarPawn->SharkHeadMesh->SetRelativeRotation(FRotator::ZeroRotator);
 
+		//Shark head mesh
+		CarPawn->SharkHeadMesh->SetRelativeScale3D(FVector::OneVector);
+		
 		//event
 		OpenHead.Broadcast(false);
 	}
@@ -260,6 +263,10 @@ void UPhysicsGrapplingComponent::InActiveState()
 	CarPawn->GrappleSensor->SetWorldRotation(NewSensorRot);
 	
 	HandleTargetHomingComp();
+
+	//set the scale of the SharkHeadMesh
+	// FVector NewHeadScale = UKismetMathLibrary::VLerp(CarPawn->SharkHeadMesh->GetRelativeScale3D(), FVector(1.f), GetWorld()->GetDeltaSeconds());
+	// CarPawn->SharkHeadMesh->SetRelativeScale3D(NewHeadScale);
 	//DL_NORMAL("Finn denne meldingen og slett den Anders! >:)")
 }
 
@@ -333,6 +340,10 @@ void UPhysicsGrapplingComponent::TravelingState()
 	
 	//this also handles the entering of states
 	HandleRayTraceLogic();
+
+	//set the scale of the SharkHeadMesh
+	FVector NewHeadScale = UKismetMathLibrary::VLerp(CarPawn->SharkHeadMesh->GetRelativeScale3D(), FVector(10.f), GetWorld()->GetDeltaSeconds());
+	CarPawn->SharkHeadMesh->SetRelativeScale3D(NewHeadScale);
 	
 	if (!IsGrappleInsideOfRange())
 	{
@@ -599,8 +610,12 @@ void UPhysicsGrapplingComponent::ReturningState()
 	
 	FVector NewPos = CarPawn->NeckSpline->GetLocationAtDistanceAlongSpline(length, ESplineCoordinateSpace::World);
 	CarPawn->GrappleHookSphereComponent->SetWorldLocation(NewPos);
-	
+
 	CarPawn->NeckComponent->UpdateSplineMesh(0.f, length);
+
+	//set the scale of the SharkHeadMesh
+	FVector NewHeadScale = UKismetMathLibrary::VLerp(CarPawn->SharkHeadMesh->GetRelativeScale3D(), FVector(1.f), GetWorld()->GetDeltaSeconds() * 10.f);
+	CarPawn->SharkHeadMesh->SetRelativeScale3D(NewHeadScale);
 }
 
 void UPhysicsGrapplingComponent::MoveTowardsGrapple(float LengthAtSpline)

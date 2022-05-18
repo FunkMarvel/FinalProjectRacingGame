@@ -470,6 +470,7 @@ void ASplineWormEnemy::StartWorm() {
 	
 	CurrentWormState = EWormState::Active;
 	ColliderCapsule->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GrappleSphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	InitSplineMeshSegments();
 	// InitStaticMeshComponents();
 	InitNiagaraParticleComponents(SplineMeshComponents.Num());
@@ -493,6 +494,7 @@ void ASplineWormEnemy::StartWorm() {
 void ASplineWormEnemy::ResetWorm() {
 	CurrentWormState = EWormState::UnInitialized;
 	ColliderCapsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GrappleSphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GrappleSphereComponent->SetIsEatable(false);
 	
 	CurrentMoveTime = 0.f;
