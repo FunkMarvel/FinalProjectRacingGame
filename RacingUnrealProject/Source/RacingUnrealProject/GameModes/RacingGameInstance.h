@@ -63,6 +63,9 @@ public:
 
 	const FString DefaultSaveSlotName{TEXT("DefaultSaveSlot")};
 	const uint32 DefaultSaveSlotIndex{0};
+
+	const FString SettingsSaveSlotName{TEXT("SettingsSaveSlot")};
+	const uint32 SettingsSaveSlotIndex{1};
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Levels")
 		TArray<FName> LevelNames{};

@@ -18,4 +18,8 @@ public:
 	AMainMenuGameModeBase();
 	
 	virtual void BeginPlay() override;
+
+	bool SaveSettings();
+
+	bool LoadSettings();
 };
