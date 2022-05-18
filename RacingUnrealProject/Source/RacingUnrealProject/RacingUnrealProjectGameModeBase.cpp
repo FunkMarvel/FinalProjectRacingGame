@@ -60,7 +60,7 @@ bool ARacingUnrealProjectGameModeBase::SaveGame()
 {
 	if (URacingSaveGame* RacingSaveGame = Cast<URacingSaveGame>(UGameplayStatics::CreateSaveGameObject(URacingSaveGame::StaticClass())))
 	{
-		RacingSaveGame->SetGameData(RacingGameInstance->GetPlayerDataArray());
+		RacingSaveGame->SetGameData(RacingGameInstance->GetBestTimePlayer()->PlayerTime, RacingGameInstance->GetBestScorePlayer()->PlayerScore);
 
 		if (UGameplayStatics::SaveGameToSlot(RacingSaveGame, RacingGameInstance->DefaultSaveSlotName, RacingGameInstance->DefaultSaveSlotIndex))
 			return true;
@@ -74,10 +74,8 @@ bool ARacingUnrealProjectGameModeBase::LoadGame()
 		Cast<URacingSaveGame>(UGameplayStatics::LoadGameFromSlot(RacingGameInstance->DefaultSaveSlotName,
 			RacingGameInstance->DefaultSaveSlotIndex)))
 	{
-		for (int i{}; i < RacingSaveGame->PlayerScores.Num(); i++)
-		{
-			RacingGameInstance->SavePlayerData(FPlayerData(RacingSaveGame->PlayerTimes[i], RacingSaveGame->PlayerScores[i]));
-		}
+		FPlayerData BestPlayer{RacingSaveGame->BestPlayerTime, RacingSaveGame->BestPlayerScore};
+		RacingGameInstance->SavePlayerData(BestPlayer);
 		return true;
 	}
 	return false;
