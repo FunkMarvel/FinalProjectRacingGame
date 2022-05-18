@@ -6,6 +6,7 @@
 #include "CarPawn.h"
 #include "DebugLog.h"
 #include "Components/BoxComponent.h"
+#include "Components/SphereComponent.h"
 
 // Sets default values
 AEnterExitTrigger::AEnterExitTrigger()
@@ -42,7 +43,7 @@ void AEnterExitTrigger::Tick(float DeltaTime)
 void AEnterExitTrigger::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (bCooldown == false && OtherActor->IsA(ACarPawn::StaticClass())) {
+	if (bCooldown == false && OtherActor->IsA(ACarPawn::StaticClass()) && OtherComp->IsA(USphereComponent::StaticClass())) {
 		EventTriggerEnterExit.Broadcast();
 
 		// cooldown lambda / callback
