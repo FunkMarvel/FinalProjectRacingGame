@@ -9,6 +9,7 @@
 #include "MainMenuWidgets/LevelSelectMenuWidget.h"
 #include "MainMenuWidgets/MainMenuHUDWidget.h"
 #include "MainMenuWidgets/SettingsMenu.h"
+#include "RacingUnrealProject/DebugLog.h"
 #include "RacingUnrealProject/GameModes/MainMenuGameModeBase.h"
 #include "RacingUnrealProject/GameModes/RacingGameInstance.h"
 
@@ -134,6 +135,7 @@ void AMainMenuHUD::OnPressMinus()
 void AMainMenuHUD::OnPressSave()
 {
 	GameInstance->NumberOfLaps = CurrentNumLaps;
+	if (GameModeBase->SaveSettings())  DL_NORMAL("Settings Saved Succesfully");
 }
 
 void AMainMenuHUD::OnPressReturnToMenu()
