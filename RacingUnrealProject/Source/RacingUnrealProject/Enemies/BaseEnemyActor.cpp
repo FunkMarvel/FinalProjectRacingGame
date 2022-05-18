@@ -122,8 +122,7 @@ void ABaseEnemyActor::Tick(float DeltaTime)
 
 void ABaseEnemyActor::HandleDeath()
 {
-	EnemyDeath.Broadcast(EnemyArrayIndex);
+	if (EnemyDeath.IsBound()) EnemyDeath.Broadcast(EnemyArrayIndex);
 	if (GameModeBase) GameModeBase->AddScore(ScoreValue);
-	Destroy();
 }
 

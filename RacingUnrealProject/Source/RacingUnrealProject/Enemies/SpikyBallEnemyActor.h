@@ -79,7 +79,7 @@ protected:
 		float MaxSpeed{2000.f};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement|Rolling")
-		float TargetDistance{12000.f};
+		float TargetDistance{500.f*1e2};
 };
 
 inline void ASpikyBallEnemyActor::TriggerSpikes()
