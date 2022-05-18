@@ -7,7 +7,6 @@
 #include "../GravitySplineActor.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "RacingUnrealProject/DebugLog.h"
 
 ASpikyBallEnemyActor::ASpikyBallEnemyActor() : ABaseEnemyActor()
 {
@@ -16,9 +15,12 @@ ASpikyBallEnemyActor::ASpikyBallEnemyActor() : ABaseEnemyActor()
 	SphereComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
 	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECollisionResponse::ECR_Block);
-	SphereComp->SetSphereRadius(200.f);
+	SphereComp->SetSphereRadius(RetractedSize);
 
 	CosmeticMesh->SetVisibility(false);
+
+	IdleAnimation = CreateDefaultSubobject<UAnimationAsset>(TEXT("IdleAnimation"));
+	SpikeDeployAnimation = CreateDefaultSubobject<UAnimationAsset>(TEXT("SpikeDeployAnimation"));
 
 	CosmeticBallMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CosmeticBallMesh"));
 	CosmeticBallMesh->SetupAttachment(GetRootComponent());
@@ -28,9 +30,12 @@ ASpikyBallEnemyActor::ASpikyBallEnemyActor() : ABaseEnemyActor()
 void ASpikyBallEnemyActor::BeginPlay()
 {
 	Super::BeginPlay();
+	if (IdleAnimation) CosmeticBallMesh->SetAnimation(IdleAnimation);
+	
 	LocalUpVector = GetActorUpVector();
 	AGravitySplineActor* ClosestGravitySpline{};
 	ClosestGravitySpline = GetClosestGravitySpline();
+	
 	if (ClosestGravitySpline)
 	{
 		GravitySplineActive = ClosestGravitySpline;
@@ -112,6 +117,19 @@ void ASpikyBallEnemyActor::SpikedState()
 	{
 		bEnteringState = false;
 	}
+	if ( -0.1f <= DeployTimer && DeployTimer <= Duration)
+	{
+		float Alpha{DeployTimer/Duration};
+		float CurrentSize = FMath::InterpExpoIn(RetractedSize, DeployedSize, Alpha);
+		SphereComp->SetSphereRadius(CurrentSize);
+		DeployTimer += GetWorld()->GetDeltaSeconds();
+	}
+	else if (DeployTimer >= Duration)
+	{
+		SphereComp->SetSphereRadius(DeployedSize);
+		DeployTimer = -1.f;
+	}
+	
 	Move();
 	ApplyGravity();
 	// UE_LOG(LogTemp, Warning, TEXT("Spiked"));
