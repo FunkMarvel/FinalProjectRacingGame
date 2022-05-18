@@ -132,15 +132,15 @@ void ACarPawn::BeginPlay()
 
 
 	// //TODO REMOVE TEMP
-	// FTimerHandle Handle;
-	//
-	// FTimerDelegate Callback;
-	// Callback.BindLambda([this]
-	// {
-	// 	EnterState(EVehicleState::Finished);
-	// });
-	//
-	// GetWorld()->GetTimerManager().SetTimer(Handle, Callback, 5.f, false);
+	 FTimerHandle Handle;
+	
+	 FTimerDelegate Callback;
+	 Callback.BindLambda([this]
+	 {
+	 	EnterState(EVehicleState::Finished);
+	 });
+	
+	GetWorld()->GetTimerManager().SetTimer(Handle, Callback, 5.f, false);
 }
 
 void ACarPawn::RotateSphereCompToLocalUpVector()
@@ -468,11 +468,10 @@ void ACarPawn::StateFinished() {
 	if (bEnterState) {
 		bEnterState = false;
 		SphereComp->SetLinearDamping(1.f);
-		CameraBoom->SetRelativeRotation(FRotator(-25.f, 0.f, 0.f));
-		// CameraBoom->SetRelativeLocation(FVector);
+		CameraBoom->SetRelativeLocation(FVector(0.f, 0.f, -30.f));
 	}
 
-	CameraBoom->SetRelativeRotation(FRotator(-25.f, StateTime * StateFinishedTurnSpeed, 0.f));
+	CameraBoom->SetRelativeRotation(FRotator(-5.f, StateTime * StateFinishedTurnSpeed, 0.f));
 	
 	TiltCarMesh(FVector::ZeroVector);
 }
