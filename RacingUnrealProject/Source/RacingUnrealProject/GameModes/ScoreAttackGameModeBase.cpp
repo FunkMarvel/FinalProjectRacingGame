@@ -4,6 +4,7 @@
 #include "ScoreAttackGameModeBase.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "RacingUnrealProject/DebugLog.h"
 #include "RacingUnrealProject/HUD/ScoreAttackHUD.h"
 
 AScoreAttackGameModeBase::AScoreAttackGameModeBase()
@@ -72,11 +73,24 @@ void AScoreAttackGameModeBase::GameEndState()
 		AttackHUD->SetBestScore(CurrentPlayerData.PlayerScore, CurrentPlayerData.PlayerScore);
 	}
 	RacingGameInstance->SavePlayerData(CurrentPlayerData);
+	if(SaveGame()) DL_NORMAL("Save Succesful");
 }
 
 void AScoreAttackGameModeBase::AddScore(int32 Score)
 {
 	Super::AddScore(Score);
+	
+	int32 CurrentGoalScore{};
+	FSlateColor SlateColor = ChangeGoalColor(EGoals::None);
+
 	CurrentScore += Score;
-	AttackHUD->SetScore(CurrentScore);
+
+	if (RacingGameInstance->ScoresToBeat.Num() > EGoals::Gold)
+	{
+		if (CurrentScore >= RacingGameInstance->ScoresToBeat[CurrentBestGoal]) ++CurrentBestGoal;
+		CurrentGoalScore = RacingGameInstance->ScoresToBeat[CurrentBestGoal];
+		SlateColor = ChangeGoalColor(CurrentBestGoal);
+	}
+	
+	AttackHUD->SetScore(CurrentScore, CurrentGoalScore, SlateColor);
 }

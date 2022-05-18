@@ -5,6 +5,7 @@
 
 #include "RacingGameInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "RacingUnrealProject/DebugLog.h"
 #include "RacingUnrealProject/GameStartSequenceActor.h"
 #include "RacingUnrealProject/HUD/TimeAttackHUD.h"
 
@@ -33,6 +34,7 @@ void ATimeAttackGameModeBase::BeginPlay()
 	}
 
 	TimeAttackHUD = Cast<ATimeAttackHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+	CurrentBestGoal = EGoals::Gold;
 }
 
 void ATimeAttackGameModeBase::BeginTimer()
@@ -91,4 +93,5 @@ void ATimeAttackGameModeBase::GameEndState()
 		TimeAttackHUD->SetBestTime(CurrentPlayerData.PlayerTime, CurrentPlayerData.PlayerTime);
 	}
 	RacingGameInstance->SavePlayerData(CurrentPlayerData);
+	if(SaveGame()) DL_NORMAL("Save Succesful");
 }

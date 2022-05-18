@@ -18,10 +18,13 @@ public:
 	virtual void NativeConstruct() override;
 
 	UFUNCTION()
-	void UpdateScore(int32 CurrentScore);
+	void UpdateScore(int32 CurrentScore, int32 CurrentGoalScore, FSlateColor &CurrentColor);
 
 	UFUNCTION()
 	void UpdateLapCounter(int32 CurrentNumLaps, int32 MaxNumLaps);
+
+	UFUNCTION()
+	void SetSpeedOMeter(float InSpeed);
 
 protected:
 	UPROPERTY(meta=(BindWidget))
@@ -29,4 +32,7 @@ protected:
 
 	UPROPERTY(meta=(BindWidget))
 	class UTextBlock* LapCounter{nullptr};
+
+	UPROPERTY(meta=(BindWidget))
+	class UTextBlock* SpeedOMeter{nullptr};
 };

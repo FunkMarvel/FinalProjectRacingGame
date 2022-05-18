@@ -44,4 +44,10 @@ public:
 	virtual void OnCompletedLap() override;
 
 	virtual void GameEndState() override;
+
+	float GetCurrentGoalTime()
+	{
+		if (RacingGameInstance) return RacingGameInstance->TimesToBeat[CurrentBestGoal];
+		return 0.f;
+	}
 };

@@ -20,13 +20,15 @@ public:
 
 	void SetLapCounter(int32 CurrentLap, int32 MaxNumLaps);
 
-	void SetScore(int32 CurrentScore);
+	void SetScore(int32 CurrentScore, int32 CurrentGoalScore, FSlateColor &CurrentColor);
 
 	void SetBestScore(int32 CurrentScore, int32 BestScore);
 
 	void ToggleEndMenu(bool bShowMenu);
 
 	void TogglePauseMenu(bool bShowMenu);
+
+	virtual void Tick(float DeltaSeconds) override;
 
 	UFUNCTION()
 		void OnResume();
@@ -51,4 +53,7 @@ protected:
 
 	UPROPERTY()
 		class UScoreAttackEndMenuWidget* ScoreAttackEndMenuWidget{nullptr};
+
+	UPROPERTY()
+		class ACarPawn* PlayerPawn{nullptr};
 };

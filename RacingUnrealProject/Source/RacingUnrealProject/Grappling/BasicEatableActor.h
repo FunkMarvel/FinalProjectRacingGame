@@ -27,7 +27,17 @@ public:
 		class UStaticMeshComponent* MainMesh = nullptr;
 	UPROPERTY(EditAnywhere, Category = "Eatable")
 		class UGrappleSphereComponent* GrappleSphereComponent = nullptr;
+	UPROPERTY(EditAnywhere, Category = "Eatable")
+		class AEnterExitTrigger* RespawnTrigger = nullptr;
 
+
+	UFUNCTION(BlueprintCallable)
+		void VisualizeTrigger();
 	UFUNCTION()
 		void OnReached(float AddSpeedAmount);
+	UFUNCTION()
+		void Respawn();
+
+private:
+	FVector StartLocation;
 };

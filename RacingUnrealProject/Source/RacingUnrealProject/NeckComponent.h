@@ -55,14 +55,21 @@ private:
 	TArray<USplineMeshComponent*> SplineMeshComponents;
 protected:
 	// Neck handling
+	//locations
 	UFUNCTION()
 	void UpdateSplinePoints();
 	void UpdateSplinePointsLocations(FVector Start, FVector End, bool bLerp);
 	void UpdateSplineStartPosition(FVector Start);
 	void UpdateSplineEndPosition(FVector End);
-	
+
+	//tangents
 	void UpdateSplinePointsTangents(FVector StartTangent, FVector EndTangent, bool bLerp);
-	
+	UFUNCTION()
+	void UpdateEndTangent(FVector EndTangent, bool bLerp);
+	UFUNCTION()
+	void UpdateStartTangent(FVector StartTangent, bool bLerp);
+
+
 	UFUNCTION()
 	void UpdateSplineMesh();
 	void UpdateSplineMesh(float StartLength, float EndLength);

@@ -65,4 +65,10 @@ protected:
 		
 	UPROPERTY() 
 		class USpeedIndicatorWidget* SpeedIndicatorWidget{nullptr};
+
+	UPROPERTY()
+		class ACarPawn* PlayerPawn{nullptr};
+
+	UPROPERTY()
+		struct FSlateColor CurrentGoalColor{};
 };

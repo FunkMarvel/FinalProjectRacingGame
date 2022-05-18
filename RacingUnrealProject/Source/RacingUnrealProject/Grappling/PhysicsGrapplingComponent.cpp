@@ -8,11 +8,13 @@
 #include "RacingUnrealProject/GravitySplineActor.h"
 #include "RacingUnrealProject/NeckComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Camera/CameraModifier.h"
 #include "Components/SphereComponent.h"
 #include "Components/SplineComponent.h"
 #include "RacingUnrealProject/Grappling/GrappableWidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "RacingUnrealProject/CameraEffecttComponent.h"
 #include "RacingUnrealProject/DebugLog.h"
 
 // Sets default values for this component's properties
@@ -40,7 +42,9 @@ void UPhysicsGrapplingComponent::BeginPlay()
 	MaxGrappleDistance = CarPawn->GrappleSensor->GetStaticMesh()->GetBoundingBox().GetSize().X;
 }
 
-
+/**
+ * @brief Gets all overlaping actors, and sorts them, sets the first valid to grapple target
+ */
 void UPhysicsGrapplingComponent::HandleTargetHomingComp()
 {
 	//Handle TargetGraooableComponent
@@ -51,7 +55,8 @@ void UPhysicsGrapplingComponent::HandleTargetHomingComp()
 	
 	TArray<UGrappleSphereComponent*> GrappableSphereComponents;
 	GrappableSphereComponents.Init(nullptr, 0);
-	
+
+	//find all grappables / eatables
 	for (int32 i = 0; i < OverlappingComponents.Num(); i++)
 	{
 		if (OverlappingComponents[i]->IsA(UGrappleSphereComponent::StaticClass()))
@@ -59,23 +64,38 @@ void UPhysicsGrapplingComponent::HandleTargetHomingComp()
 			GrappableSphereComponents.Add(Cast<UGrappleSphereComponent>(OverlappingComponents[i]));		
 		}
 	}
-	
 
+	
+	
 	if (GrappableSphereComponents.Num() > 0)
 	{
-		if (GrappableSphereComponents[0]->IsEnabled())
+		float ClosestDistance = 10000000000;
+		int ClosestIterator = -1;
+		
+		for (int i = 0; i < GrappableSphereComponents.Num(); ++i) {
+			UGrappleSphereComponent* GrapComp = GrappableSphereComponents[i];
+			if (GrapComp->IsEnabled()) {
+				float ForDistance = (GrapComp->GetComponentLocation() - CarPawn->SphereComp->GetComponentLocation()).Size();
+				if (ForDistance < ClosestDistance)
+				{
+					ClosestIterator = i;
+					ClosestDistance = ForDistance;
+				}
+				
+			}
+		}
+		if (ClosestIterator != -1)
 		{
-			
-			TargetGrappableComponent = GrappableSphereComponents[0];
+			TargetGrappableComponent = GrappableSphereComponents[ClosestIterator];
 			CarPawn->GrappableWidgetComponent->PlaceWidget(TargetGrappableComponent);
 			FoundHomingTargetEvent.Broadcast(TargetGrappableComponent);
+			return;
 		}
 	}
-	else // array size 0
-	{
-		TargetGrappableComponent = nullptr;
-		LostHomingTargetEvent.Broadcast();
-	}
+	
+	TargetGrappableComponent = nullptr;
+	LostHomingTargetEvent.Broadcast();
+	
 }
 
 // Called every frame
@@ -157,13 +177,14 @@ void UPhysicsGrapplingComponent::ResetTemporalVariables()
 {
 	OnHookedDirection = FVector::ZeroVector;
 	OnHookedVehicleTransfrom = FTransform::Identity;
+	OnHookedUpVector = FVector::ZeroVector;
 	OnHookedSpeed = 0.f;
 	TargetGrappableComponent = nullptr;
 	MoveToTargetModifier = 1.f;
 	CurrentHookedTime = 0.f;
 	KnockOffHitResult =	FHitResult();
 
-	CarPawn->GrappleHookMesh->SetRelativeScale3D(FVector(3.f));
+	CarPawn->SharkHeadMesh->SetRelativeScale3D(FVector(3.f));
 	
 }
 
@@ -224,17 +245,19 @@ void UPhysicsGrapplingComponent::InActiveState()
 		CarPawn->GrappleHookSphereComponent->SetRelativeLocation(StartLocationGrappleMesh);
 		CarPawn->GrappleHookSphereComponent->SetRelativeRotation(FRotator::ZeroRotator);
 		ResetTemporalVariables();
-		CarPawn->GrappleHookMesh->SetRelativeRotation(FRotator::ZeroRotator);
+		CarPawn->SharkHeadMesh->SetRelativeRotation(FRotator::ZeroRotator);
 
-		//CarPawn->GrappleSensor->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		
+		//event
+		OpenHead.Broadcast(false);
 	}
+
+	//update spline and spline mesh for shark neck
 	FVector BaseSplineLocation = CarPawn->SphereComp->GetComponentLocation();
 	CarPawn->NeckComponent->UpdateSplinePointsLocations(BaseSplineLocation, BaseSplineLocation, false);
 	CarPawn->NeckComponent->UpdateSplinePointsTangents(FVector::ZeroVector, FVector::ZeroVector, false);
 	CarPawn->NeckComponent->UpdateSplineMesh();
 
-	// setting the Sensor mesh to match the camera forward vector
+	// Grapple sensor orientation
 	FRotator NewSensorRot = CarPawn->MainCamera->GetForwardVector().Rotation();
 	CarPawn->GrappleSensor->SetWorldRotation(NewSensorRot);
 	
@@ -257,14 +280,14 @@ void UPhysicsGrapplingComponent::TravelingState()
 		//CarPawn->GrappleHookSphereComponent->AddImpulse(CarPawn->MainCamera->GetForwardVector() * FireGrappleSpeed, NAME_None, true);
 		CarPawn->GrappleSensor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
-		CarPawn->GrappleHookMesh->SetRelativeScale3D(FVector(10.f));
+		CarPawn->SharkHeadMesh->SetRelativeScale3D(FVector(10.f));
 
 		//event
-		if (TargetGrappableComponent)
-		{
-			BeginHomingEvent.Broadcast();
-			
-		}
+		if (TargetGrappableComponent){
+			BeginHomingEvent.Broadcast();}
+
+		
+		OpenHead.Broadcast(true);
 		
 	}
 	
@@ -272,7 +295,7 @@ void UPhysicsGrapplingComponent::TravelingState()
 	//updates the sensor to match grappleSphere velocity
 	FRotator NewRot = UKismetMathLibrary::MakeRotFromXZ(CarPawn->GrappleHookSphereComponent->GetPhysicsLinearVelocity(), CarPawn->SphereComp->GetUpVector());
 	CarPawn->GrappleSensor->SetWorldRotation(NewRot);
-	CarPawn->GrappleHookMesh->SetWorldRotation(NewRot);
+	CarPawn->SharkHeadMesh->SetWorldRotation(NewRot);
 
 	//applies gravity
 	HandleGravity();
@@ -280,15 +303,15 @@ void UPhysicsGrapplingComponent::TravelingState()
 	//updates spline
 	FVector StartLocation, EndLocation = FVector::ZeroVector;
 	
-	StartLocation = CarPawn->CarMesh->GetComponentLocation();
+	StartLocation = CarPawn->SharkBodyMesh->GetComponentLocation();
 	EndLocation = CarPawn->GrappleHookSphereComponent->GetComponentLocation();
 
 	// DrawDebugSphere(GetWorld(), EndLocation, 150.f, 10, FColor::Red, false,  1.f);
 
 	float Distance = (StartLocation - EndLocation).Size();
 	
-	FVector StartTangent = CarPawn->CarMesh->GetForwardVector() * Distance;
-	FVector EndTangent = CarPawn->GrappleHookMesh->GetForwardVector() * Distance;
+	FVector StartTangent = CarPawn->SharkBodyMesh->GetForwardVector() * Distance;
+	FVector EndTangent = CarPawn->SharkHeadMesh->GetForwardVector() * Distance;
 
 	//new method for end tangent
 	EndTangent = FVector::CrossProduct( CarPawn->GrappleHookSphereComponent->GetPhysicsLinearVelocity(),
@@ -302,6 +325,16 @@ void UPhysicsGrapplingComponent::TravelingState()
 	//updates spline mesh
 	CarPawn->NeckComponent->UpdateSplineMesh();
 
+	//if no grapple target try to find one
+	if (TargetGrappableComponent == nullptr)
+	{
+		HandleTargetHomingComp();
+		if (TargetGrappableComponent) {
+			CarPawn->GrappableWidgetComponent->PlayAnimation();
+		}
+	}
+
+	
 	//this also handles the entering of states
 	HandleRayTraceLogic();
 	
@@ -334,7 +367,7 @@ void UPhysicsGrapplingComponent::TravelingState()
 		
 		//sets the shark head
 		FRotator NewHeadRot = UKismetMathLibrary::MakeRotFromXZ(Vel.GetSafeNormal(), CarPawn->LocalUpVector);
-		CarPawn->GrappleHookMesh->SetWorldRotation(NewHeadRot);
+		CarPawn->SharkHeadMesh->SetWorldRotation(NewHeadRot);
 		
 	}
 	else
@@ -407,27 +440,31 @@ void UPhysicsGrapplingComponent::HookedState()
 	if (bEnterState)
 	{
 		bEnterState = false;
-		
+		// stopping grapplehook
 		CarPawn->GrappleHookSphereComponent->SetSimulatePhysics(false);
 		CarPawn->GrappleHookSphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		
+
+		//saved values
 		OnHookedSpeed = CarPawn->SphereComp->GetPhysicsLinearVelocity().Size();
 		if (OnHookedSpeed >= HighestOnHookedSpeed) // clamps the velocity
 			OnHookedSpeed = HighestOnHookedSpeed;
 		else if (OnHookedSpeed <= LowestOnHookedSpeed)
 			OnHookedSpeed = LowestOnHookedSpeed;
-		
-		
 		OnHookedDirection = (CarPawn->GrappleHookSphereComponent->GetComponentLocation() - CarPawn->GetActorLocation()).GetSafeNormal();
 		OnHookedVehicleTransfrom = CarPawn->GetTransform();
-
+		OnHookedUpVector = CarPawn->SphereComp->GetUpVector();
+		
 		//neck spline
-
-		//detaches spline so is wont move
+			//detaches spline so is wont move
 		CarPawn->NeckSpline->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+			// spline locations
 		CarPawn->NeckComponent->UpdateSplinePointsLocations(CarPawn->SphereComp->GetComponentLocation(),
 			CarPawn->GrappleHookSphereComponent->GetComponentLocation(), false);
-		
+			//spline start tangent
+		float SplineLengthFactor = CarPawn->NeckComponent->Spline->GetSplineLength();
+		CarPawn->NeckComponent->UpdateStartTangent(CarPawn->SphereComp->GetForwardVector() * SplineLengthFactor, false);
+		CarPawn->NeckComponent->UpdateEndTangent(TargetGrappableComponent->GetForwardVector() * SplineLengthFactor, false);
+			//returning time
 		TargetReturningTime = CarPawn->NeckComponent->Spline->GetSplineLength() / GetOnHookedVelocitySize(); // v = s / t -> t = s / v
 		TargetReturningTime *= 0.6f; // 40% faster
 		TargetReturningTime = FMath::Clamp(TargetReturningTime, 0.4f, 4.f); // clamps
@@ -436,14 +473,9 @@ void UPhysicsGrapplingComponent::HookedState()
 	
 	// updates spline
 	CarPawn->NeckComponent->UpdateSplineEndPosition(GetTargetComponent()->GetComponentLocation());
-	FVector StartTangent = GetOnHookedVelocitySize() * CarPawn->SphereComp->GetForwardVector();
-	FVector EndTangent = TargetGrappableComponent->GetForwardVector() * 5000.f;
-	CarPawn->NeckComponent->UpdateSplinePointsTangents(StartTangent, EndTangent, true);
 	
 	float Lerp = CurrentHookedTime / TargetReturningTime; // 0 to 1
-
 	Lerp = HookedMovementCurve->GetFloatValue(Lerp); // places on curve
-
 	Lerp = Lerp * CarPawn->NeckSpline->GetSplineLength(); // mulitplies to get actual length
 	
 	// get corrent length along spline
@@ -528,9 +560,11 @@ void UPhysicsGrapplingComponent::HookedEatableState()
 
 	if (distanceSqr < 1000.f* 1000.f) // when its at us!
 	{
-		TargetGrappableComponent->OnReached();
-		CarPawn->SphereComp->AddImpulse(CarPawn->SphereComp->GetForwardVector() * TargetGrappableComponent->GetSpeed(), NAME_None, true);
-		
+		TargetGrappableComponent->OnReached(); //invoke event
+		CarPawn->SphereComp->AddImpulse(CarPawn->SphereComp->GetForwardVector() * TargetGrappableComponent->GetSpeed(), NAME_None, true); // adds speed
+
+		//camera effect
+		CarPawn->CameraEffectComponent->BoostCameraModifier->EnableModifier();
 		EnterState(EGrappleStates::InActive);
 	}
 	

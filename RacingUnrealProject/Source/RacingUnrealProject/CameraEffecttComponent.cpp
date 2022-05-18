@@ -11,6 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/ArrowComponent.h"
 #include "GameFramework/SpringArmComponent.h" 
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values for this component's properties
 UCameraEffecttComponent::UCameraEffecttComponent()
@@ -43,6 +44,9 @@ void UCameraEffecttComponent::BeginPlay()
 	
 	BoostCameraModifier = UGameplayStatics::GetPlayerCameraManager(this, 0)->AddNewCameraModifier(BoostCameraModifierClass);
 	BoostCameraModifier->DisableModifier(true);
+
+	GrappleCameraModifier = UGameplayStatics::GetPlayerCameraManager(this, 0)->AddNewCameraModifier(GrappleCameraModifierClass);
+	GrappleCameraModifier->DisableModifier(true);
 	
 	//setting up speed camera shake
 
@@ -56,24 +60,16 @@ void UCameraEffecttComponent::TickComponent(float DeltaTime, ELevelTick TickType
 {
 	
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	
-	float Speed = 0.f;
+
+	// FOV
+	float Speed ;
 	if (CarPawn->SphereComp->IsSimulatingPhysics())
-	{
 		Speed = CarPawn->SphereComp->GetPhysicsLinearVelocity().Size();
-		
-	}
 	else
-	{
 		Speed = 10000.f;
-	}
-	float TargetFOV = Speed / 300.f + StartFOV;
+	float TargetFOV = Speed / 560.f + StartFOV;
 	TargetFOV = FMath::Clamp(TargetFOV, 0.f, MaxFOV);
-
 	TargetFOV = FMath::FInterpTo(CameraCurrent->FieldOfView, TargetFOV, GetWorld()->GetDeltaSeconds(), 5.f);
-
-	// TargetFOV = FMath::Clamp(TargetFOV, 0.f, MaxFOV);
-	
 	CameraCurrent->SetFieldOfView(TargetFOV);
 
 	//speed camera shake
@@ -81,6 +77,17 @@ void UCameraEffecttComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	{
 		SpeedCameraShake->ShakeScale = CarPawn->SphereComp->GetPhysicsLinearVelocity().Size() * (1.f/SpeedShakeInverseIntensity);
 	}
+
+	//rotate camera
+	FRotator CurrentCameraRot = CarPawn->MainCamera->GetRelativeRotation();
+
+	FRotator TargetCameraRot = FRotator(0.f, 0.f, CarPawn->GetYAxisValue() * 7.f);
+	FRotator NewRot = UKismetMathLibrary::RInterpTo(CurrentCameraRot, TargetCameraRot, DeltaTime, 8.f);
+	CarPawn->MainCamera->SetRelativeRotation(NewRot);
+	
+
+
+	
 }
 
 void UCameraEffecttComponent::SpaceCamera()

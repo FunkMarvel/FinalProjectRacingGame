@@ -46,7 +46,7 @@ public:
 		bool IsOverrideReleaseVelocity() const { return bOverrideReleaseVelocity; }
 	
 	UFUNCTION()
-		void SetIsEatable(bool bEnable) {bEatable = bEnable; }
+		void SetIsEatable(bool _bEnable) {bEatable = _bEnable; }
 	UFUNCTION()
 		bool IsEatable() const {return bEatable; }
 
@@ -56,9 +56,13 @@ public:
 	 * @param _bEnable  
 	 */
 	void SetIsEnabled(bool _bEnable) {bEnabled = _bEnable; }
-	
+
 	UFUNCTION()
-		bool IsEnabled() const {return bEnabled; }
+	/**
+	 * @brief is the grappaple ready to be grappled?
+	 * @return 
+	 */
+	bool IsEnabled() const {return bEnabled; }
 
 	// speed
 	UFUNCTION()

@@ -2,6 +2,8 @@
 
 
 #include "NeckComponent.h"
+
+#include "DrawDebugHelpers.h"
 #include "Components/SphereComponent.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
@@ -42,13 +44,13 @@ void UNeckComponent::UpdateSplinePoints()
 {
 	FVector StartLocation, StartTangent, EndLocation, EndTangent = FVector::ZeroVector;
 	
-	StartLocation = CarPawn->CarMesh->GetComponentLocation();
-	EndLocation = CarPawn->GrappleHookMesh->GetComponentLocation();
+	StartLocation = CarPawn->SharkBodyMesh->GetComponentLocation();
+	EndLocation = CarPawn->SharkHeadMesh->GetComponentLocation();
 
 	float Distance = (StartLocation - EndLocation).Size();
 	
-	StartTangent = CarPawn->CarMesh->GetForwardVector() * Distance;
-	EndTangent = CarPawn->GrappleHookMesh->GetForwardVector() * Distance;
+	StartTangent = CarPawn->SharkBodyMesh->GetForwardVector() * Distance;
+	EndTangent = CarPawn->SharkHeadMesh->GetForwardVector() * Distance;
 
 	//new method for end tangen
 	EndTangent = FVector::CrossProduct( CarPawn->GrappleHookSphereComponent->GetPhysicsLinearVelocity(),
@@ -104,6 +106,29 @@ void UNeckComponent::UpdateSplinePointsTangents(FVector StartTangent, FVector En
 	Spline->SetTangentAtSplinePoint(0, StartTangent, ESplineCoordinateSpace::World, false);
 	Spline->SetTangentAtSplinePoint(1, EndTangent, ESplineCoordinateSpace::World, true);
 	
+}
+
+void UNeckComponent::UpdateEndTangent(FVector EndTangent, bool bLerp)
+{
+	if (bLerp) {
+		FVector PrevEndTangent = Spline->GetTangentAtSplinePoint(1, ESplineCoordinateSpace::World);
+
+		EndTangent = FMath::VInterpTo(PrevEndTangent, EndTangent, GetWorld()->GetDeltaSeconds(), 15.f);
+	}
+	Spline->SetTangentAtSplinePoint(1, EndTangent, ESplineCoordinateSpace::World);
+}
+
+void UNeckComponent::UpdateStartTangent(FVector StartTangent, bool bLerp)
+{
+	if (bLerp) {
+		FVector PrevStartTangent = Spline->GetTangentAtSplinePoint(0, ESplineCoordinateSpace::World);
+
+		StartTangent = FMath::VInterpTo(PrevStartTangent, StartTangent, GetWorld()->GetDeltaSeconds(), 15.f);
+	}
+	Spline->SetTangentAtSplinePoint(0, StartTangent, ESplineCoordinateSpace::World);
+
+	// DrawDebugSphere(GetWorld(), Spline->GetLocationAtSplinePoint(0, ESplineCoordinateSpace::World), 1000.f,
+	// 	32, FColor::Red, false, 5.f, 0, 500.f);
 }
 
 void UNeckComponent::UpdateSplineMesh()

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/Image.h"
 #include "SpeedIndicatorWidget.generated.h"
 
 /**
@@ -30,13 +31,23 @@ private:
 	UPROPERTY(EditAnywhere, Category = "SpeedIndicator", meta =(AllowPrivateAccess = "true"))
 		class UTexture2D* NotMaxSpeedTex = nullptr;
 
-
+	// Outer Element
+	UPROPERTY(EditAnywhere, meta = (BindWidget/*, AllowPrivateAccess = "true"*/))
+		class UImage* OuterImage = nullptr;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
+		class UMaterial* OuterImageMaterial = nullptr;
+	UPROPERTY()
+		class UMaterialInstanceDynamic* OuterImageInstanceDynamic = nullptr;
+	
+	
 	//variables
 	UPROPERTY(meta = (AllowPrivateAccess = "true"))
 		float fProgressBarChangeSpeed = 1.f;
 protected:
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
+	virtual void NativeConstruct() override;
 	
 public:
 	
@@ -46,6 +57,11 @@ public:
 	UFUNCTION()
 		void SetPercentage(const float Percent);
 
+	UFUNCTION()
+		void PsudoBeginPlay();
+	
 	UPROPERTY()
 		class ACarPawn* CarPawn = nullptr;
 };
+
+

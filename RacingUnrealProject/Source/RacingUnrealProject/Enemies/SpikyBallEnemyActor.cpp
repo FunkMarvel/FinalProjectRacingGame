@@ -14,7 +14,7 @@ ASpikyBallEnemyActor::ASpikyBallEnemyActor() : ABaseEnemyActor()
 	SphereComp->SetSimulatePhysics(true);
 	SphereComp->SetEnableGravity(false);
 	SphereComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
+	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
 	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECollisionResponse::ECR_Block);
 	SphereComp->SetSphereRadius(200.f);
 }
@@ -23,7 +23,6 @@ void ASpikyBallEnemyActor::BeginPlay()
 {
 	Super::BeginPlay();
 	LocalUpVector = GetActorUpVector();
-	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASpikyBallEnemyActor::OnBeginOverLap);
 	AGravitySplineActor* ClosestGravitySpline{};
 	ClosestGravitySpline = GetClosestGravitySpline();
 	if (ClosestGravitySpline)
@@ -55,19 +54,6 @@ void ASpikyBallEnemyActor::Tick(float DeltaSeconds)
 	case EBallState::Idle:
 		// DL_NORMAL(TEXT("Idle"));
 		break;
-	}
-}
-
-void ASpikyBallEnemyActor::OnBeginOverLap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                          UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
-                                          const FHitResult& SweepResult)
-{
-	Super::OnBeginOverLap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
-
-	if (OtherActor->IsA<ASpikyBallEnemyActor>())
-	{
-		SphereComp->AddImpulse(SweepResult.ImpactNormal*FVector::DotProduct(SphereComp->GetPhysicsLinearVelocity(),
-			SweepResult.ImpactNormal));
 	}
 }
 
@@ -105,11 +91,6 @@ void ASpikyBallEnemyActor::GroundedState()
 {
 	if (bEnteringState)
 	{
-		// if (SphereComp->IsSimulatingPhysics())
-		// {
-		// 	SphereComp->SetSimulatePhysics(false);
-		// 	SphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		// }
 		GetWorld()->GetTimerManager().SetTimer(SpikeTimerHandle, this, &ASpikyBallEnemyActor::TriggerSpikes,
 		                                       SpikeTimer);
 		bEnteringState = false;
@@ -144,10 +125,9 @@ void ASpikyBallEnemyActor::Move()
 {
 	FVector MoveDir{(PlayerPawn->GetActorLocation() - GetActorLocation()).GetSafeNormal()};
 	// MoveDir.Z = 0.f;
-	if (SphereComp->GetPhysicsLinearVelocity().Size() <= MaxSpeed)
-	{
-		SphereComp->AddForce(MoveDir * Acceleration, NAME_None, true);
-	}
+	SphereComp->AddForce(MoveDir * Acceleration, NAME_None, true);
+	FVector VelVec{SphereComp->GetPhysicsLinearVelocity()};
+	SphereComp->SetPhysicsLinearVelocity(VelVec.GetClampedToMaxSize(MaxSpeed));
 }
 
 void ASpikyBallEnemyActor::ApplyGravity()

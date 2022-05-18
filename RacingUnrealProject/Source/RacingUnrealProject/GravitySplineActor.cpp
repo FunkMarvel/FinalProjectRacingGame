@@ -86,7 +86,7 @@ int32 AGravitySplineActor::GetClosestSplinePoint(USplineComponent* splineEval, F
 	return index;
 }
 
-void AGravitySplineActor::VisualiseUpVectors(int Segments, USplineComponent* SplineToUse)
+void AGravitySplineActor::VisualiseUpVectors(int Segments, USplineComponent* SplineToUse, float UpVectorLength = 300.f)
 {
 	float Length = SplineComp->GetSplineLength();
 	for (int32 i = 0; i < Segments; i++)
@@ -98,7 +98,7 @@ void AGravitySplineActor::VisualiseUpVectors(int Segments, USplineComponent* Spl
 		 
 		FVector UpVec = AGravitySplineActor::GetFixedUpVectorFromLocation(Loc);
 		//FVector UpVec = SplineComp->FindUpVectorClosestToWorldLocation(Loc, ESplineCoordinateSpace::World);
-		DrawDebugLine(GetWorld(), Loc, Loc + UpVec * 200.f, FColor::Blue, false, 0.4f, (uint8)0U, 10.f);
+		DrawDebugLine(GetWorld(), Loc, Loc + UpVec * UpVectorLength, FColor::Blue, false, 0.4f, (uint8)0U, 10.f);
 		
 		
 		/*FVector Up = FVector(0.f);

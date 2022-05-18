@@ -7,13 +7,15 @@
 #include "Components/ProgressBar.h"
 #include "Components/SphereComponent.h"
 #include "RacingUnrealProject/CarPawn.h"
+#include "RacingUnrealProject/DebugLog.h"
 
 void USpeedIndicatorWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime) {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
 
 	if (CarPawn) {
-		float Percent = CarPawn->SphereComp->GetPhysicsLinearVelocity().Size() / CarPawn->GetMaxSpeed();
+		// float Percent = CarPawn->SphereComp->GetPhysicsLinearVelocity().Size() / CarPawn->GetMaxSpeed();
+		float Percent = CarPawn->GetCurrentForwardSpeed() / CarPawn->GetMaxSpeed();
 		//scaling down by 30% this means if we are over 30% speed we hit the max max speed and change speed icon
 		Percent *= 0.7f;
 
@@ -21,13 +23,20 @@ void USpeedIndicatorWidget::NativeTick(const FGeometry& MyGeometry, float InDelt
 		float Lerp = FMath::Lerp(SpeedProgressBar->Percent, Percent, GetWorld()->GetDeltaSeconds() * fProgressBarChangeSpeed);
 		
 		SetPercentage(Lerp);
-
-
+		
 		//handling image
 		bool bMaxSpeed = Lerp >= 1.f ? true : false;
 		SetMaxSpeedIndicatorOn(bMaxSpeed);
+
+		
 		
 	}
+}
+
+void USpeedIndicatorWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+	OuterImageInstanceDynamic = UMaterialInstanceDynamic::Create(OuterImageMaterial, this);
 }
 
 void USpeedIndicatorWidget::SetMaxSpeedIndicatorOn(bool bMaxSpeed) {
@@ -46,4 +55,15 @@ void USpeedIndicatorWidget::SetMaxSpeedIndicatorOn(bool bMaxSpeed) {
 
 void USpeedIndicatorWidget::SetPercentage(const float Percent) {
 	SpeedProgressBar->SetPercent(Percent);
+	//TODO REACTIVATE
+	OuterImageInstanceDynamic->SetScalarParameterValue("Percent", Percent);
+	
+	
+}
+
+void USpeedIndicatorWidget::PsudoBeginPlay() {
+	OuterImage->SetBrushFromMaterial(OuterImageInstanceDynamic);
+	
+	// OuterImage->Brush.SetResourceObject(OuterImageMaterial);
+	
 }

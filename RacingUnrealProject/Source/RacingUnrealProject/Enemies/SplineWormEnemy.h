@@ -38,6 +38,15 @@ public:
 		class UGrappleSphereComponent* GrappleSphereComponent = nullptr;
 	UPROPERTY(EditAnywhere, Category = "Spline")
 		class USplineComponent* Spline = nullptr;
+	UPROPERTY(EditAnywhere, Category = "Spline")
+		class UCapsuleComponent* ColliderCapsule = nullptr;
+
+	// score attack
+	UPROPERTY(EditAnywhere, Category="Score")
+		int32 ScoreValue{200};
+
+	UPROPERTY()
+		class ARacingUnrealProjectGameModeBase* GameModeBase{nullptr};
 	
 private:
 	
@@ -56,6 +65,8 @@ private:
 		TArray<class USplineMeshComponent*> SplineMeshComponents;
 	UPROPERTY()
 		TArray<class UNiagaraComponent*> NiagaraComponents;
+	UPROPERTY()
+		TArray<class UStaticMeshComponent* > StaticMeshComponents;
 	
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = "Spline|Particle")
 		class UNiagaraSystem* NiagaraSystem = nullptr;
@@ -64,7 +75,7 @@ private:
 	//spline mesh
 private:
 	UFUNCTION()
-		void InitSplineSegments();
+		void InitSplineMeshSegments();
 	UFUNCTION()
 		void UpdateSplineMeshComponent();
 		
@@ -74,22 +85,28 @@ private:
 		void InitNiagaraParticleComponents(int numOfComps);
 	UFUNCTION()
 		void UpdateNiagaraParticleComponents();
+
+	//static mesh
+	UFUNCTION()
+		void InitStaticMeshComponents();
+	UFUNCTION()
+		void UpdateStaticMeshComponents();
 private:
+	//capsule collider
+	UFUNCTION()
+		void UpdateColliderCapsule();
 	
-	
-	
+	///other
 	UFUNCTION()
 		void HandleIdleAnimation();
-	
+	void GetTargetUpRightVector(FVector& Up, FVector& Forward, FVector& Location, float WormDistance, float _HeadRatio);
+
 	UFUNCTION()
-	/**
-	 * @brief 
-	 * @param RatioOnSnake 1 means at the tip, 0 means at the end
-	 */
 		void UpdateTargetTransfrom(float RatioOnSnake);
 
 	UFUNCTION()
 	    void UpdateHeadTransfrom();
+
 	
 	UFUNCTION()
 		float GetWormRealLength() const;
@@ -107,12 +124,17 @@ public:
 		float HeadDistanceFromBody = 500.f;
 	UPROPERTY(EditAnywhere, Category = "Spline")
 		ESplineWormHeadAxis CurrentHeadAxis = ESplineWormHeadAxis::Right;
+	UPROPERTY(EditAnywhere, Category = "Spline", meta = (ToolTip = "How many degrees to rotate the target Forward vector as axis vector"))
+		float RotateHeadAxis = 0.f;
 	UPROPERTY(meta = (ToolTip = "If the Upvector for the CarPawn is upside down at the end of the grapple, Use this to invert"),
 		EditAnywhere, Category = "Spline")
 	bool bInvertUpHeadAxis = false;
 	UPROPERTY(EditAnywhere, Category = "Spline", meta = (ClampMin = 0.f, ClampMax = 180.f))
 		float RandomRotationAmoundt = 20.f;
+	UPROPERTY(EditAnywhere, Category = "Spline", meta = (ClampMin = 0.f))
+		float PreActivateTargetTime = 0.6f;
 
+	
 	//move animation varibales
 	UPROPERTY(EditAnywhere, Category = "Spline|MoveAnimation")
 	float CurrentDistanceAffector = 0.001f;
@@ -127,18 +149,25 @@ public:
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Spline|IdleAnimation")
 	float IdleAmplitude = 30.f;
 
+	
+	
 	//other
 	ESplineCoordinateSpace::Type CoorSpace = ESplineCoordinateSpace::World;
 private:
-	//animation
-	UPROPERTY()
-		bool bPlayingAnim = false;
-	UPROPERTY()
-		bool bIdle = false;
-	UPROPERTY()
-		bool bHasInitSpline = false;
+
+	enum EWormState {
+		UnInitialized,
+		Active,
+		Idle
+	};
+
+	EWormState CurrentWormState = UnInitialized;
+
+	
 	UPROPERTY(meta = (AllowPrivateAccess = "true", ToolTip = "1 means at head, 0 is a back", ClampMin = 0.f, ClampMax = 1.f), EditAnywhere, Category = "Spline")
 		float HeadPlacement = 0.5f;
+	UPROPERTY()
+		float CurrentHeadPlacement = 1.f;
 	
 	
        
@@ -147,7 +176,9 @@ private:
 		float CurrentWormDistance = 0.f;
 	UPROPERTY()
 		float CurrentMoveTime = 0.f;
-
+	UPROPERTY()
+		APawn* CarPawn = nullptr;
+	
 
 
 	//grapple events
@@ -167,6 +198,8 @@ private:
 		void ResetWorm();
 	UFUNCTION(BlueprintCallable)
 		void VisualizeTriggers();
+	UFUNCTION(BlueprintCallable)
+		void VisualizeWormEnemy();
 };
 
 

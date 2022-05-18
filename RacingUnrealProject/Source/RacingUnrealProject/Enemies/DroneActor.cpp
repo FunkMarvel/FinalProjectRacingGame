@@ -15,7 +15,7 @@ ADroneActor::ADroneActor()
 	GrappleSphereComponent = CreateDefaultSubobject<UGrappleSphereComponent>(TEXT("GrappleSphereComponent"));
 	GrappleSphereComponent->SetupAttachment(GetRootComponent());
 	GrappleSphereComponent->SetIsEnabled(true);
-	GrappleSphereComponent->SetIsEatable(false);
+	GrappleSphereComponent->SetIsEatable(true);
 
 	SensorSphere = CreateDefaultSubobject<USphereComponent>(TEXT("SensorSphere"));
 	SensorSphere->SetupAttachment(GetRootComponent());
@@ -31,7 +31,6 @@ void ADroneActor::BeginPlay()
 	GrappleSphereComponent->OnGrappleHitEvent.AddDynamic(this, &ADroneActor::Grappled);
 	GrappleSphereComponent->OnReachedEvent.AddDynamic(this, &ADroneActor::Reached);
 	SensorSphere->OnComponentBeginOverlap.AddDynamic(this, &ADroneActor::OnOverlap);
-	// ScoreValue = 100;
 }
 
 void ADroneActor::Tick(float DeltaSeconds)
@@ -52,14 +51,6 @@ void ADroneActor::Tick(float DeltaSeconds)
 		if (PlayerPawn && GravitySplineActive) ChangeState(Intercepting);
 		break;
 	}
-	// if (!PlayerPawn)
-	// {
-	// 	PlayerPawn = Cast<ACarPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	// }
-	// else if (!GravitySplineActive)
- //    {
- //    	GravitySplineActive = PlayerPawn->GravitySplineActive;
- //    }
 
 	if (DroppableEnemyClass && bDropEnemy && !bHasSpawned)
 	{
@@ -82,9 +73,6 @@ void ADroneActor::InterceptingState()
 		InterceptSpeed = (TargetLocation-GetActorLocation()).Size()/InterceptTime;
 		bEnteringState = false;
 	}
-	// TargetLocation = FVector::DotProduct(TargetLocation, PlayerPawn->GetActorForwardVector())*PlayerPawn->GetActorForwardVector() +
-	// 	FVector::DotProduct(TargetLocation, PlayerPawn->GetActorRightVector())*PlayerPawn->GetActorRightVector() +
-	// 		FVector::DotProduct(GetActorLocation(), PlayerPawn->GetActorUpVector())*PlayerPawn->GetActorUpVector();
 	
 	SetActorRotation((TargetLocation - GetActorLocation()).Rotation());
 	Move(TargetLocation);
@@ -126,18 +114,19 @@ void ADroneActor::AttackingState()
 void ADroneActor::Grappled(FTransform SphereCompTransform)
 {
 	//TODO: Add behaviour for being grappled.
+	if (GameModeBase) GameModeBase->AddScore(ScoreValue/2);
 }
 
 void ADroneActor::Reached(float AddSpeedAmount)
 {
 	//TODO: Add animation for destruction.
-	HandleDeath();
+	if (this) HandleDeath();
 }
 
 void ADroneActor::HandleDeath()
 {
 	if (DroppedEnemyActor) DroppedEnemyActor->Destroy();
-	Super::HandleDeath();
+	if (this) Super::HandleDeath();
 }
 
 void ADroneActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

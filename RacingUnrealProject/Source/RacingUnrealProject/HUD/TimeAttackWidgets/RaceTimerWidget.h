@@ -18,15 +18,21 @@ public:
 	virtual void NativeConstruct() override;
 
 	UFUNCTION()
-	void UpdateTimer(float CurrentTime);
+	void UpdateTimer(float CurrentTime, float CurrentGoalTime, FSlateColor &SlateColor);
 
 	UFUNCTION()
 	void UpdateLapCounter(int32 CurrentNumLaps, int32 MaxNumLaps);
 
+	UFUNCTION()
+	void SetSpeedOMeter(float InSpeed);
+	
 protected:
 	UPROPERTY(meta=(BindWidget))
 		class UTextBlock* Timer{nullptr};
 
 	UPROPERTY(meta=(BindWidget))
 		class UTextBlock* LapCounter{nullptr};
+	
+	UPROPERTY(meta=(BindWidget))
+		class UTextBlock* SpeedOMeter{nullptr};
 };

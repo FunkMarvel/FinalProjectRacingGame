@@ -20,6 +20,9 @@ void AScoreAttackHUD::BeginPlay()
 		ScoreCounterWidget->AddToViewport();
 		ScoreCounterWidget->SetVisibility(ESlateVisibility::Visible);
 		ScoreCounterWidget->UpdateLapCounter(GameModeBase->CurrentLap, GameModeBase->NumberOfLaps);
+
+		FSlateColor SlateColor{GameModeBase->ChangeGoalColor(EGoals::None)};
+		ScoreCounterWidget->UpdateScore(0, GameModeBase->GetCurrentGoalScore(), SlateColor);
 	}
 
 	if (ScoreAttackEndMenuClass)
@@ -36,7 +39,8 @@ void AScoreAttackHUD::BeginPlay()
 		PauseMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
 		PauseMenuWidget->ResumeButton->OnClicked.AddDynamic(this, &AScoreAttackHUD::OnResume);
 		PauseMenuWidget->ReturnToMenuButton->OnClicked.AddDynamic(ScoreAttackEndMenuWidget, &UScoreAttackEndMenuWidget::OnBackToMenu);
-		ACarPawn* PlayerPawn = Cast<ACarPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
+		
+		PlayerPawn = Cast<ACarPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
 		if (PlayerPawn)
 		{
 			PauseMenuWidget->ResetToCheckpoint->OnClicked.AddDynamic(PlayerPawn, &ACarPawn::ResetCarToLastCheckpoint);
@@ -50,9 +54,9 @@ void AScoreAttackHUD::SetLapCounter(int32 CurrentLap, int32 MaxNumLaps)
 	ScoreCounterWidget->UpdateLapCounter(CurrentLap, MaxNumLaps);
 }
 
-void AScoreAttackHUD::SetScore(int32 CurrentScore)
+void AScoreAttackHUD::SetScore(int32 CurrentScore, int32 CurrentGoalScore, FSlateColor &CurrentColor)
 {
-	ScoreCounterWidget->UpdateScore(CurrentScore);
+	ScoreCounterWidget->UpdateScore(CurrentScore, CurrentGoalScore, CurrentColor);
 }
 
 void AScoreAttackHUD::SetBestScore(int32 CurrentScore, int32 BestScore)
@@ -94,6 +98,12 @@ void AScoreAttackHUD::TogglePauseMenu(bool bShowMenu)
 			PauseMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
 		}
 	}
+}
+
+void AScoreAttackHUD::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	if (ScoreCounterWidget) ScoreCounterWidget->SetSpeedOMeter(PlayerPawn->GetCurrentForwardSpeed());
 }
 
 void AScoreAttackHUD::OnResume()
