@@ -9,13 +9,8 @@ URacingSaveGame::URacingSaveGame()
 {
 }
 
-void URacingSaveGame::SetGameData(TArray<FPlayerData> InPlayerDataArray)
+void URacingSaveGame::SetGameData(float TimeToSave, int32 ScoreToSave)
 {
-	PlayerTimes.Reserve(InPlayerDataArray.Num());
-	PlayerScores.Reserve(InPlayerDataArray.Num());
-	for (FPlayerData &PlayerData : InPlayerDataArray)
-	{
-		PlayerScores.Add(PlayerData.PlayerScore);
-		PlayerTimes.Add(PlayerData.PlayerTime);
-	}
+	BestPlayerTime = TimeToSave;
+	BestPlayerScore = ScoreToSave;
 }

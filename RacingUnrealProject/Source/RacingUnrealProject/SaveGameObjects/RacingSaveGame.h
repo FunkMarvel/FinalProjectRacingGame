@@ -16,12 +16,12 @@ class RACINGUNREALPROJECT_API URacingSaveGame : public USaveGame
 
 public:
 	UPROPERTY()
-	TArray<float> PlayerTimes;
+	float BestPlayerTime;
 
 	UPROPERTY()
-	TArray<int32> PlayerScores;
+	int32 BestPlayerScore;
 
 	URacingSaveGame();
 
-	void SetGameData(TArray<struct FPlayerData> InPlayerDataArray);
+	void SetGameData(float TimeToSave, int32 ScoreToSave);
 };
