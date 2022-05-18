@@ -40,11 +40,11 @@ ACarPawn::ACarPawn()
 	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Ignore);
 	//SphereComp->BodyInstance.bLockRotation = true;
 
-	CarMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Car Mesh"));
-	CarMesh->SetupAttachment(GetRootComponent());
-	CarMesh->SetSimulatePhysics(false);
-	//SetRootComponent(CarMesh);
-	CarMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	// CarMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Car Mesh"));
+	// CarMesh->SetupAttachment(GetRootComponent());
+	// CarMesh->SetSimulatePhysics(false);
+	// //SetRootComponent(CarMesh);
+	// CarMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("Camera Boom"));
 	CameraBoom->SetupAttachment(GetRootComponent());
@@ -69,10 +69,10 @@ ACarPawn::ACarPawn()
 	GrappleHookSphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GrappleHookSphereComponent->SetNotifyRigidBodyCollision(true);
 	
-	GrappleHookMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GrapplingHookMesh"));
-	GrappleHookMesh->SetupAttachment(GrappleHookSphereComponent);
-	GrappleHookMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GrappleHookMesh->SetEnableGravity(false);
+	// GrappleHookMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GrapplingHookMesh"));
+	// GrappleHookMesh->SetupAttachment(GrappleHookSphereComponent);
+	// GrappleHookMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	// GrappleHookMesh->SetEnableGravity(false);
 
 	GrappleSensor = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GrappleSensor"));
 	GrappleSensor->SetupAttachment(GrappleHookSphereComponent);
@@ -213,8 +213,8 @@ void ACarPawn::TiltCarMesh(FVector AsymVector)
 		);
 
 	//sets
-	CarMesh->SetWorldRotation(
-	FMath::RInterpTo(CarMesh->GetComponentRotation(),
+	SharkBodyMesh->SetWorldRotation(
+	FMath::RInterpTo(SharkBodyMesh->GetComponentRotation(),
         NewRot,
         UGameplayStatics::GetWorldDeltaSeconds(this),
         5.5f
@@ -222,11 +222,11 @@ void ACarPawn::TiltCarMesh(FVector AsymVector)
 	
 	//clamps the roll rotation
 	const float ClampValue = 45.f;
-	FRotator LocalRot = CarMesh->GetRelativeRotation();
+	FRotator LocalRot = SharkBodyMesh->GetRelativeRotation();
 	LocalRot.Roll = FMath::Clamp(LocalRot.Roll, -ClampValue, ClampValue);
 
 	
-	CarMesh->SetRelativeRotation(LocalRot);
+	SharkBodyMesh->SetRelativeRotation(LocalRot);
 	
 	//handles BP events
 	if (abs(LocalRot.Roll) > 41.f)
@@ -371,8 +371,8 @@ void ACarPawn::StateGrappling()
 	
 	
 	//orients the sphere comp
-	float StartDistance = (PhysicsGrappleComponent->GetOnHookedVehicleTransform().GetLocation() -  GrappleHookMesh->GetComponentLocation()).Size();
-	float CurrentDistance = (SphereComp->GetComponentLocation() -  GrappleHookMesh->GetComponentLocation()).Size();
+	float StartDistance = (PhysicsGrappleComponent->GetOnHookedVehicleTransform().GetLocation() -  SharkBodyMesh->GetComponentLocation()).Size();
+	float CurrentDistance = (SphereComp->GetComponentLocation() -  SharkBodyMesh->GetComponentLocation()).Size();
 	float lerpFactor = CurrentDistance / StartDistance; // at start will be 1, and will progress towards 0
 	lerpFactor = 1.f -lerpFactor; // at start will be 0, will progress towards 1
 
@@ -452,8 +452,8 @@ void ACarPawn::StateDying()
 	{
 		bEnterState = false;
 		SphereComp->SetSimulatePhysics(false);
-		CarMesh->SetVisibility(false);
-		GrappleHookMesh->SetVisibility(false);
+		SharkBodyMesh->SetVisibility(false);
+		SharkHeadMesh->SetVisibility(false);
 
 		//particle
 		if (DeathParticleSystem)
@@ -464,8 +464,8 @@ void ACarPawn::StateDying()
 	}
 
 	if (StateTime > 1.3f) {
-		CarMesh->SetVisibility(true);
-		GrappleHookMesh->SetVisibility(true);
+		SharkBodyMesh->SetVisibility(true);
+		SharkHeadMesh->SetVisibility(true);
 		ResetCarToLastCheckpoint();
 	}
 

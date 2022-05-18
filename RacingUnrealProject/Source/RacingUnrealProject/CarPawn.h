@@ -41,8 +41,8 @@ public:
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Car", BlueprintReadWrite)
 	class USphereComponent* SphereComp{nullptr};
-	UPROPERTY(EditDefaultsOnly, Category = "Car")
-	class UStaticMeshComponent* CarMesh{nullptr};
+	// UPROPERTY(EditDefaultsOnly, Category = "Car")
+	// class UStaticMeshComponent* CarMesh{nullptr};
 	UPROPERTY(EditDefaultsOnly, Category = "Car")
 	class USpringArmComponent* CameraBoom{nullptr};
 	UPROPERTY(EditDefaultsOnly, Category = "Car")
@@ -53,8 +53,8 @@ public:
 	class UArrowComponent* ArrowRayCastStart{nullptr};
 	UPROPERTY(EditDefaultsOnly, Category = "Car")
 	class USphereComponent* GrappleHookSphereComponent = nullptr;
-	UPROPERTY(EditDefaultsOnly, Category = "Car")
-	class UStaticMeshComponent* GrappleHookMesh = nullptr;
+	// UPROPERTY(EditDefaultsOnly, Category = "Car")
+	// class UStaticMeshComponent* GrappleHookMesh = nullptr;
 	UPROPERTY(EditDefaultsOnly, Category = "Car")
 	class UStaticMeshComponent* GrappleSensor = nullptr;
 	UPROPERTY(EditDefaultsOnly, Category = "Car")

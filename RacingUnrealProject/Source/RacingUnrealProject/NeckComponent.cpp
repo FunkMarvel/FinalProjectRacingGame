@@ -44,13 +44,13 @@ void UNeckComponent::UpdateSplinePoints()
 {
 	FVector StartLocation, StartTangent, EndLocation, EndTangent = FVector::ZeroVector;
 	
-	StartLocation = CarPawn->CarMesh->GetComponentLocation();
-	EndLocation = CarPawn->GrappleHookMesh->GetComponentLocation();
+	StartLocation = CarPawn->SharkBodyMesh->GetComponentLocation();
+	EndLocation = CarPawn->SharkHeadMesh->GetComponentLocation();
 
 	float Distance = (StartLocation - EndLocation).Size();
 	
-	StartTangent = CarPawn->CarMesh->GetForwardVector() * Distance;
-	EndTangent = CarPawn->GrappleHookMesh->GetForwardVector() * Distance;
+	StartTangent = CarPawn->SharkBodyMesh->GetForwardVector() * Distance;
+	EndTangent = CarPawn->SharkHeadMesh->GetForwardVector() * Distance;
 
 	//new method for end tangen
 	EndTangent = FVector::CrossProduct( CarPawn->GrappleHookSphereComponent->GetPhysicsLinearVelocity(),

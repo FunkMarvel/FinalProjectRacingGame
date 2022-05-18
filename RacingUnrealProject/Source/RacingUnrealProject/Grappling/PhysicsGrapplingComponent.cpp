@@ -184,7 +184,7 @@ void UPhysicsGrapplingComponent::ResetTemporalVariables()
 	CurrentHookedTime = 0.f;
 	KnockOffHitResult =	FHitResult();
 
-	CarPawn->GrappleHookMesh->SetRelativeScale3D(FVector(3.f));
+	CarPawn->SharkHeadMesh->SetRelativeScale3D(FVector(3.f));
 	
 }
 
@@ -245,7 +245,7 @@ void UPhysicsGrapplingComponent::InActiveState()
 		CarPawn->GrappleHookSphereComponent->SetRelativeLocation(StartLocationGrappleMesh);
 		CarPawn->GrappleHookSphereComponent->SetRelativeRotation(FRotator::ZeroRotator);
 		ResetTemporalVariables();
-		CarPawn->GrappleHookMesh->SetRelativeRotation(FRotator::ZeroRotator);
+		CarPawn->SharkHeadMesh->SetRelativeRotation(FRotator::ZeroRotator);
 
 		//event
 		OpenHead.Broadcast(false);
@@ -280,7 +280,7 @@ void UPhysicsGrapplingComponent::TravelingState()
 		//CarPawn->GrappleHookSphereComponent->AddImpulse(CarPawn->MainCamera->GetForwardVector() * FireGrappleSpeed, NAME_None, true);
 		CarPawn->GrappleSensor->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
-		CarPawn->GrappleHookMesh->SetRelativeScale3D(FVector(10.f));
+		CarPawn->SharkHeadMesh->SetRelativeScale3D(FVector(10.f));
 
 		//event
 		if (TargetGrappableComponent){
@@ -295,7 +295,7 @@ void UPhysicsGrapplingComponent::TravelingState()
 	//updates the sensor to match grappleSphere velocity
 	FRotator NewRot = UKismetMathLibrary::MakeRotFromXZ(CarPawn->GrappleHookSphereComponent->GetPhysicsLinearVelocity(), CarPawn->SphereComp->GetUpVector());
 	CarPawn->GrappleSensor->SetWorldRotation(NewRot);
-	CarPawn->GrappleHookMesh->SetWorldRotation(NewRot);
+	CarPawn->SharkHeadMesh->SetWorldRotation(NewRot);
 
 	//applies gravity
 	HandleGravity();
@@ -303,15 +303,15 @@ void UPhysicsGrapplingComponent::TravelingState()
 	//updates spline
 	FVector StartLocation, EndLocation = FVector::ZeroVector;
 	
-	StartLocation = CarPawn->CarMesh->GetComponentLocation();
+	StartLocation = CarPawn->SharkBodyMesh->GetComponentLocation();
 	EndLocation = CarPawn->GrappleHookSphereComponent->GetComponentLocation();
 
 	// DrawDebugSphere(GetWorld(), EndLocation, 150.f, 10, FColor::Red, false,  1.f);
 
 	float Distance = (StartLocation - EndLocation).Size();
 	
-	FVector StartTangent = CarPawn->CarMesh->GetForwardVector() * Distance;
-	FVector EndTangent = CarPawn->GrappleHookMesh->GetForwardVector() * Distance;
+	FVector StartTangent = CarPawn->SharkBodyMesh->GetForwardVector() * Distance;
+	FVector EndTangent = CarPawn->SharkHeadMesh->GetForwardVector() * Distance;
 
 	//new method for end tangent
 	EndTangent = FVector::CrossProduct( CarPawn->GrappleHookSphereComponent->GetPhysicsLinearVelocity(),
@@ -367,7 +367,7 @@ void UPhysicsGrapplingComponent::TravelingState()
 		
 		//sets the shark head
 		FRotator NewHeadRot = UKismetMathLibrary::MakeRotFromXZ(Vel.GetSafeNormal(), CarPawn->LocalUpVector);
-		CarPawn->GrappleHookMesh->SetWorldRotation(NewHeadRot);
+		CarPawn->SharkHeadMesh->SetWorldRotation(NewHeadRot);
 		
 	}
 	else
