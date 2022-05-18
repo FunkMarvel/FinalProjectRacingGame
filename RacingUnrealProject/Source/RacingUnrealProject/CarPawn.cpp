@@ -309,7 +309,7 @@ void ACarPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 float ACarPawn::GetCurrentForwardSpeed()
 {
-	return	FVector::DotProduct(SphereComp->GetPhysicsLinearVelocity(), SphereComp->GetForwardVector());
+	return	FMath::Abs(FVector::DotProduct(SphereComp->GetPhysicsLinearVelocity(), SphereComp->GetForwardVector()));
 }
 
 void ACarPawn::EnterState(EVehicleState NewState)
