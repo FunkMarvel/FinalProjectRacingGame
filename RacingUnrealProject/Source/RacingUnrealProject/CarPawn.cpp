@@ -131,16 +131,16 @@ void ACarPawn::BeginPlay()
 	StartPlayerLocation = GetActorLocation();
 
 
-	// //TODO REMOVE TEMP
-	 FTimerHandle Handle;
 	
-	 FTimerDelegate Callback;
-	 Callback.BindLambda([this]
-	 {
-	 	EnterState(EVehicleState::Finished);
-	 });
-	
-	GetWorld()->GetTimerManager().SetTimer(Handle, Callback, 5.f, false);
+	//  FTimerHandle Handle;
+	//
+	//  FTimerDelegate Callback;
+	//  Callback.BindLambda([this]
+	//  {
+	//  	EnterState(EVehicleState::Finished);
+	//  });
+	//
+	// GetWorld()->GetTimerManager().SetTimer(Handle, Callback, 5.f, false);
 }
 
 void ACarPawn::RotateSphereCompToLocalUpVector()
