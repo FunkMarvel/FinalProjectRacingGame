@@ -16,6 +16,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "RacingUnrealProject/CameraEffecttComponent.h"
 #include "RacingUnrealProject/DebugLog.h"
+#include "RacingUnrealProject/MusicComponent.h"
 
 // Sets default values for this component's properties
 UPhysicsGrapplingComponent::UPhysicsGrapplingComponent()
@@ -573,7 +574,7 @@ void UPhysicsGrapplingComponent::HookedEatableState()
 	{
 		TargetGrappableComponent->OnReached(); //invoke event
 		CarPawn->SphereComp->AddImpulse(CarPawn->SphereComp->GetForwardVector() * TargetGrappableComponent->GetSpeed(), NAME_None, true); // adds speed
-
+		CarPawn->MusicComponent->PlaySpeedBoostSound();
 		//camera effect
 		CarPawn->CameraEffectComponent->BoostCameraModifier->EnableModifier();
 		EnterState(EGrappleStates::InActive);
