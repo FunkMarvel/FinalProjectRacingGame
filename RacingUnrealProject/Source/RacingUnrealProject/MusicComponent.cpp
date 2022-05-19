@@ -8,6 +8,7 @@
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Sound/SoundCue.h"
 
 // Sets default values for this component's properties
@@ -34,8 +35,15 @@ void UMusicComponent::BeginPlay()
 	}
 
 	if (BaseEngine1) {
-		/*BaseEngine1AudioComponent = */UGameplayStatics::SpawnSoundAttached(BaseEngine1, GetOwner()->GetRootComponent());
+		UGameplayStatics::SpawnSoundAttached(BaseEngine1, GetOwner()->GetRootComponent());
 	}
+	
+	if (BaseEngine2){
+		UGameplayStatics::SpawnSoundAttached(BaseEngine2, GetOwner()->GetRootComponent());
+		BaseEngine2->VolumeMultiplier = 0.f;
+	}
+
+	CarPawn->EnterNewStateEvent.AddDynamic(this, &UMusicComponent::SharkBodyEnterNewState);
 
 	
 }
@@ -48,14 +56,29 @@ void UMusicComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 	float adjustedSpeed = CarPawn->GetCurrentForwardSpeed() / CarPawn->GetMaxSpeed();
 	adjustedSpeed *= 0.7f;
+
+	LerpEngineSpeed = UKismetMathLibrary::Lerp(LerpEngineSpeed, adjustedSpeed, GetWorld()->GetDeltaSeconds());
+
+	// Base engine 1, scifi sound
 	
-	BaseEngine1->PitchMultiplier = adjustedSpeed;
+	BaseEngine1->PitchMultiplier = LerpEngineSpeed;
+	// BaseEngine1->VolumeMultiplier = (1.f-adjustedSpeed * 0.6f);
+
+	//base engien two (real engine)
+	BaseEngine2->VolumeMultiplier = LerpEngineSpeed * 0.2f;
 	
 }
 
 void UMusicComponent::PlaySpeedBoostSound() const {
 	if (SpeedBoostSound) {
 		UGameplayStatics::SpawnSoundAttached(SpeedBoostSound, GetOwner()->GetRootComponent());
+	}
+}
+
+void UMusicComponent::SharkBodyEnterNewState(EVehicleState NewState) {
+	if (NewState == EVehicleState::Grappling) {
+		LerpEngineSpeed = 2.f;
+		PlaySpeedBoostSound();
 	}
 }
 

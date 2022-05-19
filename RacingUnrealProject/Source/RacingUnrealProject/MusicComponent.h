@@ -38,9 +38,17 @@ private:
 		class USoundBase* MusicToUse = nullptr;
 	UPROPERTY(EditAnywhere, meta =(AllowPrivateAccess = "true"), Category = "SoundEffects")
 		class USoundCue* BaseEngine1 = nullptr;
+    UPROPERTY(EditAnywhere, meta =(AllowPrivateAccess = "true"), Category = "SoundEffects")
+            class USoundCue* BaseEngine2 = nullptr;
 	UPROPERTY(EditAnywhere, meta =(AllowPrivateAccess = "true"), Category = "SoundEffects")
 		class USoundBase* SpeedBoostSound = nullptr;
 
+
+	UPROPERTY()
+	float LerpEngineSpeed = 0.f;
+
+	UFUNCTION()
+		void SharkBodyEnterNewState(EVehicleState NewState);
 	/*UPROPERTY()
 		class UAudioComponent* BaseEngine1AudioComponent = nullptr;*/
 };
