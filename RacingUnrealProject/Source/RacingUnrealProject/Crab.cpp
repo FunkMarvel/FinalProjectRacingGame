@@ -45,5 +45,8 @@ void ACrab::Tick(float DeltaTime)
 
 	if (CurrentDistance > Spline->GetSplineLength())
 		CurrentDistance = 0.f;
+	
+	if (CurrentDistance < 0.f)
+		CurrentDistance = Spline->GetSplineLength();
 }
 
