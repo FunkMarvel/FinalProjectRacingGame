@@ -84,13 +84,14 @@ void ATimeAttackGameModeBase::GameEndState()
 	}
 	CurrentPlayerData.PlayerTime = RaceTimer;
 	FPlayerData* BestPlayer = RacingGameInstance->GetBestTimePlayer();
+	FSlateColor CurrentColor{ChangeGoalColor(CurrentBestGoal)};
 	if (BestPlayer)
 	{
-		TimeAttackHUD->SetBestTime(CurrentPlayerData.PlayerTime, BestPlayer->PlayerTime);
+		TimeAttackHUD->SetBestTime(CurrentPlayerData.PlayerTime, BestPlayer->PlayerTime, CurrentColor);
 	}
 	else
 	{
-		TimeAttackHUD->SetBestTime(CurrentPlayerData.PlayerTime, CurrentPlayerData.PlayerTime);
+		TimeAttackHUD->SetBestTime(CurrentPlayerData.PlayerTime, CurrentPlayerData.PlayerTime, CurrentColor);
 	}
 	RacingGameInstance->SavePlayerData(CurrentPlayerData);
 	if(SaveGame()) DL_NORMAL("Save Succesful");

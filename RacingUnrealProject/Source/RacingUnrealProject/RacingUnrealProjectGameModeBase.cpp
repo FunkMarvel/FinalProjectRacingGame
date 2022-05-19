@@ -4,9 +4,10 @@
 #include "RacingUnrealProjectGameModeBase.h"
 
 #include "CarPawn.h"
-#include "DebugLog.h"
+
 #include "Checkpoint/Checkpoint.h"
 #include "Components/ArrowComponent.h"
+#include "Components/SphereComponent.h"
 #include "GameModes/RacingGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "SaveGameObjects/RacingSaveGame.h"
@@ -52,6 +53,19 @@ void ARacingUnrealProjectGameModeBase::GameEndState()
 
 void ARacingUnrealProjectGameModeBase::OnPressPause()
 {
+	if (FName(GetWorld()->GetMapName()) == RacingGameInstance->LevelNames[0]) return;
+	if (!bGamePaused)
+	{
+		CurrentVel = PlayerPawn->SphereComp->GetPhysicsLinearVelocity();
+		CurrentAngVel = PlayerPawn->SphereComp->GetPhysicsAngularVelocityInRadians();
+		PlayerPawn->SphereComp->SetSimulatePhysics(false);
+	}
+	else
+	{
+		PlayerPawn->SphereComp->SetSimulatePhysics(true);
+		PlayerPawn->SphereComp->SetPhysicsLinearVelocity(CurrentVel);
+		PlayerPawn->SphereComp->SetPhysicsAngularVelocityInRadians(CurrentAngVel);
+	}
 }
 
 void ARacingUnrealProjectGameModeBase::AddScore(int32 Score)

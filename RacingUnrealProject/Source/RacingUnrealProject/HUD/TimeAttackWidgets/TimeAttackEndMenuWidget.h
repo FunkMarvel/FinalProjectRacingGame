@@ -20,7 +20,7 @@ public:
 	UFUNCTION()
 	FText GetTimeTextFromFloat(float NewTime);
 
-	void SetTimeText(FText CurrentTimeText, FText BestTimeText);
+	void SetTimeText(FText CurrentTimeText, FText BestTimeText, FSlateColor SlateColor);
 
 	UFUNCTION()
 	virtual void OnPlayAgain();
