@@ -24,9 +24,13 @@ FText UTimeAttackEndMenuWidget::GetTimeTextFromFloat(float NewTime)
 	return FText::FromString(TimeString);
 }
 
-void UTimeAttackEndMenuWidget::SetTimeText(FText CurrentTimeText, FText BestTimeText)
+void UTimeAttackEndMenuWidget::SetTimeText(FText CurrentTimeText, FText BestTimeText, FSlateColor SlateColor)
 {
-	if (CurrentTime) CurrentTime->SetText(CurrentTimeText);
+	if (CurrentTime)
+	{
+		CurrentTime->SetText(CurrentTimeText);
+		CurrentTime->SetColorAndOpacity(SlateColor);
+	}
 	if (BestTime) BestTime->SetText(BestTimeText);
 }
 

@@ -23,7 +23,7 @@ public:
 
 	void SetLapCounter(int32 CurrentLap, int32 MaxNumLaps);
 
-	void SetBestTime(float CurrentTime, float BestTime);
+	void SetBestTime(float CurrentTime, float BestTime, FSlateColor SlateColor);
 
 	void ToggleEndMenu(bool bShowMenu);
 
