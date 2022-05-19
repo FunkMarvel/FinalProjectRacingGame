@@ -40,13 +40,13 @@ public:
 	//events
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Event")
-		FFoundHomingTarget FoundHomingTargetEvent;
+	FFoundHomingTarget FoundHomingTargetEvent;
 	UPROPERTY(BlueprintAssignable, Category = "Event")
-		FBeginHoming BeginHomingEvent;
+	FBeginHoming BeginHomingEvent;
 	UPROPERTY(BlueprintAssignable, Category = "Event")
-		FLostHomingTarget LostHomingTargetEvent;
+	FLostHomingTarget LostHomingTargetEvent;
 	UPROPERTY(BlueprintAssignable, Category = "Event")
-		FOpennHead OpenHead;
+	FOpennHead OpenHead;
 	
 private:
 	UPROPERTY()
@@ -62,138 +62,138 @@ private:
 
 		// global state variables
 	UPROPERTY()
-		float CurrentStateTime = 0.f;
+	float CurrentStateTime = 0.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Gravity")
-		float GrappleGravityForce = 9000.f;
+	float GrappleGravityForce = 9000.f;
 	
 	//inactive state
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Inactive")
-		float FireGrappleSpeed = 19000.f;
+	float FireGrappleSpeed = 19000.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Inactive")
-		float GrappleRotationSpeed = 500.f;
+	float GrappleRotationSpeed = 500.f;
 	
 	
 	//hooked
 
 	//caps how slow or fast Player shoudl move
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere ,Category = "Grapp|OnHooked")
-		float LowestOnHookedSpeed = 3400.f;
+	float LowestOnHookedSpeed = 3400.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere ,Category = "Grapp|OnHooked")
-		float HighestOnHookedSpeed = 9000.f;
+	float HighestOnHookedSpeed = 9000.f;
 
 	UPROPERTY()
-		float OnHookedSpeed = 0.f;
+	float OnHookedSpeed = 0.f;
 	UPROPERTY()
-		FVector OnHookedDirection = FVector::ZeroVector;
+	FVector OnHookedDirection = FVector::ZeroVector;
 	UPROPERTY()
-		FTransform OnHookedVehicleTransfrom = FTransform::Identity;
+	FTransform OnHookedVehicleTransfrom = FTransform::Identity;
 	UPROPERTY()
-		FVector OnHookedUpVector = FVector::ZeroVector;
+	FVector OnHookedUpVector = FVector::ZeroVector;
 	
 	UPROPERTY()
-		float MoveToTargetModifier = 1.f;
+	float MoveToTargetModifier = 1.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere ,Category = "Grapple|Hooked")
-		float MoveToTargetAcceleration = 10.f;
+	float MoveToTargetAcceleration = 10.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Hooked")
-		UCurveFloat* HookedMovementCurve = nullptr;
+	UCurveFloat* HookedMovementCurve = nullptr;
 	UPROPERTY()
-		float CurrentHookedTime = 0.f; 
+	float CurrentHookedTime = 0.f; 
 
 	//traveling
 	UPROPERTY(/*meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple"*/)
-		UGrappleSphereComponent* TargetGrappableComponent = nullptr;
+	UGrappleSphereComponent* TargetGrappableComponent = nullptr;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Travelling")
-		float RaycastRange = 1000.f;
+	float RaycastRange = 1000.f;
 	UPROPERTY(/*meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Travveling"*/)
 	float MaxGrappleDistance = 0.f; 
 
 	// knockoff
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Knockoff")
-		float knockoffDuration = 0.4f;
+	float knockoffDuration = 0.4f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Knockoff")
-		float KnockoffForce = 4000.f;
+	float KnockoffForce = 4000.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Knockoff")
-		float KnockoffMaxAngle = 45.f;
+	float KnockoffMaxAngle = 45.f;
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Grapple|Knockoff")
-		class UParticleSystem* KnockOffParticleSystem = nullptr;
+	class UParticleSystem* KnockOffParticleSystem = nullptr;
 	UPROPERTY()
-		FHitResult KnockOffHitResult;
+	FHitResult KnockOffHitResult;
 	
 	// OnHooked eatable
 	UPROPERTY()
-		class UGrappleSphereComponent* EatableGrappleSphereComponent = nullptr;
+	class UGrappleSphereComponent* EatableGrappleSphereComponent = nullptr;
 
 	//returning
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere ,Category = "Grapple|Returning")
-		float ReturnStateTime = 0.2f;
+	float ReturnStateTime = 0.2f;
 	
 
 	// returning with eatable
 	UPROPERTY(meta = (AllowPrivateAccess = "ture"), EditAnywhere, Category = "Grapple|Eatable")
-		float ReturnEatableTime = 0.4f;
+	float ReturnEatableTime = 0.4f;
 public:
 
 	UFUNCTION()
-		void HandleGravity();
+	void HandleGravity();
 
 	
 	UFUNCTION()
-		EGrappleStates GetCurrentGrappleState(){return CurrentGrappleState; }
+	EGrappleStates GetCurrentGrappleState(){return CurrentGrappleState; }
 	UFUNCTION()
-		float GetOnHookedVelocitySize() const { return OnHookedSpeed; }
+	float GetOnHookedVelocitySize() const { return OnHookedSpeed; }
 	UFUNCTION()
-		FVector GetOnHookedDirection() const { return OnHookedDirection; }
+	FVector GetOnHookedDirection() const { return OnHookedDirection; }
 	UFUNCTION()
-		FTransform GetOnHookedVehicleTransform(){return OnHookedVehicleTransfrom; }
+	FTransform GetOnHookedVehicleTransform(){return OnHookedVehicleTransfrom; }
 	UFUNCTION()
-		FVector GetOnHookedUpVector() const {return OnHookedUpVector; }
+	FVector GetOnHookedUpVector() const {return OnHookedUpVector; }
 	UFUNCTION()
-		UGrappleSphereComponent* GetTargetComponent() const {return TargetGrappableComponent; }
+	UGrappleSphereComponent* GetTargetComponent() const {return TargetGrappableComponent; }
 	UFUNCTION()
-		bool IsGrappleInsideOfRange();
+	bool IsGrappleInsideOfRange();
 	
 	UFUNCTION()
-		void FireGrapplingHook();
+	void FireGrapplingHook();
 	UFUNCTION()
-		void RetractGrapplingHook();
+	void RetractGrapplingHook();
 
 	UFUNCTION()
-		void ResetTemporalVariables();
+	void ResetTemporalVariables();
 	UFUNCTION()
-		void OnGrappleHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	void OnGrappleHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	//state machine for grapple
 	UFUNCTION()
-		void EnterState(EGrappleStates NewState);
+	void EnterState(EGrappleStates NewState);
 	UFUNCTION()
-		void InActiveState();
+	void InActiveState();
 	UFUNCTION()
-		void TravelingState();
+	void TravelingState();
 	UFUNCTION()
-		void KnockoffState();
+	void KnockoffState();
 	UFUNCTION()
-		void HookedState();
+	void HookedState();
 	UFUNCTION()
-		void HookedEatableState();
+	void HookedEatableState();
 	UFUNCTION()
-		void ReturningState();
+	void ReturningState();
 
 	//on Shark swtich state
 	UFUNCTION()
-		void OnSharkChangeState(EVehicleState _NewState);
+	void OnSharkChangeState(EVehicleState _NewState);
 
 	//other
 	UFUNCTION()
-		void MoveTowardsGrapple(float LengthAtSpline);
+	void MoveTowardsGrapple(float LengthAtSpline);
 	UFUNCTION()
-		bool ValidGrappleState();
+	bool ValidGrappleState();
 	UFUNCTION()
-		void HandleRayTraceLogic();
+	void HandleRayTraceLogic();
 
 	
 	
 	//debug
 public:
 	UPROPERTY(EditAnywhere, Category = "Grapple|Debug")
-		bool bDebugGrappleState = false;
+	bool bDebugGrappleState = false;
 };

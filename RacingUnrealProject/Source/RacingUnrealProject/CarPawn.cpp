@@ -108,7 +108,7 @@ void ACarPawn::ResetCarToLastCheckpoint()
 		if (CP->GetCheckpointGravitySpline())
 			GravitySplineActive = CP->GetCheckpointGravitySpline();
 		else
-			DL_NORMAL( "gravity spline is selected" + CP->GetName());
+			DL_ERROR( "gravity spline is NOT selected" + CP->GetName());
 		
 		EnterState(EVehicleState::AirBorne);
 	}
@@ -120,7 +120,7 @@ void ACarPawn::BeginPlay()
 	
 	Super::BeginPlay();
 	
-	// Hit and phyus
+	// Hit and phys
 	SphereComp->OnComponentHit.AddDynamic(this, &ACarPawn::OnHitt);
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ACarPawn::OnBeginOverLap);
 	SphereComp->OnComponentEndOverlap.AddDynamic(this, &ACarPawn::OnEndOverLap);
@@ -129,22 +129,9 @@ void ACarPawn::BeginPlay()
 	
 	//deathzone variables
 	StartPlayerLocation = GetActorLocation();
-
-
-	
-	//  FTimerHandle Handle;
-	//
-	//  FTimerDelegate Callback;
-	//  Callback.BindLambda([this]
-	//  {
-	//  	EnterState(EVehicleState::Finished);
-	//  });
-	//
-	// GetWorld()->GetTimerManager().SetTimer(Handle, Callback, 5.f, false);
 }
 
-void ACarPawn::RotateSphereCompToLocalUpVector()
-{
+void ACarPawn::RotateSphereCompToLocalUpVector() const {
 	FRotator TargetRot = UKismetMathLibrary::MakeRotFromZX(LocalUpVector, GetActorForwardVector());
 	FRotator NewRotation = FMath::RInterpTo(SphereComp->GetComponentRotation(), TargetRot,
 		GetWorld()->GetDeltaSeconds(), 3.4f);
@@ -159,7 +146,6 @@ void ACarPawn::ApplyGravity()
 		FVector HoverForce(0.f);
 		if (SphereComp->IsSimulatingPhysics())
 		{
-			
 			float ScaleHeight{(HoverHeight - DistanceToGround())/HoverForceReduction};
 			FVector HeightVelocity{
 				FVector::DotProduct(SphereComp->GetPhysicsLinearVelocity(),LocalUpVector)*LocalUpVector
@@ -168,7 +154,7 @@ void ACarPawn::ApplyGravity()
 			if (IsGrounded())
 			{
 				HoverForce = (-GravityForceVector * UKismetMathLibrary::Exp(ScaleHeight) -
-					HoverDampingFactor * HeightVelocity).GetClampedToMaxSize(10000.f); // * UKismetMathLibrary::Exp(ScaleHeight)
+					HoverDampingFactor * HeightVelocity).GetClampedToMaxSize(10000.f);
 			}
 			SphereComp->AddForce(GravityForceVector+HoverForce, FName(), true);
 		}
@@ -177,8 +163,6 @@ void ACarPawn::ApplyGravity()
 
 void ACarPawn::TiltCarMesh(FVector AsymVector)
 {
-	//orients the mesh
-
 	//get the upvector from the ground
 	FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
 
@@ -231,8 +215,7 @@ void ACarPawn::TiltCarMesh(FVector AsymVector)
 
 void ACarPawn::HandleAsymFriction(const FVector& AsymVector)
 {
-	if (SphereComp->IsSimulatingPhysics())
-	{
+	if (SphereComp->IsSimulatingPhysics()){
 		SphereComp->AddForce(AsymVector* 30.f);
 	}
 }
@@ -264,10 +247,10 @@ void ACarPawn::Tick(float DeltaTime)
 		
 	}
 
-
+	//resets angular velocity so car wont begin spinning
 	SphereComp->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
 
-	//bp event
+	//handles bp event
 	if (SphereComp->IsSimulatingPhysics()) {
 		float ScaledSpeed = SphereComp->GetPhysicsLinearVelocity().Size();
 		ScaledSpeed = (ScaledSpeed/MaxSpeed);
@@ -321,7 +304,6 @@ void ACarPawn::StateDriving()
 	}
 	ApplyGravity();
 	SetUpVectorAsSplineUpAxis();
-	// LocalUpVector = GetUpVectorFromUnderCar();
 	
 	if (IsGrounded())
 	{
@@ -339,9 +321,6 @@ void ACarPawn::StateDriving()
 		EnterState(EVehicleState::AirBorne);
 	}
 	
-	//HandleMaxTurnWithSpline();
-	//DrawDebugLine(GetWorld(), SphereComp->GetComponentLocation(), SphereComp->GetComponentLocation() + LocalUpVector * 10000.f, FColor::Red, false);
-	
 	//should we be grappling
 	if (PhysicsGrappleComponent->ValidGrappleState())
 	{
@@ -357,9 +336,6 @@ void ACarPawn::StateGrappling()
 		SphereComp->SetSimulatePhysics(false);
 		
 		CameraEffectComponent->GrappleCameraModifier->EnableModifier();
-		// UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraEffectComponent->CameraShake, SphereComp->GetComponentLocation(),
-		// 	  0.f, 1000.f, 1.f);
-		
 	}
 
 	
@@ -372,23 +348,16 @@ void ACarPawn::StateGrappling()
 
 	if (PhysicsGrappleComponent->GetTargetComponent())
 	{
-		/*FRotator NewRot = UKismetMathLibrary::RLerp(
-			PhysicsGrappleComponent->GetOnHookedVehicleTransform().Rotator(),
-			PhysicsGrappleComponent->GetTargetComponent()->GetComponentRotation(),
-			lerpFactor,
-			true);
-		SphereComp->SetWorldRotation(NewRot);*/
 		FVector Up, Forward;
 		Up = UKismetMathLibrary::VLerp(PhysicsGrappleComponent->GetOnHookedUpVector(), PhysicsGrappleComponent->GetTargetComponent()->GetUpVector(), lerpFactor);
 		Forward = NeckSpline->FindDirectionClosestToWorldLocation(SphereComp->GetComponentLocation(), ESplineCoordinateSpace::World);
 		
-		
 		FRotator NewRot = UKismetMathLibrary::MakeRotFromXZ(Forward, Up);
-		// FRotator NewRot = UKismetMathLibrary::MakeRotFromZX(Up, Forward);
+		
 		SphereComp->SetWorldRotation(NewRot);
 	}
+	
 	CameraBoom->SetRelativeRotation(FRotator(-5.f, 0.f, 0.f));
-
 	
 	//psudo on exit
 	if (PhysicsGrappleComponent->ValidGrappleState() == false)
@@ -409,12 +378,8 @@ void ACarPawn::StateAirBorne()
 	if (bEnterState)
 	{
 		bEnterState = false;
-		// SphereComp->SetSimulatePhysics(true);
-		// SphereComp->SetPhysicsLinearVelocity(FVector::ZeroVector);
-		
 	}
 	SetUpVectorAsSplineUpAxis();
-	// LocalUpVector = GetUpVectorFromUnderCar();
 	
 	RotateSphereCompToLocalUpVector();
 	ApplyGravity();
@@ -444,6 +409,7 @@ void ACarPawn::StateDying()
 {
 	if (bEnterState)
 	{
+		//hides vehicle
 		bEnterState = false;
 		SphereComp->SetSimulatePhysics(false);
 		SharkBodyMesh->SetVisibility(false);
@@ -457,6 +423,7 @@ void ACarPawn::StateDying()
 		
 	}
 	if (StateTime > DyingDuration) {
+		//shows vehicle
 		SharkBodyMesh->SetVisibility(true);
 		SharkHeadMesh->SetVisibility(true);
 		ResetCarToLastCheckpoint();
@@ -479,12 +446,10 @@ void ACarPawn::ToggleGrappleHook()
 {
 	if (PhysicsGrappleComponent->GetCurrentGrappleState() == EGrappleStates::InActive)
 	{
-		//EnterState(EVehicleState::Grappling);
 		PhysicsGrappleComponent->FireGrapplingHook();
 	}
 	else
 	{
-		// EnterState(EVehicleState::AirBorne);
 		PhysicsGrappleComponent->RetractGrapplingHook();
 	}
 	
@@ -531,11 +496,8 @@ FVector ACarPawn::CalcAsymVector()
 	if (NegativeVelocity.SizeSquared() < cutoffspeed* cutoffspeed)
 	{
 		CalcAsymForce *= NegativeVelocity.Size() / 5000.f;
-		// CalcAsymForce = FVector::ZeroVector;
-		// DL_NORMAL("UnderCutoffSpeed")
 	}
 	
-		
 	return CalcAsymForce;
 }
 
@@ -551,7 +513,7 @@ void ACarPawn::MoveXAxis(const float Value)
 		return;
 	}
 	
-	float TimeIndependentValue = Value /** UGameplayStatics::GetWorldDeltaSeconds(this)*/;
+	float TimeIndependentValue = Value;
 	if (!SphereComp->IsSimulatingPhysics()) // guard cluase
 		return;
 
@@ -693,8 +655,7 @@ bool ACarPawn::IsGrounded()
 		TraceParams
 	);
 	
-	if (hit.IsValidBlockingHit()/* && UnsignedAngle(GravitySplineActive->
-		GetFixedUpVectorFromLocation(SphereComp->GetComponentLocation()), hit.Normal) < MaxGroundAngle*/) {
+	if (hit.IsValidBlockingHit()) {
 		return true;
 	}
 	return false;
@@ -752,9 +713,7 @@ FHitResult ACarPawn::ShootRayFromCenterOfScreen()
 
 void ACarPawn::SetUpVectorAsSplineUpAxis()
 {
-	// LocalUpVector = GetUpVectorFromUnderCar();
 	LocalUpVector = GravitySplineActive->GetFixedUpVectorFromLocation(SphereComp->GetComponentLocation());
-	
 }
 
 bool ACarPawn::IsMovingForward()
@@ -779,14 +738,12 @@ float ACarPawn::GetSplineCarForwardAngle()
 	FVector CarForward = SphereComp->GetForwardVector();
 	float Angle = SignedAngleAxis(SplineForward, CarForward, LocalUpVector);
 	
-
 	return Angle;
 }
 
 void ACarPawn::HandleMaxTurnWithSpline()
 {
 	float Angle = GetSplineCarForwardAngle();
-
 	
 	if (Angle > MaxCar_SplineAngle)
 	{
@@ -827,13 +784,17 @@ bool ACarPawn::IsOutOfBounds()
 
 void ACarPawn::SetGameSpeedUp()
 {
+#if UE_EDITOR
 	float timedil = UGameplayStatics::GetGlobalTimeDilation(this);
 	
 		UGameplayStatics::SetGlobalTimeDilation( GetWorld(),timedil + 0.1f);
+#endif
+	return;
 }
 
 void ACarPawn::SetGameSpeedDown()
 {
+#if UE_EDITOR
 	float timedil = UGameplayStatics::GetGlobalTimeDilation(this);
 	if (timedil - 0.1f > 0.05f)
 	{
@@ -843,11 +804,13 @@ void ACarPawn::SetGameSpeedDown()
 	{
 		UGameplayStatics::SetGlobalTimeDilation( GetWorld(),0.04f);
 	}
-	
+#endif
+	return;
 }
 
 bool ACarPawn::IsUnderMaxSpeed(bool bBuffer)
 {
+	
 	float BufferMaxSpeed = MaxSpeed * MaxSpeed;
 	float buffer = 0.f;
 	buffer = BufferMaxSpeed * 0.05f * bBuffer;
@@ -855,8 +818,6 @@ bool ACarPawn::IsUnderMaxSpeed(bool bBuffer)
 
 	if (BufferMaxSpeed + buffer > SphereComp->GetPhysicsLinearVelocity().SizeSquared())
 	{
-		
-		
 		return true;
 	}
 	return false;
@@ -876,8 +837,7 @@ FVector ACarPawn::GetUpVectorFromUnderCar()
 		FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldStatic),
 		TraceParams
 	);
-
-	// DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 1.f, (uint8)0U, 10.f);
+	
 	if (hit.IsValidBlockingHit())
 	{
 		// DL_NORMAL("LineTraceChannelHit!")
@@ -889,12 +849,6 @@ FVector ACarPawn::GetUpVectorFromUnderCar()
 void ACarPawn::OnHitt(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	HitGroundBpEvent(SphereComp->GetPhysicsLinearVelocity().Size());
-
-	//is the normal impule great enoguh, and is the impule not coming mainly from below the car
-	/*if (NormalImpulse.Size() > 400000.f && UnsignedAngle(NormalImpulse, LocalUpVector) > 70.f) {
-		/*EnterState(EVehicleState::Dying);
-		return;#1#
-	}*/
 
 	if (UnsignedAngle(-NormalImpulse.GetSafeNormal(), SphereComp->GetForwardVector()) < 40.f)
 	{

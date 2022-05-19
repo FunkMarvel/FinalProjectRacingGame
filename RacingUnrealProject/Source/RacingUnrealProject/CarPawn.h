@@ -27,7 +27,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	void RotateSphereCompToLocalUpVector();
+	void RotateSphereCompToLocalUpVector() const;
 	void ApplyGravity();
 	void TiltCarMesh(FVector AsymVector);
 	void HandleAsymFriction(const FVector& AsymVector);
@@ -42,8 +42,6 @@ public:
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Car", BlueprintReadWrite)
 	class USphereComponent* SphereComp{nullptr};
-	// UPROPERTY(EditDefaultsOnly, Category = "Car")
-	// class UStaticMeshComponent* CarMesh{nullptr};
 	UPROPERTY(EditDefaultsOnly, Category = "Car")
 	class USpringArmComponent* CameraBoom{nullptr};
 	UPROPERTY(EditDefaultsOnly, Category = "Car")
@@ -54,8 +52,6 @@ public:
 	class UArrowComponent* ArrowRayCastStart{nullptr};
 	UPROPERTY(EditDefaultsOnly, Category = "Car")
 	class USphereComponent* GrappleHookSphereComponent = nullptr;
-	// UPROPERTY(EditDefaultsOnly, Category = "Car")
-	// class UStaticMeshComponent* GrappleHookMesh = nullptr;
 	UPROPERTY(EditDefaultsOnly, Category = "Car")
 	class UStaticMeshComponent* GrappleSensor = nullptr;
 	UPROPERTY(EditDefaultsOnly, Category = "Car")
@@ -148,11 +144,11 @@ private:
 	//gettes for movment
 public:
 	UFUNCTION()
-		float GetMaxSpeed() const {return MaxSpeed; }
+	float GetMaxSpeed() const {return MaxSpeed; }
 	UFUNCTION()
-		float GetCurrentForwardSpeed();
+	float GetCurrentForwardSpeed();
 	UFUNCTION()
-		float GetYAxisValue() const {return YAxisValue; }
+	float GetYAxisValue() const {return YAxisValue; }
 
 	
 	//Camera
@@ -169,7 +165,7 @@ public:
 	UFUNCTION()
 	void SetTargetCameraBoomLength(float NewCameraboomLength){CameraBoom->TargetArmLength = NewCameraboomLength; }
 	UFUNCTION()
-		float GetTargetCameraBoomLength() const {return CameraBoom->TargetArmLength; }
+	float GetTargetCameraBoomLength() const {return CameraBoom->TargetArmLength; }
 
 	
 
@@ -179,13 +175,11 @@ public:
 		//state machine evnets
 	UPROPERTY(BlueprintAssignable, Category = "Event")
 	FEnterNewStateEvent EnterNewStateEvent;
-	UFUNCTION(BlueprintImplementableEvent)
-		void BPEOnEnterNewState(EVehicleState _NewState);
+	
 private:
 	UPROPERTY()
 	FVector StartPlayerLocation = FVector::ZeroVector;
-
-
+	
 	//state machince
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Car|State")
 	EVehicleState CurrentVehicleState = EVehicleState::AirBorne;
@@ -193,9 +187,7 @@ private:
 	float StateTime = 0.f;
 	UPROPERTY()
 	bool bEnterState = false;
-
-
-
+	
 	UFUNCTION()
 	void StateDriving();
 
@@ -222,22 +214,15 @@ private:
 
 	//is valid X state
 	UFUNCTION()
-		bool IsValidDriveState() const;
+	bool IsValidDriveState() const;
 	UFUNCTION()
-		bool IsValidTurnState() const;
+	bool IsValidTurnState() const;
 	UFUNCTION()
-		bool IsValidLookState() const;
+	bool IsValidLookState() const;
 	
-	//TODO orgenize these :)
-
-
 	//other funcs
-
 	FVector CalcAsymVector();
 	float CaltAsymForce();
-
-	
-
 	
 	//action funcs
 	void MoveXAxis(float TimeAdjustedValue);
@@ -245,6 +230,7 @@ private:
 	void LookXAxis(float Value);
 	void LookYAxis(float Value);
 
+	//utility
 	UFUNCTION(BlueprintCallable)
 	bool IsGrounded();
 	float DistanceToGround();
@@ -252,39 +238,30 @@ private:
 	FHitResult ShootRayFromCenterOfScreen();
 	void SetUpVectorAsSplineUpAxis();
 	bool IsMovingForward();
-
 	float GetSplineCarForwardAngle();
 	void HandleMaxTurnWithSpline();
 	void ApplyDrag();
 	UFUNCTION()
 	bool IsOutOfBounds();
+	bool IsUnderMaxSpeed(bool bBuffer);
+	UFUNCTION()
+	FVector GetUpVectorFromUnderCar();
 
-
-	// #if WITH_EDITORONLY_DATA
-	//TODO debug remove!
+	//debug
 	UFUNCTION()
 	void SetGameSpeedUp();
 	UFUNCTION()
 	void SetGameSpeedDown();
-	// TODO debug remove end
-	// #endif
 
 	//patricles
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Car|ParticleSystem")
 		class UParticleSystem* DeathParticleSystem = nullptr;
 
-
 public:
+	//math
 	static float SignedAngleAxis(FVector v1, FVector v2, FVector axis);
 	static float UnsignedAngle(FVector v1, FVector v2);
 
-
-	bool IsUnderMaxSpeed(bool bBuffer);
-
-	UFUNCTION()
-	FVector GetUpVectorFromUnderCar();
-
-	//debug
 public:
 	UPROPERTY(EditAnywhere, Category = "Car|Debug")
 	bool bDebugCarState = false;
@@ -298,4 +275,6 @@ public:
 	void HitGroundBpEvent(float Speed);
 	UFUNCTION(BlueprintImplementableEvent, meta = (ToolTip = "0 -> 1 max speed"))
 	void BPECarSpeed(float Speed);
+	UFUNCTION(BlueprintImplementableEvent) 
+	void BPEOnEnterNewState(EVehicleState _NewState);
 };

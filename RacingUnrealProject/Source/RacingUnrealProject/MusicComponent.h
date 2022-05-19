@@ -49,6 +49,4 @@ private:
 
 	UFUNCTION()
 		void SharkBodyEnterNewState(EVehicleState NewState);
-	/*UPROPERTY()
-		class UAudioComponent* BaseEngine1AudioComponent = nullptr;*/
 };
