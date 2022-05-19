@@ -76,12 +76,12 @@ void AEnemySpawner::OnExitOverlapBegin(UPrimitiveComponent* OverlappedComponent,
 void AEnemySpawner::OnExitOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (OtherActor->IsA<APawn>())
+	if (OtherActor->IsA<APawn>() && NumberOfSpawnedEnemies > 0)
 	{
 		for (ABaseEnemyActor* Enemy : EnemyActors)
 		{
 			DL_NORMAL(TEXT("Destroyed"));
-			if (Enemy) Enemy->HandleDeath();
+			if (IsValid(Enemy)) Enemy->HandleDeath();
 		}
 		NumberOfSpawnedEnemies = 0;
 		NumberOfDestroyedEnemies = 0;
