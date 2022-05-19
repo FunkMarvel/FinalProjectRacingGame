@@ -7,6 +7,7 @@
 #include "PauseMenuWidget.h"
 #include "Components/Button.h"
 #include "RacingUnrealProject/CarPawn.h"
+#include "RacingUnrealProject/Widget/SpeedIndicatorWidget.h"
 #include "ScoreAttackWidgets/ScoreAttackEndMenuWidget.h"
 
 void AScoreAttackHUD::BeginPlay()
@@ -47,6 +48,19 @@ void AScoreAttackHUD::BeginPlay()
 			PauseMenuWidget->ResetToCheckpoint->OnClicked.AddDynamic(this, &AScoreAttackHUD::OnResume);
 		}
 	}
+
+	if (SpeedIndicatorClass) {
+		SpeedIndicatorWidget = CreateWidget<USpeedIndicatorWidget>(GetWorld(), SpeedIndicatorClass);
+		SpeedIndicatorWidget->AddToViewport();
+		SpeedIndicatorWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
+		// if (GetWorld()->GetFirstPlayerController()->GetPawn()->IsA(ACarPawn::StaticClass())) {
+		// 	SpeedIndicatorWidget->CarPawn = Cast<ACarPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
+		//
+		// }
+		if (PlayerPawn) SpeedIndicatorWidget->CarPawn = PlayerPawn;
+
+		SpeedIndicatorWidget->PsudoBeginPlay();
+	}
 }
 
 void AScoreAttackHUD::SetLapCounter(int32 CurrentLap, int32 MaxNumLaps)
@@ -59,11 +73,11 @@ void AScoreAttackHUD::SetScore(int32 CurrentScore, int32 CurrentGoalScore, FSlat
 	ScoreCounterWidget->UpdateScore(CurrentScore, CurrentGoalScore, CurrentColor);
 }
 
-void AScoreAttackHUD::SetBestScore(int32 CurrentScore, int32 BestScore)
+void AScoreAttackHUD::SetBestScore(int32 CurrentScore, int32 BestScore, FSlateColor &CurrentColor)
 {
 	FString CurrentScoreString{FString::Printf(TEXT("%05d"), CurrentScore)};
 	FString BestScoreString{FString::Printf(TEXT("%05d"), BestScore)};
-	ScoreAttackEndMenuWidget->SetTimeText(FText::FromString(CurrentScoreString), FText::FromString(BestScoreString));
+	ScoreAttackEndMenuWidget->SetTimeText(FText::FromString(CurrentScoreString), FText::FromString(BestScoreString), CurrentColor);
 }
 
 void AScoreAttackHUD::ToggleEndMenu(bool bShowMenu)
