@@ -7,6 +7,7 @@
 #include "../GrappleSphereComponent.h"
 #include "Components/BoxComponent.h"
 #include "RacingUnrealProject/EnterExitTrigger.h"
+#include "RacingUnrealProject/RacingUnrealProjectGameModeBase.h"
 
 // Sets default values
 ABasicEatableActor::ABasicEatableActor()
@@ -61,7 +62,12 @@ void ABasicEatableActor::OnReached(float AddSpeedAmount)
 	MainMesh->SetVisibility(false);
 	GrappleSphereComponent->SetIsEatable(false);
 	GrappleSphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	
+	ARacingUnrealProjectGameModeBase* GameModeBase{Cast<ARacingUnrealProjectGameModeBase>(GetWorld()->GetAuthGameMode())};
+
+	if (IsValid(GameModeBase))
+	{
+		GameModeBase->AddScore(ScoreValue);
+	}
 }
 
 void ABasicEatableActor::Respawn() {

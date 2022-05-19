@@ -30,6 +30,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Eatable")
 		class AEnterExitTrigger* RespawnTrigger = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Eatable")
+		int32 ScoreValue{50};
+
 
 	UFUNCTION(BlueprintCallable)
 		void VisualizeTrigger();
