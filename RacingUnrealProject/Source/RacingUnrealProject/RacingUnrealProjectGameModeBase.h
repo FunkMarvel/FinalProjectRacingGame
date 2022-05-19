@@ -114,6 +114,7 @@ public:
 		FSlateColor ChangeGoalColor(EGoals CurrentGoal);
 	
 protected:
-	
+	FVector CurrentVel{};
+	FVector CurrentAngVel{};
 	
 };
