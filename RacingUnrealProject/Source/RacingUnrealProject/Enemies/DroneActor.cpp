@@ -127,7 +127,7 @@ void ADroneActor::HandleDeath()
 {
 	Super::HandleDeath();
 	if (IsValid(DroppedEnemyActor)) DroppedEnemyActor->Destroy();
-	Destroy();
+	if (IsValid(this)) Destroy();
 }
 
 void ADroneActor::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
