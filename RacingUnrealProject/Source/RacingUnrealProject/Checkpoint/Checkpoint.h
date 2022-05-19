@@ -34,18 +34,33 @@ private:
 		class UBoxComponent* BoxComponent{};
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Checkpoint")
 		class UArrowComponent* SpawnArrow{};
+	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Checkpoint")
+		class USkeletalMeshComponent* PillarOneMesh = nullptr;
+	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Checkpoint")
+		class USkeletalMeshComponent* PillarTwoMesh = nullptr;
 
 	//variables
 	UPROPERTY()
 		class ARacingUnrealProjectGameModeBase* GameModee{};
 	UPROPERTY(meta = (AllowPrivateAccess = "ture"), EditAnywhere, Category = "Checkpoint")
 		class AGravitySplineActor* GravitySplineActor{};
+	UPROPERTY(meta = (AllowPrivateAccess = "ture"), EditAnywhere, Category = "Checkpoint|Enter")
+		class AEnterExitTrigger* EnterTrigger = nullptr;
+	UPROPERTY(meta = (AllowPrivateAccess = "ture"), EditAnywhere, Category = "Checkpoint|Enter")
+		class UAnimationAsset* OpenAnimation = nullptr;
+	UPROPERTY(meta = (AllowPrivateAccess = "ture"), EditAnywhere, Category = "Checkpoint|Enter")
+	class UAnimationAsset* IdleAnimation = nullptr;
 
+	
 	//funcs
 	UFUNCTION()
 		void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 			int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	UFUNCTION()
+		void OnTriggerEnter();
+	
+	
 public:
 	// public funcs
 	UFUNCTION()
