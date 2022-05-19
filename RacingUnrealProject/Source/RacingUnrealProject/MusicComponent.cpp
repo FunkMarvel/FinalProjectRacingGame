@@ -3,7 +3,12 @@
 
 #include "MusicComponent.h"
 
+#include "AudioDevice.h"
+#include "DebugLog.h"
+#include "Components/AudioComponent.h"
+#include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 // Sets default values for this component's properties
 UMusicComponent::UMusicComponent()
@@ -21,11 +26,17 @@ void UMusicComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	CarPawn = Cast<ACarPawn>( GetOwner());
+	
 	if (MusicToUse)
 	{
 		UGameplayStatics::SpawnSoundAttached(MusicToUse, GetOwner()->GetRootComponent());
-		
 	}
+
+	if (BaseEngine1) {
+		/*BaseEngine1AudioComponent = */UGameplayStatics::SpawnSoundAttached(BaseEngine1, GetOwner()->GetRootComponent());
+	}
+
 	
 }
 
@@ -35,6 +46,16 @@ void UMusicComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+	float adjustedSpeed = CarPawn->GetCurrentForwardSpeed() / CarPawn->GetMaxSpeed();
+	adjustedSpeed *= 0.7f;
+	
+	BaseEngine1->PitchMultiplier = adjustedSpeed;
+	
+}
+
+void UMusicComponent::PlaySpeedBoostSound() const {
+	if (SpeedBoostSound) {
+		UGameplayStatics::SpawnSoundAttached(SpeedBoostSound, GetOwner()->GetRootComponent());
+	}
 }
 

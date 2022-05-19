@@ -22,7 +22,7 @@ public:
 
 	void SetScore(int32 CurrentScore, int32 CurrentGoalScore, FSlateColor &CurrentColor);
 
-	void SetBestScore(int32 CurrentScore, int32 BestScore);
+	void SetBestScore(int32 CurrentScore, int32 BestScore, FSlateColor &CurrentColor);
 
 	void ToggleEndMenu(bool bShowMenu);
 
@@ -42,6 +42,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets|Pause Menu")
 	TSubclassOf<class UUserWidget> PauseMenuClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets|In Game HUD")
+	TSubclassOf<class UUserWidget> SpeedIndicatorClass; 
+
 protected:
 	AScoreAttackGameModeBase* GameModeBase{nullptr};
 
@@ -53,6 +56,9 @@ protected:
 
 	UPROPERTY()
 		class UScoreAttackEndMenuWidget* ScoreAttackEndMenuWidget{nullptr};
+
+	UPROPERTY() 
+		class USpeedIndicatorWidget* SpeedIndicatorWidget{nullptr};
 
 	UPROPERTY()
 		class ACarPawn* PlayerPawn{nullptr};

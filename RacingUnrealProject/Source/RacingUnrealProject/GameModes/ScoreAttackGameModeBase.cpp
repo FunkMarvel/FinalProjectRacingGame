@@ -64,13 +64,14 @@ void AScoreAttackGameModeBase::GameEndState()
 	}
 	CurrentPlayerData.PlayerScore = CurrentScore;
 	FPlayerData* BestPlayer = RacingGameInstance->GetBestTimePlayer();
+	FSlateColor CurrentColor{ChangeGoalColor(CurrentBestGoal)};
 	if (BestPlayer)
 	{
-		AttackHUD->SetBestScore(CurrentPlayerData.PlayerScore, BestPlayer->PlayerScore);
+		AttackHUD->SetBestScore(CurrentPlayerData.PlayerScore, BestPlayer->PlayerScore, CurrentColor);
 	}
 	else
 	{
-		AttackHUD->SetBestScore(CurrentPlayerData.PlayerScore, CurrentPlayerData.PlayerScore);
+		AttackHUD->SetBestScore(CurrentPlayerData.PlayerScore, CurrentPlayerData.PlayerScore, CurrentColor);
 	}
 	RacingGameInstance->SavePlayerData(CurrentPlayerData);
 	if(SaveGame()) DL_NORMAL("Save Succesful");

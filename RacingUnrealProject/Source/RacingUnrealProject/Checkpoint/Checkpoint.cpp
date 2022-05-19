@@ -6,6 +6,7 @@
 #include "../CarPawn.h"
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
+#include "RacingUnrealProject/EnterExitTrigger.h"
 #include "RacingUnrealProject/RacingUnrealProjectGameModeBase.h"
 
 // Sets default values
@@ -28,6 +29,12 @@ ACheckpoint::ACheckpoint()
 	SpawnArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("PlayerSpawnArrow"));
 	SpawnArrow->SetupAttachment(GetRootComponent());
 
+	PillarOneMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PillarOneMesh"));
+	PillarOneMesh->SetupAttachment(GetRootComponent());
+
+	PillarTwoMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PillarTwoMesh"));
+	PillarTwoMesh->SetupAttachment(GetRootComponent());
+
 	
 }
 
@@ -44,6 +51,10 @@ void ACheckpoint::BeginPlay()
 	if (bStartAndFinishLine) GameModee->SetGoalCheckpoint(this);
 	
 	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &ACheckpoint::OnBeginOverlap);
+
+	if (EnterTrigger != nullptr) {
+		EnterTrigger->EventTriggerEnterExit.AddDynamic(this, &ACheckpoint::OnTriggerEnter);
+	}
 }
 
 // Called every frame
@@ -65,5 +76,21 @@ void ACheckpoint::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 		}
 	}
 	
+}
+
+void ACheckpoint::OnTriggerEnter() {
+	PillarOneMesh->PlayAnimation(OpenAnimation, false);
+	PillarTwoMesh->PlayAnimation(OpenAnimation, false);
+
+	
+	//timer
+	FTimerHandle Handle;
+	FTimerDelegate Callback;
+	Callback.BindLambda([this]
+	{
+		PillarOneMesh->PlayAnimation(IdleAnimation, false);
+		PillarTwoMesh->PlayAnimation(IdleAnimation, false);
+	});
+	GetWorld()->GetTimerManager().SetTimer(Handle, Callback, 5.f, false);
 }
 

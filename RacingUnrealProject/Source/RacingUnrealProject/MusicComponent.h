@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CarPawn.h"
 #include "Components/ActorComponent.h"
 #include "MusicComponent.generated.h"
 
@@ -23,8 +24,23 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	//mmy desegg----
+	UFUNCTION()
+		void PlaySpeedBoostSound() const;
 
+	
 private:
-	UPROPERTY(EditAnywhere, Category = "Music")
+	UPROPERTY()
+		ACarPawn* CarPawn = nullptr;
+
+	
+	UPROPERTY(EditAnywhere, meta =(AllowPrivateAccess = "true"), Category = "Music")
 		class USoundBase* MusicToUse = nullptr;
+	UPROPERTY(EditAnywhere, meta =(AllowPrivateAccess = "true"), Category = "SoundEffects")
+		class USoundCue* BaseEngine1 = nullptr;
+	UPROPERTY(EditAnywhere, meta =(AllowPrivateAccess = "true"), Category = "SoundEffects")
+		class USoundBase* SpeedBoostSound = nullptr;
+
+	/*UPROPERTY()
+		class UAudioComponent* BaseEngine1AudioComponent = nullptr;*/
 };
