@@ -25,6 +25,7 @@ FPlayerData* URacingGameInstance::GetBestTimePlayer()
 {
 	if (PlayerArray.Num() > 0)
 	{
+		// lambda function sorts player data array from shortest to longest time.
 		Algo::Sort(PlayerArray, [](const FPlayerData A, const FPlayerData B) { return A.PlayerTime < B.PlayerTime; });
 
 		return &PlayerArray[0];
@@ -36,6 +37,7 @@ FPlayerData* URacingGameInstance::GetBestScorePlayer()
 {
 	if (PlayerArray.Num() > 0)
 	{
+		// lambda function sorts player data array from highest to lowest score.
 		Algo::Sort(PlayerArray, [](const FPlayerData A, const FPlayerData B) { return A.PlayerScore > B.PlayerScore; });
 		
 		return &PlayerArray[0];
