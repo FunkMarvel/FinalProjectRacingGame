@@ -86,11 +86,6 @@ private:
 	UFUNCTION()
 		void UpdateNiagaraParticleComponents();
 
-	//static mesh
-	UFUNCTION()
-		void InitStaticMeshComponents();
-	UFUNCTION()
-		void UpdateStaticMeshComponents();
 private:
 	//capsule collider
 	UFUNCTION()
@@ -183,7 +178,7 @@ private:
 
 	//grapple events
 	UFUNCTION()
-		void OnGrappleReaced(float Addspeed);
+		void OnGrappleReaced(float AddSpeed);
 	
 	//enter exit
 	UPROPERTY(EditAnywhere, Category = "Spline|EnterExit")

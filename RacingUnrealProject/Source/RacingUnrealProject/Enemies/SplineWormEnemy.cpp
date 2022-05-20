@@ -178,78 +178,6 @@ void ASplineWormEnemy::UpdateNiagaraParticleComponents() {
 	}
 }
 
-void ASplineWormEnemy::InitStaticMeshComponents() {
-	//init spline segmensts
-	int SegmentsToCreate = (WormGoalLength / NeckSegmentLength) - StaticMeshComponents.Num();
-
-	DL_NORMAL("segments to create : " + FString::FromInt(SegmentsToCreate))
-	
-	for (int32 i = 0; i < SegmentsToCreate; i++)
-	{
-		UStaticMeshComponent* NewStaticMesh = NewObject<UStaticMeshComponent>(this);
-		if (NewStaticMesh)
-		{
-			//essensial
-			NewStaticMesh->RegisterComponent();
-			NewStaticMesh->SetMobility(EComponentMobility::Movable);
-			NewStaticMesh->SetStaticMesh(NeckSegment);
-
-			//other
-			NewStaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			// NewSplineMesh->SetMaterial(0, WormBodyMaterial);
-			
-			//adds to array
-			StaticMeshComponents.Emplace(NewStaticMesh);
-		}
-	}
-		
-	
-
-
-	//setting the sizes on each spline mesh segment
-	//this cpould be optimized, but since its only called once per worm, i think its fine for now
-	
-	const float TotalLength = GetWormRealLength();
-	for (int i = 0; i < StaticMeshComponents.Num(); ++i) {
-		//setting sclae
-		//start
-		float CurveTime = (i * NeckSegmentLength) / TotalLength;
-		float Size = WormSizeCurve->GetFloatValue(CurveTime);
-		StaticMeshComponents[i]->SetWorldScale3D(FVector(Size));
-		
-		
-		// //setting random roll
-		// float randomRoll = FMath::RandRange(-RandomRotationAmoundt, RandomRotationAmoundt);
-		// StaticMeshComponents[i]->SetEndRoll(randomRoll);
-		// StaticMeshComponents[i]->SetStartRoll(randomRoll);
-	}
-}
-
-void ASplineWormEnemy::UpdateStaticMeshComponents() {
-	float CurrentDistancee = CurrentWormDistance;
-	FVector Offset = FVector::ZeroVector;
-	for (int i = 0; i < StaticMeshComponents.Num(); ++i) {
-
-		DL_NORMAL("Update static mesh")
-		
-		//offset animation
-		float SinValue = sin( CurrentDistanceAffector * CurrentDistancee + CurrentMoveTime * CurrentMoveTimeAffector);
-		float CosValue = cos( CurrentDistanceAffector * CurrentDistancee + CurrentMoveTime * CurrentMoveTimeAffector);
-		Offset = Spline->GetRightVectorAtDistanceAlongSpline(CurrentDistancee, CoorSpace) * CosValue +
-			Spline->GetUpVectorAtDistanceAlongSpline(CurrentDistancee, CoorSpace) * SinValue;
-		Offset *= MoveAmplitude;
-
-		// Location
-		FVector Location = Spline->GetLocationAtDistanceAlongSpline(CurrentDistancee, CoorSpace);
-		StaticMeshComponents[i]->SetWorldLocation(Location + Offset);
-
-		// Rotation
-		FRotator Rotation = Spline->GetRotationAtDistanceAlongSpline(CurrentDistancee, CoorSpace);
-		StaticMeshComponents[i]->SetWorldRotation(Rotation);
-		
-		CurrentDistancee += NeckSegmentLength;
-	}
-}
 
 void ASplineWormEnemy::UpdateColliderCapsule() {
 	//updating capsule collisiton
@@ -457,7 +385,7 @@ float ASplineWormEnemy::GetWormRealLength() const
 	// return SplineMeshComponents.Num() * NeckSegmentLength + SplineMeshOverLap;
 }
 
-void ASplineWormEnemy::OnGrappleReaced(float Addspeed)
+void ASplineWormEnemy::OnGrappleReaced(float AddSpeed)
 {
 	DL_NORMAL("Finished grappling worm!")
 	if (GameModeBase) GameModeBase->AddScore(ScoreValue);
@@ -488,7 +416,7 @@ void ASplineWormEnemy::StartWorm() {
 	});
 	GetWorld()->GetTimerManager().SetTimer(Handle, Callback, 0.04f, false);
 	
-	DL_NORMAL("StartWOrm!")
+	DL_NORMAL("StartWorm!")
 }
 
 void ASplineWormEnemy::ResetWorm() {
@@ -516,9 +444,6 @@ void ASplineWormEnemy::ResetWorm() {
 		NiagaraComponents[i]->DestroyComponent();
 	}
 	NiagaraComponents.Empty();
-	
-
-	// DL_NORMAL("ResetWorm!!")
 }
 
 void ASplineWormEnemy::VisualizeTriggers() {
@@ -553,7 +478,6 @@ void ASplineWormEnemy::VisualizeWormEnemy() {
 	DrawDebugLine(World, Location, Location - Forward * 4000.f, FColor::Cyan, false, 1.2f, 0, 200.f);
 	// up
 	DrawDebugLine(World, Location, Location + Up * 1000.f, FColor::Red, false, 1.2f, 0, 200.f);
-	// DL_ERROR("Visualizing Worm!")
 }
 
 

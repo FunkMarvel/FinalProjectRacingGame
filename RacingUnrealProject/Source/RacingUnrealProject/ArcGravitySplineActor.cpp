@@ -95,11 +95,9 @@ FVector AArcGravitySplineActor::GetFixedUpVectorFromLocationAndSpline(FVector Or
 
 	const float SegmentDistance = PointDistance - SecPointDistance;
 	const float p1 = abs(PointDistance - OrgPosDistance);
-	//float p2 = abs(SecPointDistance - OrgPosDistance);
 
 	float lerp = p1/SegmentDistance;
 	lerp = abs(lerp);
-	// DL_NORMAL(FString::SanitizeFloat(lerp))
 
 	FVector newUpVector = UKismetMathLibrary::VLerp(SplineComponent->GetUpVectorAtSplinePoint(closest, ESplineCoordinateSpace::World),
 		SplineComponent->GetUpVectorAtSplinePoint(SecClosest, ESplineCoordinateSpace::World),

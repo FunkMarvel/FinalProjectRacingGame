@@ -42,6 +42,7 @@ void UNeckComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 void UNeckComponent::UpdateSplinePoints()
 {
+	//calc locations and tangents
 	FVector StartLocation, StartTangent, EndLocation, EndTangent = FVector::ZeroVector;
 	
 	StartLocation = CarPawn->SharkBodyMesh->GetComponentLocation();
@@ -50,21 +51,20 @@ void UNeckComponent::UpdateSplinePoints()
 	float Distance = (StartLocation - EndLocation).Size();
 	
 	StartTangent = CarPawn->SharkBodyMesh->GetForwardVector() * Distance;
-	EndTangent = CarPawn->SharkHeadMesh->GetForwardVector() * Distance;
 
-	//new method for end tangen
+	//new method for end tangent
 	EndTangent = FVector::CrossProduct( CarPawn->GrappleHookSphereComponent->GetPhysicsLinearVelocity(),
 		CarPawn->SphereComp->GetForwardVector());
 	EndTangent = EndTangent.GetSafeNormal();
 	EndTangent *= Distance;
 	
 	//Sets the values to the spline
-	
+
+	//sets values
 	Spline->SetLocationAtSplinePoint(0, StartLocation, ESplineCoordinateSpace::World, false);
 	Spline->SetTangentAtSplinePoint(0, StartTangent, ESplineCoordinateSpace::World, false);
 	Spline->SetLocationAtSplinePoint(1, EndLocation, ESplineCoordinateSpace::World, false);
 	Spline->SetTangentAtSplinePoint(1, EndTangent, ESplineCoordinateSpace::World, true);
-	
 }
 
 
@@ -126,9 +126,6 @@ void UNeckComponent::UpdateStartTangent(FVector StartTangent, bool bLerp)
 		StartTangent = FMath::VInterpTo(PrevStartTangent, StartTangent, GetWorld()->GetDeltaSeconds(), 15.f);
 	}
 	Spline->SetTangentAtSplinePoint(0, StartTangent, ESplineCoordinateSpace::World);
-
-	// DrawDebugSphere(GetWorld(), Spline->GetLocationAtSplinePoint(0, ESplineCoordinateSpace::World), 1000.f,
-	// 	32, FColor::Red, false, 5.f, 0, 500.f);
 }
 
 void UNeckComponent::UpdateSplineMesh()
@@ -142,9 +139,6 @@ void UNeckComponent::UpdateSplineMesh(float StartLength, float EndLength)
 	//clamps input
 	if (StartLength < 0.f || StartLength > Spline->GetSplineLength()) StartLength = 0.f;
 	if (EndLength > Spline->GetSplineLength() || EndLength < 0.f) EndLength = Spline->GetSplineLength();
-
-	
-
 	
 	//adds or removes segments to the array
 	//int32 segments = CalculateNumberOfSegments();
@@ -152,9 +146,9 @@ void UNeckComponent::UpdateSplineMesh(float StartLength, float EndLength)
 	float segmentsf = Length / TargetSegmentsLength;
 	int32 segments = (int)truncf(segmentsf) + 1;
 
-	// if length is really short, have zero splinemesh segments
+	// if length is really short, have zero spline mesh segments
 	if (Length < 10.f)
-	segments  = 0;	
+		segments = 0;	
 	
 	int32 SegmentsToCreate = segments - SplineMeshComponents.Num();
 	
@@ -162,12 +156,16 @@ void UNeckComponent::UpdateSplineMesh(float StartLength, float EndLength)
 	{
 		for (int32 i = 0; i < SegmentsToCreate; i++)
 		{
+			//creates new USplineMesh
 			USplineMeshComponent* NewSplineMesh = NewObject<USplineMeshComponent>(this);
 			if (NewSplineMesh)
 			{
+				//essensials
 				NewSplineMesh->RegisterComponent();
 				NewSplineMesh->SetMobility(EComponentMobility::Movable);
 				NewSplineMesh->SetStaticMesh(StaticMeshClass);
+
+				//ads to array
 				SplineMeshComponents.Emplace(NewSplineMesh);
 			}
 		}
@@ -177,6 +175,7 @@ void UNeckComponent::UpdateSplineMesh(float StartLength, float EndLength)
 	{
 		for (int32 i = 0; i < abs(SegmentsToCreate); i++)
 		{
+			//removes from array
 			int32 LastIndex = SplineMeshComponents.Num() - 1;
 			SplineMeshComponents[LastIndex]->DestroyComponent();
 			SplineMeshComponents.RemoveAt(LastIndex);
@@ -209,8 +208,6 @@ int32 UNeckComponent::CalculateNumberOfSegments()
 
 	float segmentsf = Length/TargetSegmentsLength;
 	int32 segments = (int)truncf(segmentsf);
-
-	//UE_LOG(LogTemp, Warning, TEXT("%d"), segments)
 
 	return segments;
 }

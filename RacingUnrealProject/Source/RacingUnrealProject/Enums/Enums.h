@@ -9,7 +9,7 @@ enum class EVehicleState : uint8{
 	Grappling			UMETA(DisplayName = "EGrappling"),
 	AirBorne			UMETA(DisplayName = "EAirBorne"),
 	Dying				UMETA(DisplayName = "EDying"),
-	Finished			UMETA(DisplayName = "EFi")
+	Finished			UMETA(DisplayName = "EFinished")
 	
 };
 

@@ -60,8 +60,8 @@ void UMusicComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	LerpEngineSpeed = UKismetMathLibrary::Lerp(LerpEngineSpeed, adjustedSpeed, GetWorld()->GetDeltaSeconds());
 
 	// Base engine 1, scifi sound
-	
 	BaseEngine1->PitchMultiplier = LerpEngineSpeed;
+	
 	// BaseEngine1->VolumeMultiplier = (1.f-adjustedSpeed * 0.6f);
 
 	//base engien two (real engine)
