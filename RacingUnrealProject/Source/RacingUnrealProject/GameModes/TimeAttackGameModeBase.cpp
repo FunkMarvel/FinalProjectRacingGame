@@ -23,6 +23,7 @@ void ATimeAttackGameModeBase::BeginPlay()
 
 	if (StartSequenceActors.Num() >= 1)
 	{
+		// delays timing of player until countdown finishes
 		GameStartSequence = Cast<AGameStartSequenceActor>(StartSequenceActors[0]);
 		GameStartSequence->StartSequenceFinishedEvent.AddDynamic(this, &ATimeAttackGameModeBase::BeginTimer);
 	}
@@ -37,16 +38,22 @@ void ATimeAttackGameModeBase::BeginPlay()
 	CurrentBestGoal = EGoals::Gold;
 }
 
+/**
+ * @brief Starts timing of player.
+ */
 void ATimeAttackGameModeBase::BeginTimer()
 {
 	ToggleTiming(true);
 }
 
+/**
+ * @brief toggles pause menu.
+ */
 void ATimeAttackGameModeBase::OnPressPause()
 {
 	Super::OnPressPause();
 	bGamePaused = !bGamePaused;
-	if (TimeAttackHUD) TimeAttackHUD->TogglePauseMenu(bGamePaused);
+	if (TimeAttackHUD) TimeAttackHUD->TogglePauseMenu(bGamePaused); // stops timing when paused.
 	if (bGamePaused)
 	{
 		PlayerController->SetShowMouseCursor(true);
@@ -64,12 +71,18 @@ void ATimeAttackGameModeBase::OnPressPause()
 	UGameplayStatics::SetGamePaused(GetWorld(), bGamePaused);
 }
 
+/**
+ * @brief counts up lap counter.
+ */
 void ATimeAttackGameModeBase::OnCompletedLap()
 {
 	Super::OnCompletedLap();
 	if (TimeAttackHUD) TimeAttackHUD->SetLapCounter(CurrentLap, NumberOfLaps);
 }
 
+/**
+ * @brief toggles end state and saves time to instance and file.
+ */
 void ATimeAttackGameModeBase::GameEndState()
 {
 	Super::GameEndState();
