@@ -72,7 +72,7 @@ void AScoreAttackGameModeBase::GameEndState()
 		if (AttackHUD) AttackHUD->ToggleEndMenu(true);
 	}
 	CurrentPlayerData.PlayerScore = CurrentScore;
-	FPlayerData* BestPlayer = RacingGameInstance->GetBestTimePlayer();
+	FPlayerData* BestPlayer = RacingGameInstance->GetBestScorePlayer();
 	FSlateColor CurrentColor{ChangeGoalColor(CurrentBestGoal)};
 	if (BestPlayer)
 	{
