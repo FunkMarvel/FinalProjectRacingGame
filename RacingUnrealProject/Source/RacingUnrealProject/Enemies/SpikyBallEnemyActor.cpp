@@ -8,6 +8,9 @@
 #include "Components/SphereComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
+/**
+ * @brief class for spiky ball enemies.
+ */
 ASpikyBallEnemyActor::ASpikyBallEnemyActor() : ABaseEnemyActor()
 {
 	SphereComp->SetSimulatePhysics(true);
@@ -17,8 +20,10 @@ ASpikyBallEnemyActor::ASpikyBallEnemyActor() : ABaseEnemyActor()
 	SphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECollisionResponse::ECR_Block);
 	SphereComp->SetSphereRadius(RetractedSize);
 
+	// hides unused mesh
 	CosmeticMesh->SetVisibility(false);
 
+	// adds animation and skeletal mesh:
 	IdleAnimation = CreateDefaultSubobject<UAnimationAsset>(TEXT("IdleAnimation"));
 	SpikeDeployAnimation = CreateDefaultSubobject<UAnimationAsset>(TEXT("SpikeDeployAnimation"));
 
