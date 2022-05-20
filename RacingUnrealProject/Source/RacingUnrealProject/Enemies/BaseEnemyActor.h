@@ -9,6 +9,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FEnemyDeath, int32, EnemyIndex);
 
+// parent class for drones and spiky balls.
 UCLASS()
 class RACINGUNREALPROJECT_API ABaseEnemyActor : public AActor
 {
