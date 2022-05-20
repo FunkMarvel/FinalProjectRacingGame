@@ -8,7 +8,7 @@
 #include "ScoreAttackHUD.generated.h"
 
 /**
- * 
+ * @brief score attack HUD
  */
 UCLASS()
 class RACINGUNREALPROJECT_API AScoreAttackHUD : public AHUD
