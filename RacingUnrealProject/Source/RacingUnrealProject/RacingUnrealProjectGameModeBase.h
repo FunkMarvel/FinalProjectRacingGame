@@ -7,6 +7,7 @@
 #include "GameModes/RacingGameInstance.h"
 #include "RacingUnrealProjectGameModeBase.generated.h"
 
+/// @brief States for each goal reached by the player
 UENUM()
 enum EGoals
 {
@@ -16,6 +17,11 @@ enum EGoals
 	Gold
 };
 
+/**
+ * @brief Increments goal state (higher is better).
+ * @param CurrentGoal EGoal state to be incremented.
+ * @return The incremented EGoal state.
+ */
 inline EGoals& operator++(EGoals& CurrentGoal) { switch (CurrentGoal)
 {
 case EGoals::None:
@@ -30,6 +36,11 @@ case EGoals::Gold:
 	return CurrentGoal;
 }
 
+/**
+ * @brief Decrements goal state (higher is better).
+ * @param CurrentGoal EGoal state to be decremented.
+ * @return The decremented EGoal state.
+ */
 inline EGoals& operator--(EGoals& CurrentGoal) { switch (CurrentGoal)
 {
 case EGoals::None:
@@ -45,7 +56,7 @@ case EGoals::Gold:
 }
 
 /**
- * 
+ * @brief Parent class for all project game-mode bases.
  */
 UCLASS()
 class RACINGUNREALPROJECT_API ARacingUnrealProjectGameModeBase : public AGameModeBase
