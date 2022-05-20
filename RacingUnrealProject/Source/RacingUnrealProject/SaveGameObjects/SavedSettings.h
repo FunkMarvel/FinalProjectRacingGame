@@ -7,7 +7,7 @@
 #include "SavedSettings.generated.h"
 
 /**
- * 
+ * @brief save object for settings.
  */
 UCLASS()
 class RACINGUNREALPROJECT_API USavedSettings : public USaveGame
