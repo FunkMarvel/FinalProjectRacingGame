@@ -7,7 +7,7 @@
 #include "MainMenuGameModeBase.generated.h"
 
 /**
- * 
+ *  @brief game mode base for main menu.
  */
 UCLASS()
 class RACINGUNREALPROJECT_API AMainMenuGameModeBase : public ARacingUnrealProjectGameModeBase
