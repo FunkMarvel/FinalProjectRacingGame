@@ -15,6 +15,7 @@ void AScoreAttackHUD::BeginPlay()
 	Super::BeginPlay();
 	GameModeBase = Cast<AScoreAttackGameModeBase>(GetWorld()->GetAuthGameMode());
 
+	// sets up widgets:
 	if (ScoreWidgetClass)
 	{
 		ScoreCounterWidget = CreateWidget<UScoreCounterWidget>(GetWorld(), ScoreWidgetClass);
@@ -42,8 +43,9 @@ void AScoreAttackHUD::BeginPlay()
 		PauseMenuWidget->ReturnToMenuButton->OnClicked.AddDynamic(ScoreAttackEndMenuWidget, &UScoreAttackEndMenuWidget::OnBackToMenu);
 		
 		PlayerPawn = Cast<ACarPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
-		if (PlayerPawn)
+		if (PlayerPawn && PauseMenuWidget)
 		{
+			// sets up pause menu buttons.
 			PauseMenuWidget->ResetToCheckpoint->OnClicked.AddDynamic(PlayerPawn, &ACarPawn::ResetCarToLastCheckpoint);
 			PauseMenuWidget->ResetToCheckpoint->OnClicked.AddDynamic(this, &AScoreAttackHUD::OnResume);
 		}
@@ -53,26 +55,40 @@ void AScoreAttackHUD::BeginPlay()
 		SpeedIndicatorWidget = CreateWidget<USpeedIndicatorWidget>(GetWorld(), SpeedIndicatorClass);
 		SpeedIndicatorWidget->AddToViewport();
 		SpeedIndicatorWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
-		// if (GetWorld()->GetFirstPlayerController()->GetPawn()->IsA(ACarPawn::StaticClass())) {
-		// 	SpeedIndicatorWidget->CarPawn = Cast<ACarPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
-		//
-		// }
+
 		if (PlayerPawn) SpeedIndicatorWidget->CarPawn = PlayerPawn;
 
 		SpeedIndicatorWidget->PsudoBeginPlay();
 	}
 }
 
+/**
+ * @brief update lap counter
+ * @param CurrentLap number of current lap
+ * @param MaxNumLaps number of total laps
+ */
 void AScoreAttackHUD::SetLapCounter(int32 CurrentLap, int32 MaxNumLaps)
 {
 	ScoreCounterWidget->UpdateLapCounter(CurrentLap, MaxNumLaps);
 }
 
+/**
+ * @brief updates score counter
+ * @param CurrentScore current score
+ * @param CurrentGoalScore current goal to beat
+ * @param CurrentColor color of current goal
+ */
 void AScoreAttackHUD::SetScore(int32 CurrentScore, int32 CurrentGoalScore, FSlateColor &CurrentColor)
 {
 	ScoreCounterWidget->UpdateScore(CurrentScore, CurrentGoalScore, CurrentColor);
 }
 
+/**
+ * @brief sets scores on end menu
+ * @param CurrentScore score achieved by player
+ * @param BestScore high score
+ * @param CurrentColor color of highest goal beat by player
+ */
 void AScoreAttackHUD::SetBestScore(int32 CurrentScore, int32 BestScore, FSlateColor &CurrentColor)
 {
 	FString CurrentScoreString{FString::Printf(TEXT("%05d"), CurrentScore)};
@@ -80,6 +96,9 @@ void AScoreAttackHUD::SetBestScore(int32 CurrentScore, int32 BestScore, FSlateCo
 	ScoreAttackEndMenuWidget->SetTimeText(FText::FromString(CurrentScoreString), FText::FromString(BestScoreString), CurrentColor);
 }
 
+/**
+ * @brief toggles end menu
+ */
 void AScoreAttackHUD::ToggleEndMenu(bool bShowMenu)
 {
 	if (ScoreWidgetClass && PauseMenuWidget && ScoreAttackEndMenuWidget && !PauseMenuWidget->IsVisible())
@@ -97,6 +116,9 @@ void AScoreAttackHUD::ToggleEndMenu(bool bShowMenu)
 	}
 }
 
+/**
+ * @brief toggles pause menu
+ */
 void AScoreAttackHUD::TogglePauseMenu(bool bShowMenu)
 {
 	if (ScoreWidgetClass && PauseMenuWidget && ScoreAttackEndMenuWidget && !ScoreAttackEndMenuWidget->IsVisible())
@@ -120,6 +142,9 @@ void AScoreAttackHUD::Tick(float DeltaSeconds)
 	if (ScoreCounterWidget) ScoreCounterWidget->SetSpeedOMeter(PlayerPawn->GetCurrentForwardSpeed());
 }
 
+/**
+ * @brief resumes game if paused.
+ */
 void AScoreAttackHUD::OnResume()
 {
 	GameModeBase->OnPressPause();
