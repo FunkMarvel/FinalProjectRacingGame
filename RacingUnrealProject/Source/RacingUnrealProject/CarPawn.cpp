@@ -435,6 +435,7 @@ void ACarPawn::StateFinished() {
 		bEnterState = false;
 		SphereComp->SetLinearDamping(1.f);
 		CameraBoom->SetRelativeLocation(FVector(0.f, 0.f, -30.f));
+		CameraBoom->bDoCollisionTest = false;
 	}
 
 	CameraBoom->SetRelativeRotation(FRotator(-5.f, StateTime * StateFinishedTurnSpeed, 0.f));

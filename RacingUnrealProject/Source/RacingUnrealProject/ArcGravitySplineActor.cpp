@@ -38,11 +38,11 @@ FVector AArcGravitySplineActor::GetFixedUpVectorFromLocation(FVector OrgPos) {
 	float FirstRatio = FirstDistance/_MaxDistance;
 	float SecondRatio = SecondDistance/_MaxDistance;
 
-	DrawDebugSphere(GetWorld(), FirstSplineLocation, 150.f, 32, FColor::Red);
-	DrawDebugSphere(GetWorld(), SecondSplineLocation, 150.f, 32, FColor::Red);
-
-	DrawDebugLine(GetWorld(), FirstSplineLocation , FirstSplineLocation + FirstUpVector * 300.f, FColor::Red, false, -1, 0, 50.f);
-	DrawDebugLine(GetWorld(), SecondSplineLocation , SecondSplineLocation + SecondUpVector * 300.f, FColor::Red, false, -1, 0, 50.f);
+	// DrawDebugSphere(GetWorld(), FirstSplineLocation, 150.f, 32, FColor::Red);
+	// DrawDebugSphere(GetWorld(), SecondSplineLocation, 150.f, 32, FColor::Red);
+	//
+	// DrawDebugLine(GetWorld(), FirstSplineLocation , FirstSplineLocation + FirstUpVector * 300.f, FColor::Red, false, -1, 0, 50.f);
+	// DrawDebugLine(GetWorld(), SecondSplineLocation , SecondSplineLocation + SecondUpVector * 300.f, FColor::Red, false, -1, 0, 50.f);
 	
 	//early bail if we are farther away than max distance
 	if (FirstRatio > 1.005f || SecondRatio > 1.005f) {
@@ -58,8 +58,8 @@ FVector AArcGravitySplineActor::GetFixedUpVectorFromLocation(FVector OrgPos) {
 	// thingking from first to second
 	FVector ToSecondFromFirst = SecondSplineLocation - FirstSplineLocation;
 	FVector ToPlayerFromFirst = OrgPos - FirstSplineLocation;
-	DrawDebugLine(GetWorld(), FirstSplineLocation , FirstSplineLocation + ToSecondFromFirst, FColor::Red, false, -1, 0, 50.f);
-	DrawDebugLine(GetWorld(), FirstSplineLocation , FirstSplineLocation + ToPlayerFromFirst, FColor::Red, false, -1, 0, 50.f);
+	// DrawDebugLine(GetWorld(), FirstSplineLocation , FirstSplineLocation + ToSecondFromFirst, FColor::Red, false, -1, 0, 50.f);
+	// DrawDebugLine(GetWorld(), FirstSplineLocation , FirstSplineLocation + ToPlayerFromFirst, FColor::Red, false, -1, 0, 50.f);
 
 	float Angle = ACarPawn::UnsignedAngle(ToSecondFromFirst.GetSafeNormal(), ToPlayerFromFirst.GetSafeNormal());
 	DL_NORMAL(FString::SanitizeFloat(Angle))
