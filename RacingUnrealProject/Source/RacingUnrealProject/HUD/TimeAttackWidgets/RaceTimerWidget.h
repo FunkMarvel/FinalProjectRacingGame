@@ -7,7 +7,7 @@
 #include "RaceTimerWidget.generated.h"
 
 /**
- * 
+ * @brief in game HUD for time attack.
  */
 UCLASS()
 class RACINGUNREALPROJECT_API URaceTimerWidget : public UUserWidget
