@@ -7,7 +7,7 @@
 #include "TimeAttackHUD.generated.h"
 
 /**
- * 
+ * @brief time attack HUD
  */
 UCLASS()
 class RACINGUNREALPROJECT_API ATimeAttackHUD : public AHUD
@@ -59,9 +59,6 @@ protected:
 
 	UPROPERTY()
 		class UPauseMenuWidget* PauseMenuWidget{nullptr};
-
-	UPROPERTY()
-		class UMinimapWidget* MinimapWidget{nullptr};
 		
 	UPROPERTY() 
 		class USpeedIndicatorWidget* SpeedIndicatorWidget{nullptr};
