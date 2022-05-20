@@ -138,21 +138,25 @@ void ACarPawn::RotateSphereCompToLocalUpVector() const {
 	SphereComp->SetWorldRotation(NewRotation);
 }
 
+/**
+ * @brief Applies gravity and hover force according to vehicle height above ground
+ */
 void ACarPawn::ApplyGravity()
 {
-	//gravity
 	if (GravitySplineActive != nullptr)
 	{
-		FVector HoverForce(0.f);
 		if (SphereComp->IsSimulatingPhysics())
 		{
-			float ScaleHeight{(HoverHeight - DistanceToGround())/HoverForceReduction};
+			FVector HoverForce(0.f); // hover-force is zero if not hovering.
+			float ScaleHeight{(HoverHeight - DistanceToGround())/HoverForceReduction}; // scaled displacement from hover height
+
+			// velocity in vertical direction relative to local vehicle
 			FVector HeightVelocity{
 				FVector::DotProduct(SphereComp->GetPhysicsLinearVelocity(),LocalUpVector)*LocalUpVector
 			};
-			FVector GravityForceVector{-LocalUpVector * GravityForce * GravityMod};
+			FVector GravityForceVector{-LocalUpVector * GravityForce * GravityMod}; // gravity force
 			if (IsGrounded())
-			{
+			{	// Hover-force is calculated only when below a certain height.
 				HoverForce = (-GravityForceVector * UKismetMathLibrary::Exp(ScaleHeight) -
 					HoverDampingFactor * HeightVelocity).GetClampedToMaxSize(10000.f);
 			}
