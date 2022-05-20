@@ -7,7 +7,7 @@
 #include "MainMenuHUD.generated.h"
 
 /**
- * 
+ * @brief main menu HUD class.
  */
 UCLASS()
 class RACINGUNREALPROJECT_API AMainMenuHUD : public AHUD
