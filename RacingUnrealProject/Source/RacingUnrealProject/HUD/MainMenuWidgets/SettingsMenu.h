@@ -7,7 +7,7 @@
 #include "SettingsMenu.generated.h"
 
 /**
- * 
+ * @brief settings menu
  */
 UCLASS()
 class RACINGUNREALPROJECT_API USettingsMenu : public UUserWidget
