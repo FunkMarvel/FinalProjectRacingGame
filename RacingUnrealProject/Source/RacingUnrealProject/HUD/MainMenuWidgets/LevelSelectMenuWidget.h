@@ -7,7 +7,7 @@
 #include "LevelSelectMenuWidget.generated.h"
 
 /**
- * 
+ * @brief level select menu
  */
 UCLASS()
 class RACINGUNREALPROJECT_API ULevelSelectMenuWidget : public UUserWidget
