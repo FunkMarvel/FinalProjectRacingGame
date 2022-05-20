@@ -31,7 +31,8 @@ ACarPawn::ACarPawn()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	
+
+	//setting up components
 	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	SetRootComponent(SphereComp);
 	SphereComp->SetSimulatePhysics(true);
@@ -98,13 +99,16 @@ void ACarPawn::ResetCarToLastCheckpoint()
 	ARacingUnrealProjectGameModeBase* GameMode = Cast<ARacingUnrealProjectGameModeBase>(GetWorld()->GetAuthGameMode());
 	if (GameMode && GameMode->GetLastCheckpoint())
 	{
+		//disable physics
 		SphereComp->SetSimulatePhysics(true);
 		SphereComp->SetPhysicsLinearVelocity(FVector::ZeroVector);
-		
+
+		//gets last checkpoint driven thorugh
 		ACheckpoint* CP = GameMode->GetLastCheckpoint();
 		SetActorLocation(CP->GetSpawnArrow()->GetComponentLocation());
 		SetActorRotation(CP->GetSpawnArrow()->GetComponentRotation());
-			
+
+		//updates active gravity spline
 		if (CP->GetCheckpointGravitySpline())
 			GravitySplineActive = CP->GetCheckpointGravitySpline();
 		else
@@ -117,10 +121,9 @@ void ACarPawn::ResetCarToLastCheckpoint()
 // Called when the game starts or when spawned
 void ACarPawn::BeginPlay()
 {
-	
 	Super::BeginPlay();
 	
-	// Hit and phys
+	// Hit and physics
 	SphereComp->OnComponentHit.AddDynamic(this, &ACarPawn::OnHitt);
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ACarPawn::OnBeginOverLap);
 	SphereComp->OnComponentEndOverlap.AddDynamic(this, &ACarPawn::OnEndOverLap);
@@ -132,6 +135,7 @@ void ACarPawn::BeginPlay()
 }
 
 void ACarPawn::RotateSphereCompToLocalUpVector() const {
+	//lerps rotation to target
 	FRotator TargetRot = UKismetMathLibrary::MakeRotFromZX(LocalUpVector, GetActorForwardVector());
 	FRotator NewRotation = FMath::RInterpTo(SphereComp->GetComponentRotation(), TargetRot,
 		GetWorld()->GetDeltaSeconds(), 3.4f);
@@ -141,23 +145,21 @@ void ACarPawn::RotateSphereCompToLocalUpVector() const {
 void ACarPawn::ApplyGravity()
 {
 	//gravity
-	if (GravitySplineActive != nullptr)
+	if (GravitySplineActive != nullptr && SphereComp->IsSimulatingPhysics())
 	{
 		FVector HoverForce(0.f);
-		if (SphereComp->IsSimulatingPhysics())
+		
+		float ScaleHeight{(HoverHeight - DistanceToGround())/HoverForceReduction};
+		FVector HeightVelocity{
+			FVector::DotProduct(SphereComp->GetPhysicsLinearVelocity(),LocalUpVector)*LocalUpVector
+		};
+		FVector GravityForceVector{-LocalUpVector * GravityForce * GravityMod};
+		if (IsGrounded())
 		{
-			float ScaleHeight{(HoverHeight - DistanceToGround())/HoverForceReduction};
-			FVector HeightVelocity{
-				FVector::DotProduct(SphereComp->GetPhysicsLinearVelocity(),LocalUpVector)*LocalUpVector
-			};
-			FVector GravityForceVector{-LocalUpVector * GravityForce * GravityMod};
-			if (IsGrounded())
-			{
-				HoverForce = (-GravityForceVector * UKismetMathLibrary::Exp(ScaleHeight) -
-					HoverDampingFactor * HeightVelocity).GetClampedToMaxSize(10000.f);
-			}
-			SphereComp->AddForce(GravityForceVector+HoverForce, FName(), true);
+			HoverForce = (-GravityForceVector * UKismetMathLibrary::Exp(ScaleHeight) -
+				HoverDampingFactor * HeightVelocity).GetClampedToMaxSize(10000.f);
 		}
+		SphereComp->AddForce(GravityForceVector+HoverForce, FName(), true);
 	}
 }
 
@@ -198,7 +200,7 @@ void ACarPawn::TiltCarMesh(FVector AsymVector)
 	FRotator LocalRot = SharkBodyMesh->GetRelativeRotation();
 	LocalRot.Roll = FMath::Clamp(LocalRot.Roll, -ClampValue, ClampValue);
 
-	
+	//sets again with clamps
 	SharkBodyMesh->SetRelativeRotation(LocalRot);
 	
 	//handles BP events
@@ -220,13 +222,18 @@ void ACarPawn::HandleAsymFriction(const FVector& AsymVector)
 	}
 }
 
+void ACarPawn::ForceSharkHeadInFront() {
+	FVector Location = SharkBodyMesh->GetComponentLocation() + SharkBodyMesh->GetForwardVector() * 38.f;
+	SharkHeadMesh->SetWorldLocation(Location);
+}
+
 // Called every frame
 void ACarPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 	StateTime += DeltaTime;
-	// state machine
+	// state machine using switch case
 	switch (CurrentVehicleState)
 	{
 	case EVehicleState::Driving:
@@ -271,7 +278,6 @@ void ACarPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis("LookUp", this, &ACarPawn::LookYAxis);
 	
 	// Action binding
-	//action.bConsumeInput = false;
 	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this, &ACarPawn::ToggleGrappleHook);
 	PlayerInputComponent->BindAction("Up", EInputEvent::IE_Pressed, this, &ACarPawn::SetGameSpeedUp);
 	PlayerInputComponent->BindAction("Down", EInputEvent::IE_Pressed, this, &ACarPawn::SetGameSpeedDown);
@@ -279,19 +285,23 @@ void ACarPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	ARacingUnrealProjectGameModeBase* GameModeBase = Cast<ARacingUnrealProjectGameModeBase>(GetWorld()->GetAuthGameMode());
 	PlayerInputComponent->BindAction("Pause", IE_Pressed, GameModeBase, &ARacingUnrealProjectGameModeBase::OnPressPause).bExecuteWhenPaused = true;
-	// PlayerInputComponent->BindAction("Space", EInputEvent::IE_Pressed, this, &ACarPawn::OnSpacePressed);
+	
 }
 
-float ACarPawn::GetCurrentForwardSpeed()
-{
+float ACarPawn::GetCurrentForwardSpeed() const {
 	return	FMath::Abs(FVector::DotProduct(SphereComp->GetPhysicsLinearVelocity(), SphereComp->GetForwardVector()));
 }
 
 void ACarPawn::EnterState(EVehicleState NewState)
 {
+	//resets vraibales
 	bEnterState = true;
 	StateTime = 0.f;
+
+	//sets new state
 	CurrentVehicleState = NewState;
+
+	//braods casts events for cpp and bps
 	EnterNewStateEvent.Broadcast(NewState);
 	BPEOnEnterNewState(NewState);
 }
@@ -302,13 +312,12 @@ void ACarPawn::StateDriving()
 	{
 		bEnterState = false;
 	}
+	
 	ApplyGravity();
 	SetUpVectorAsSplineUpAxis();
 	
 	if (IsGrounded())
 	{
-		
-		
 		const FVector AsymVector = CalcAsymVector();
 		HandleAsymFriction(AsymVector);
 		TiltCarMesh(AsymVector);
@@ -321,7 +330,7 @@ void ACarPawn::StateDriving()
 		EnterState(EVehicleState::AirBorne);
 	}
 	
-	//should we be grappling
+	//should we be in grappling state?
 	if (PhysicsGrappleComponent->ValidGrappleState())
 	{
 		EnterState(EVehicleState::Grappling);
@@ -334,13 +343,12 @@ void ACarPawn::StateGrappling()
 	{
 		bEnterState = false;
 		SphereComp->SetSimulatePhysics(false);
-		
+
+		// camera effect modifer activate
 		CameraEffectComponent->GrappleCameraModifier->EnableModifier();
 	}
-
 	
-	
-	//orients the sphere comp
+	//calculates lerp factor for lerping upvector of vehicle
 	float StartDistance = (PhysicsGrappleComponent->GetOnHookedVehicleTransform().GetLocation() -  SharkBodyMesh->GetComponentLocation()).Size();
 	float CurrentDistance = (SphereComp->GetComponentLocation() -  SharkBodyMesh->GetComponentLocation()).Size();
 	float lerpFactor = CurrentDistance / StartDistance; // at start will be 1, and will progress towards 0
@@ -356,7 +364,8 @@ void ACarPawn::StateGrappling()
 		
 		SphereComp->SetWorldRotation(NewRot);
 	}
-	
+
+	//forces camera rotation
 	CameraBoom->SetRelativeRotation(FRotator(-5.f, 0.f, 0.f));
 	
 	//psudo on exit
@@ -384,18 +393,15 @@ void ACarPawn::StateAirBorne()
 	RotateSphereCompToLocalUpVector();
 	ApplyGravity();
 	TiltCarMesh(FVector::ZeroVector);
-
 	
 	if (IsGrounded())
 	{
-		
 		EnterState(EVehicleState::Driving);
 	}
 
 	if (IsOutOfBounds())
 	{
 		ResetCarToLastCheckpoint();
-		
 	}
 	//shoud we be in grapple state
 	if (PhysicsGrappleComponent->ValidGrappleState())
@@ -415,7 +421,7 @@ void ACarPawn::StateDying()
 		SharkBodyMesh->SetVisibility(false);
 		SharkHeadMesh->SetVisibility(false);
 
-		//particle
+		//particles
 		if (DeathParticleSystem)
 			UGameplayStatics::SpawnEmitterAtLocation(this, DeathParticleSystem, GetActorLocation(), GetActorRotation());
 		else
@@ -433,18 +439,25 @@ void ACarPawn::StateDying()
 void ACarPawn::StateFinished() {
 	if (bEnterState) {
 		bEnterState = false;
+
+		//ensures the vehicle slows down
 		SphereComp->SetLinearDamping(1.f);
+		
+		//camera boom setup for this state
 		CameraBoom->SetRelativeLocation(FVector(0.f, 0.f, -30.f));
 		CameraBoom->bDoCollisionTest = false;
 	}
 
+	//contonuisly rotates cameraboom around vehicle
 	CameraBoom->SetRelativeRotation(FRotator(-5.f, StateTime * StateFinishedTurnSpeed, 0.f));
-	
+
+	//tilts car upright
 	TiltCarMesh(FVector::ZeroVector);
 }
 
 void ACarPawn::ToggleGrappleHook()
 {
+	//comunicates with PhyicsGrappleComponent
 	if (PhysicsGrappleComponent->GetCurrentGrappleState() == EGrappleStates::InActive)
 	{
 		PhysicsGrappleComponent->FireGrapplingHook();
@@ -489,12 +502,13 @@ FVector ACarPawn::CalcAsymVector()
 {
 	// Got help from Anders so its physics based
 	FVector NegativeVelocity = -SphereComp->GetPhysicsLinearVelocity();
-	FVector FrictionForce = NegativeVelocity.GetSafeNormal() * AsymForce; // a big number
+	FVector FrictionForce = NegativeVelocity.GetSafeNormal() * AsymForce;
 
+	//trigonometry
 	FVector CalcAsymForce = GetActorRightVector() * FVector::DotProduct(SphereComp->GetRightVector(), FrictionForce);
 
-	float cutoffspeed = 700.f;
-	if (NegativeVelocity.SizeSquared() < cutoffspeed* cutoffspeed)
+	float Cutoffspeed = 700.f;
+	if (NegativeVelocity.SizeSquared() < Cutoffspeed* Cutoffspeed)
 	{
 		CalcAsymForce *= NegativeVelocity.Size() / 5000.f;
 	}
@@ -502,10 +516,7 @@ FVector ACarPawn::CalcAsymVector()
 	return CalcAsymForce;
 }
 
-float ACarPawn::CaltAsymForce()
-{
-	return 0.0f;
-}
+
 
 void ACarPawn::MoveXAxis(const float Value)
 {
@@ -576,11 +587,12 @@ void ACarPawn::LookXAxis(float Value)
 	if (IsValidLookState() == false) {
 		return;
 	}
-	
+
+	//updates cameraboom rotation and clamps
 	FRotator OldRotation = CameraBoom->GetRelativeRotation();
 	float Yaw = OldRotation.Yaw + CameraLookSpeed* Value * UGameplayStatics::GetWorldDeltaSeconds(this);
 	Yaw = FMath::Clamp(Yaw, -MaxYawLookAngle, MaxYawLookAngle);
-
+	
 	OldRotation.Yaw = Yaw;
 	CameraBoom->SetRelativeRotation(OldRotation);
 }
@@ -590,11 +602,11 @@ void ACarPawn::LookYAxis(float Value)
 	if (IsValidLookState() == false) {
 		return;
 	}
-	
+	//updates cameraboom rotation and clamps
 	FRotator OldRotation = CameraBoom->GetRelativeRotation();
 	float Pitch = OldRotation.Pitch + CameraLookSpeed* Value * UGameplayStatics::GetWorldDeltaSeconds(this);
 	Pitch = FMath::Clamp(Pitch, -MaxPichLookAngle, MaxPichLookAngle);
-
+	
 	OldRotation.Pitch = Pitch;
 	CameraBoom->SetRelativeRotation(OldRotation);
 }
