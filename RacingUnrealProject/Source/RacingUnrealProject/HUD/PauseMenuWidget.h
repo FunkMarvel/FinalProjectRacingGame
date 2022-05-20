@@ -7,7 +7,7 @@
 #include "PauseMenuWidget.generated.h"
 
 /**
- * 
+ * @brief wrapper for pause menu buttons.
  */
 UCLASS()
 class RACINGUNREALPROJECT_API UPauseMenuWidget : public UUserWidget
