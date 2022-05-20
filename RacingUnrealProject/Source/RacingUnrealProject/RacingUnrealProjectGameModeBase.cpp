@@ -24,6 +24,9 @@ void ARacingUnrealProjectGameModeBase::BeginPlay()
 	}
 }
 
+/**
+ * @brief Increments or decrements lap count
+ */
 void ARacingUnrealProjectGameModeBase::OnCompletedLap()
 {
 	if (bGameEnded) return;
@@ -32,18 +35,21 @@ void ARacingUnrealProjectGameModeBase::OnCompletedLap()
 	if (FVector::DotProduct(PlayerToGoalDir, GoalCheckpoint->GetSpawnArrow()->GetForwardVector()) > 0.f)
 	{
 		if (bFirstLap)
-		{
+		{	// player passes through start line twice on first lap, so first crossing is ignored.
 			bFirstLap = false;
 			return;
 		}
-		CurrentLap++;
+		CurrentLap++;  // increments lap if start line is crossed in right direction.
 	}
 	else if (FVector::DotProduct(PlayerToGoalDir, GoalCheckpoint->GetSpawnArrow()->GetForwardVector()) < 0.f)
 	{
-		CurrentLap--;
+		CurrentLap--; // decrements lap if start line is crossed in wrong direction.
 	}
 }
 
+/**
+ * @brief Switches on end game menu, and decelerates ship.
+ */
 void ARacingUnrealProjectGameModeBase::GameEndState()
 {
 	if (bGameEnded) return;
@@ -51,27 +57,41 @@ void ARacingUnrealProjectGameModeBase::GameEndState()
 	PlayerPawn->EnterState(EVehicleState::Finished);
 }
 
+/**
+ * @brief Toggles paused state and pause menu.
+ */
 void ARacingUnrealProjectGameModeBase::OnPressPause()
 {
-	if (FName(GetWorld()->GetMapName()) == RacingGameInstance->LevelNames[0]) return;
-	if (!bGamePaused)
+	if (FName(GetWorld()->GetMapName()) == RacingGameInstance->LevelNames[0]) return;  // no need to pause main menu
+	if (!bGamePaused)  // following code ensures no forces accumulate on vehicle while game is paused:
 	{
+		// stores current velocity and spin of vehicle before zeroing all physics
 		CurrentVel = PlayerPawn->SphereComp->GetPhysicsLinearVelocity();
 		CurrentAngVel = PlayerPawn->SphereComp->GetPhysicsAngularVelocityInRadians();
 		PlayerPawn->SphereComp->SetSimulatePhysics(false);
 	}
 	else
 	{
+		// enables physics and applies previous state
 		PlayerPawn->SphereComp->SetSimulatePhysics(true);
 		PlayerPawn->SphereComp->SetPhysicsLinearVelocity(CurrentVel);
 		PlayerPawn->SphereComp->SetPhysicsAngularVelocityInRadians(CurrentAngVel);
 	}
 }
 
+/**
+ * @brief Adds points to score tracker if in ScoreAttack game mode.
+ * @param Score number of points to add.
+ */
 void ARacingUnrealProjectGameModeBase::AddScore(int32 Score)
 {
+	// this is just a base class for polymorphism, actual implementation in ScoreAttackGameModeBase.
 }
 
+/**
+ * @brief Attempts to save high score and best time to file.
+ * @return bool - true if save succeeded and false if save failed.
+ */
 bool ARacingUnrealProjectGameModeBase::SaveGame()
 {
 	if (URacingSaveGame* RacingSaveGame = Cast<URacingSaveGame>(UGameplayStatics::CreateSaveGameObject(URacingSaveGame::StaticClass())))
@@ -84,6 +104,10 @@ bool ARacingUnrealProjectGameModeBase::SaveGame()
 	return false;
 }
 
+/**
+ * @brief Attempts to load high score and best time from file.
+ * @return bool - true if load succeeded and false if load failed.
+ */
 bool ARacingUnrealProjectGameModeBase::LoadGame()
 {
 	if (URacingSaveGame* RacingSaveGame =
@@ -97,6 +121,11 @@ bool ARacingUnrealProjectGameModeBase::LoadGame()
 	return false;
 }
 
+/**
+ * @brief Gives a FSlateColor for coloring text based on current goal reached.
+ * @param CurrentGoal Current goal reached.
+ * @return FSlateColor - white if no goal reached, else returns bronze, silver or gold depending on current goal reached.
+ */
 FSlateColor ARacingUnrealProjectGameModeBase::ChangeGoalColor(EGoals CurrentGoal)
 {
 	FSlateColor SlateColor;
