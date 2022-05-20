@@ -72,19 +72,19 @@ public:
 	
 private:
 	UPROPERTY(EditAnywhere, Category = "Grappable")
-		float AddSpeed = 550.f;
+	float AddSpeed = 550.f;
 	UPROPERTY(EditAnywhere, Category = "Grappable")
-		bool bEatable = false;
+	bool bEatable = false;
 	UPROPERTY(EditAnywhere, Category = "Grappable")
-		bool bOverrideReleaseVelocity = true;
+	bool bOverrideReleaseVelocity = true;
 	UPROPERTY(EditAnywhere, Category = "Grappable")
-		bool bOverrideSpeed = false;
+	bool bOverrideSpeed = false;
 	UPROPERTY(EditAnywhere, Category = "Grappable")
-		bool bEnabled = false;
+	bool bEnabled = false;
 
 	//UI
 	UPROPERTY(EditAnywhere, Category = "Grappable|UI")
-		bool bUseWidget = true;
+	bool bUseWidget = true;
 	
 	
 };

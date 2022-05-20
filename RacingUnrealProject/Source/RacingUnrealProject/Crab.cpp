@@ -42,7 +42,7 @@ void ACrab::Tick(float DeltaTime)
 	CrabMesh->SetWorldLocation(Location);
 	CrabMesh->SetWorldRotation(Rotation);
 
-
+	
 	if (CurrentDistance > Spline->GetSplineLength())
 		CurrentDistance = 0.f;
 	
