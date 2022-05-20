@@ -6,11 +6,9 @@
 #include "PauseMenuWidget.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
-#include "Components/SphereComponent.h"
 #include "RacingUnrealProject/CarPawn.h"
 #include "RacingUnrealProject/GameModes/TimeAttackGameModeBase.h"
 #include "RacingUnrealProject/Widget/SpeedIndicatorWidget.h"
-#include "TimeAttackWidgets/MinimapWidget.h"
 #include "TimeAttackWidgets/RaceTimerWidget.h"
 #include "TimeAttackWidgets/TimeAttackEndMenuWidget.h"
 
@@ -24,11 +22,13 @@ void ATimeAttackHUD::BeginPlay()
 	Super::BeginPlay();
 	GameModeBase = Cast<ATimeAttackGameModeBase>(GetWorld()->GetAuthGameMode());
 
+	// setting up widgets:
 	if (TimerWidgetClass)
 	{
 		RaceTimerWidget = CreateWidget<URaceTimerWidget>(GetWorld(), TimerWidgetClass);
 		RaceTimerWidget->AddToViewport();
 		RaceTimerWidget->UpdateLapCounter(GameModeBase->CurrentLap, GameModeBase->NumberOfLaps);
+		// setting initial goal to beat as lowest time.
 		CurrentGoalColor = GameModeBase->ChangeGoalColor(GameModeBase->CurrentBestGoal);
 	}
 
@@ -54,22 +54,11 @@ void ATimeAttackHUD::BeginPlay()
 		}
 	}
 
-	if (/*MinimapClass*/ false) {
-		MinimapWidget = CreateWidget<UMinimapWidget>(GetWorld(), MinimapClass);
-		MinimapWidget->AddToViewport();
-		MinimapWidget->SetVisibility(ESlateVisibility::Visible);
-		MinimapWidget->CarPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
-		MinimapWidget->PlayerStartLocation = MinimapWidget->CarPawn->GetActorLocation();
-	}
-
 	if (SpeedIndicatorClass) {
 		SpeedIndicatorWidget = CreateWidget<USpeedIndicatorWidget>(GetWorld(), SpeedIndicatorClass);
 		SpeedIndicatorWidget->AddToViewport();
 		SpeedIndicatorWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
-		// if (GetWorld()->GetFirstPlayerController()->GetPawn()->IsA(ACarPawn::StaticClass())) {
-		// 	SpeedIndicatorWidget->CarPawn = Cast<ACarPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
-		//
-		// }
+
 		if (PlayerPawn) SpeedIndicatorWidget->CarPawn = PlayerPawn;
 
 		SpeedIndicatorWidget->PsudoBeginPlay();
@@ -81,6 +70,8 @@ void ATimeAttackHUD::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 	if (GameModeBase->IsTiming()) GameModeBase->RaceTimer += DeltaSeconds;
 
+	// setting initial goal to beat as lowest time.
+	// if player does not beat level in time, easier goal is set.
 	if (GameModeBase->RaceTimer >= GameModeBase->GetCurrentGoalTime())
 	{
 		--GameModeBase->CurrentBestGoal;
@@ -91,6 +82,11 @@ void ATimeAttackHUD::Tick(float DeltaSeconds)
 	if (RaceTimerWidget) RaceTimerWidget->SetSpeedOMeter(PlayerPawn->GetCurrentForwardSpeed());
 }
 
+/**
+ * @brief update lap counter
+ * @param CurrentLap number of current lap
+ * @param MaxNumLaps number of total laps
+ */
 void ATimeAttackHUD::SetLapCounter(int32 CurrentLap, int32 MaxNumLaps)
 {
 	RaceTimerWidget->UpdateLapCounter(CurrentLap, MaxNumLaps);
@@ -103,6 +99,9 @@ void ATimeAttackHUD::SetBestTime(float CurrentTime, float BestTime, FSlateColor 
 		TimeAttackEndMenuWidget->GetTimeTextFromFloat(BestTime), SlateColor);
 }
 
+/**
+ * @brief toggles end menu
+ */
 void ATimeAttackHUD::ToggleEndMenu(bool bShowMenu)
 {
 	if (PauseMenuWidget && !PauseMenuWidget->IsVisible())
@@ -111,17 +110,18 @@ void ATimeAttackHUD::ToggleEndMenu(bool bShowMenu)
 		{
 			if (RaceTimerWidget) RaceTimerWidget->SetVisibility(ESlateVisibility::Collapsed);
 			if (TimeAttackEndMenuWidget) TimeAttackEndMenuWidget->SetVisibility(ESlateVisibility::Visible);
-			if (MinimapWidget) MinimapWidget->SetVisibility(ESlateVisibility::Collapsed);
 		}
 		else
 		{
 			if (RaceTimerWidget) RaceTimerWidget->SetVisibility(ESlateVisibility::Visible);
 			if (TimeAttackEndMenuWidget) TimeAttackEndMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
-			if (MinimapWidget) MinimapWidget->SetVisibility(ESlateVisibility::Visible);
 		}
 	}
 }
 
+/**
+ * @brief toggles pause menu
+ */
 void ATimeAttackHUD::TogglePauseMenu(bool bShowMenu)
 {
 	if (TimeAttackEndMenuWidget && !TimeAttackEndMenuWidget->IsVisible())
@@ -130,17 +130,18 @@ void ATimeAttackHUD::TogglePauseMenu(bool bShowMenu)
 		{
 			if (RaceTimerWidget) RaceTimerWidget->SetVisibility(ESlateVisibility::Collapsed);
 			if (PauseMenuWidget) PauseMenuWidget->SetVisibility(ESlateVisibility::Visible);
-			if (MinimapWidget) MinimapWidget->SetVisibility(ESlateVisibility::Collapsed);
 		}
 		else
 		{
 			if (RaceTimerWidget) RaceTimerWidget->SetVisibility(ESlateVisibility::Visible);
 			if (PauseMenuWidget) PauseMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
-			if (MinimapWidget) MinimapWidget->SetVisibility(ESlateVisibility::Visible);
 		}
 	}
 }
 
+/**
+ * @brief resumes game if paused.
+ */
 void ATimeAttackHUD::OnResume()
 {
 	GameModeBase->OnPressPause();
