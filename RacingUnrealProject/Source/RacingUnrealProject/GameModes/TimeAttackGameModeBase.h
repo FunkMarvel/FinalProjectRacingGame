@@ -7,7 +7,7 @@
 #include "TimeAttackGameModeBase.generated.h"
 
 /**
- * 
+ *  @brief game mode base for time attack.
  */
 UCLASS()
 class RACINGUNREALPROJECT_API ATimeAttackGameModeBase : public ARacingUnrealProjectGameModeBase
