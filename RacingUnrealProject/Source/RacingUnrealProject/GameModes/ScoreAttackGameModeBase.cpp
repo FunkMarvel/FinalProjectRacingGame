@@ -7,6 +7,9 @@
 #include "RacingUnrealProject/DebugLog.h"
 #include "RacingUnrealProject/HUD/ScoreAttackHUD.h"
 
+/**
+ * @brief game mode base for score attack.
+ */
 AScoreAttackGameModeBase::AScoreAttackGameModeBase()
 {
 }
@@ -23,6 +26,9 @@ void AScoreAttackGameModeBase::BeginPlay()
 	AttackHUD = Cast<AScoreAttackHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 }
 
+/**
+ * @brief toggles pause menu.
+ */
 void AScoreAttackGameModeBase::OnPressPause()
 {
 	Super::OnPressPause();
@@ -51,6 +57,9 @@ void AScoreAttackGameModeBase::OnCompletedLap()
 	AttackHUD->SetLapCounter(CurrentLap, NumberOfLaps);
 }
 
+/**
+ * @brief toggles end menu and saves game to instance and file.
+ */
 void AScoreAttackGameModeBase::GameEndState()
 {
 	Super::GameEndState();
@@ -77,6 +86,10 @@ void AScoreAttackGameModeBase::GameEndState()
 	if(SaveGame()) DL_NORMAL("Save Succesful");
 }
 
+/**
+ * @brief Adds points to score tracker.
+ * @param Score int32 - number of points to add.
+ */
 void AScoreAttackGameModeBase::AddScore(int32 Score)
 {
 	Super::AddScore(Score);
@@ -86,6 +99,7 @@ void AScoreAttackGameModeBase::AddScore(int32 Score)
 
 	CurrentScore += Score;
 
+	// changes color and displayed goal when exceeding the previous goal.
 	if (RacingGameInstance->ScoresToBeat.Num() > EGoals::Gold)
 	{
 		if (CurrentScore >= RacingGameInstance->ScoresToBeat[CurrentBestGoal]) ++CurrentBestGoal;
