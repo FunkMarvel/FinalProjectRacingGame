@@ -6,6 +6,7 @@
 #include "Engine/GameInstance.h"
 #include "RacingGameInstance.generated.h"
 
+/// @brief  Game instance class for persistent variables.
 USTRUCT()
 struct FPlayerData
 {
