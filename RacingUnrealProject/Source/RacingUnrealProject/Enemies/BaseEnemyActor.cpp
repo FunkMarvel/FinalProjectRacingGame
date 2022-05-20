@@ -10,7 +10,9 @@
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 
-// Sets default values
+/**
+ * @brief Parent class for drones and spiky ball enemies.
+ */
 ABaseEnemyActor::ABaseEnemyActor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -36,8 +38,11 @@ ABaseEnemyActor::ABaseEnemyActor()
 	ArrowRayCastStart->SetupAttachment(GetRootComponent());
 }
 
+/**
+ * @brief Switches gravity spline if entering new area.
+ */
 void ABaseEnemyActor::OnBeginOverLap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                                     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor->IsA<AGravitySplineActor>())
 	{
@@ -45,6 +50,11 @@ void ABaseEnemyActor::OnBeginOverLap(UPrimitiveComponent* OverlappedComponent, A
 	}
 }
 
+/**
+ * @brief Get vector pointing from enemy to player.
+ * @param bNormalized if true returns unit vector, if false returns difference vector.
+ * @return FVector pointing from enemy to player.
+ */
 FVector ABaseEnemyActor::GetToPlayerVector(bool bNormalized)
 {
 	FVector ToPlayer{PlayerPawn->GetActorLocation() - GetActorLocation()};
@@ -52,10 +62,7 @@ FVector ABaseEnemyActor::GetToPlayerVector(bool bNormalized)
 	{
 		return ToPlayer.GetSafeNormal();
 	}
-	else
-	{
-		return ToPlayer;
-	}
+	return ToPlayer;
 }
 
 // Called when the game starts or when spawned
@@ -66,6 +73,10 @@ void ABaseEnemyActor::BeginPlay()
 	GameModeBase = Cast<ARacingUnrealProjectGameModeBase>(GetWorld()->GetAuthGameMode());
 }
 
+/**
+ * @brief Gets closest gravity spline to enemy.
+ * @return pointer to AGravitySplineActor closest to enemy.
+ */
 AGravitySplineActor* ABaseEnemyActor::GetClosestGravitySpline()
 {
 	TArray<AActor*> GravitySplines;
@@ -91,6 +102,10 @@ AGravitySplineActor* ABaseEnemyActor::GetClosestGravitySpline()
 	return Cast<AGravitySplineActor>(GravitySplines[MinIndex]);
 }
 
+/**
+ * @brief Checks if enemy is on the ground.
+ * @return true if on ground, false if not on ground.
+ */
 bool ABaseEnemyActor::IsGrounded()
 {
 		FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner());
@@ -120,6 +135,9 @@ void ABaseEnemyActor::Tick(float DeltaTime)
 	
 }
 
+/**
+ * @brief Handles death and destruction of enemy.
+ */
 void ABaseEnemyActor::HandleDeath()
 {
 	if (EnemyDeath.IsBound()) EnemyDeath.Broadcast(EnemyArrayIndex);
