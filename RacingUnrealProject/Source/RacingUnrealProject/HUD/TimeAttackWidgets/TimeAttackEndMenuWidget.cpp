@@ -14,6 +14,11 @@ void UTimeAttackEndMenuWidget::NativeConstruct()
 	ReturnToMenuButton->OnClicked.AddDynamic(this, &UTimeAttackEndMenuWidget::OnBackToMenu);
 }
 
+/**
+ * @brief Turns float into time text
+ * @param NewTime 
+ * @return 
+ */
 FText UTimeAttackEndMenuWidget::GetTimeTextFromFloat(float NewTime)
 {
 	int32 Minutes = FMath::FloorToInt(NewTime / 60);
@@ -24,6 +29,12 @@ FText UTimeAttackEndMenuWidget::GetTimeTextFromFloat(float NewTime)
 	return FText::FromString(TimeString);
 }
 
+/**
+ * @brief sets time text
+ * @param CurrentTimeText player's achieved time
+ * @param BestTimeText best time
+ * @param SlateColor color of achieved time
+ */
 void UTimeAttackEndMenuWidget::SetTimeText(FText CurrentTimeText, FText BestTimeText, FSlateColor SlateColor)
 {
 	if (CurrentTime)
@@ -34,6 +45,9 @@ void UTimeAttackEndMenuWidget::SetTimeText(FText CurrentTimeText, FText BestTime
 	if (BestTime) BestTime->SetText(BestTimeText);
 }
 
+/**
+ * @brief play again
+ */
 void UTimeAttackEndMenuWidget::OnPlayAgain()
 {
 	URacingGameInstance* GameInstance{};
@@ -41,6 +55,9 @@ void UTimeAttackEndMenuWidget::OnPlayAgain()
 	if (GameInstance) GameInstance->ChangeLevel(GameInstance->LevelNames[GameInstance->TimeAttack]);
 }
 
+/**
+ * @brief quit to menu
+ */
 void UTimeAttackEndMenuWidget::OnBackToMenu()
 {
 	URacingGameInstance* GameInstance{};
