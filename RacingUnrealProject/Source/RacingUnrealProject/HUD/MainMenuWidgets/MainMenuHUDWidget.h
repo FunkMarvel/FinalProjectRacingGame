@@ -7,7 +7,7 @@
 #include "MainMenuHUDWidget.generated.h"
 
 /**
- * 
+ * @brief main menu
  */
 UCLASS()
 class RACINGUNREALPROJECT_API UMainMenuHUDWidget : public UUserWidget
