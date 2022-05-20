@@ -20,11 +20,6 @@ public:
 	virtual FVector GetFixedUpVectorFromLocation(FVector OrgPos) override;
 
 	virtual void Tick(float DeltaSeconds) override;
-
 	
-
-private:
-	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Spline")
-		float MaxAngle = 30.f;
 	
 };

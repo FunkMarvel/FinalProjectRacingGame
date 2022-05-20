@@ -31,6 +31,7 @@ protected:
 	void ApplyGravity();
 	void TiltCarMesh(FVector AsymVector);
 	void HandleAsymFriction(const FVector& AsymVector);
+	void ForceSharkHeadInFront();
 
 public:
 	// Called every frame
@@ -146,7 +147,7 @@ public:
 	UFUNCTION()
 	float GetMaxSpeed() const {return MaxSpeed; }
 	UFUNCTION()
-	float GetCurrentForwardSpeed();
+	float GetCurrentForwardSpeed() const;
 	UFUNCTION()
 	float GetYAxisValue() const {return YAxisValue; }
 
@@ -209,6 +210,7 @@ private:
 	UPROPERTY(meta = (AllowPrivateAccess = "true"), EditAnywhere, Category = "Car|State|Finished")
 	float StateFinishedTurnSpeed = 100.f;
 
+	// func for comunicating with physicsgrapple component
 	UFUNCTION()
 	void ToggleGrappleHook();
 
@@ -222,7 +224,7 @@ private:
 	
 	//other funcs
 	FVector CalcAsymVector();
-	float CaltAsymForce();
+	
 	
 	//action funcs
 	void MoveXAxis(float TimeAdjustedValue);
