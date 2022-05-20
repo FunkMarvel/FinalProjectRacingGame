@@ -7,7 +7,7 @@
 #include "DroneActor.generated.h"
 
 /**
- * 
+ * @brief drone actor class.
  */
 UCLASS()
 class RACINGUNREALPROJECT_API ADroneActor : public ABaseEnemyActor
@@ -60,6 +60,9 @@ public:
 protected:
 	ASpikyBallEnemyActor* DroppedEnemyActor{nullptr};
 
+	/**
+	 * @brief States of AI behavior for drone.
+	 */
 	enum EDroneState
 	{
 		Idle,
