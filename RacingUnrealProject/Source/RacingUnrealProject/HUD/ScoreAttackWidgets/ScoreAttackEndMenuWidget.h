@@ -7,7 +7,7 @@
 #include "ScoreAttackEndMenuWidget.generated.h"
 
 /**
- * 
+ * @brief end menu
  */
 UCLASS()
 class RACINGUNREALPROJECT_API UScoreAttackEndMenuWidget : public UTimeAttackEndMenuWidget
