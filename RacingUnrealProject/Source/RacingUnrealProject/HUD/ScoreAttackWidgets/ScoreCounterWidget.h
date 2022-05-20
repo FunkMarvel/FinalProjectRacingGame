@@ -7,7 +7,7 @@
 #include "ScoreCounterWidget.generated.h"
 
 /**
- * 
+ * @brief in game HUD for score attack
  */
 UCLASS()
 class RACINGUNREALPROJECT_API UScoreCounterWidget : public UUserWidget
