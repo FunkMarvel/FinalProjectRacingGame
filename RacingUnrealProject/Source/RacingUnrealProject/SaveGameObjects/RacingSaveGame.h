@@ -7,7 +7,7 @@
 #include "RacingSaveGame.generated.h"
 
 /**
- * 
+ * @brief save object for high score and best time.
  */
 UCLASS()
 class RACINGUNREALPROJECT_API URacingSaveGame : public USaveGame
