@@ -7,7 +7,7 @@
 #include "SpikyBallEnemyActor.generated.h"
 
 /**
- * 
+ *  @brief class for spiky ball enemies.
  */
 UCLASS()
 class RACINGUNREALPROJECT_API ASpikyBallEnemyActor : public ABaseEnemyActor
@@ -42,6 +42,9 @@ protected:
 public:
 	void RotateSphereComponentToLocalUpVector();
 
+	/**
+	 * @brief Ball states for AI behavior.
+	 */
 	enum EBallState
 	{
 		Idle,
