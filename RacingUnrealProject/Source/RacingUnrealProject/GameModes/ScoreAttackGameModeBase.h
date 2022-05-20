@@ -7,7 +7,7 @@
 #include "ScoreAttackGameModeBase.generated.h"
 
 /**
- * 
+ * @brief score attack game mode base.
  */
 UCLASS()
 class RACINGUNREALPROJECT_API AScoreAttackGameModeBase : public ARacingUnrealProjectGameModeBase
@@ -34,6 +34,7 @@ public:
 	}
 
 protected:
+	
 	int32 CurrentScore{};
 
 	class AScoreAttackHUD* AttackHUD{nullptr};
