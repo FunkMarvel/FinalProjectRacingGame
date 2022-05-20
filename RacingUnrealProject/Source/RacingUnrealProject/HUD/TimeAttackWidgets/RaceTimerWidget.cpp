@@ -16,9 +16,15 @@ void URaceTimerWidget::NativeConstruct()
 	if (SpeedOMeter) SpeedOMeter->SetText(FText::FromString("000 KM/H"));
 }
 
+/**
+ * @brief updates timer
+ * @param CurrentTime current time in number of seconds
+ * @param CurrentGoalTime current goal to achieve in seconds
+ * @param SlateColor color of current goal
+ */
 void URaceTimerWidget::UpdateTimer(float CurrentTime, float CurrentGoalTime, FSlateColor &SlateColor)
 {
-	//timer text
+	//calculate time in Minutes::Seconds::HundrethOfASecond :
 	int32 GoalMinutes = FMath::FloorToInt(CurrentGoalTime / 60);
 	int32 GoalSeconds = FMath::FloorToInt(FMath::Fmod(CurrentGoalTime, 60.f));
 	int32 GoalCentiSeconds = FMath::FloorToInt((FMath::Fmod(CurrentGoalTime, 60.f) - GoalSeconds)*100);
@@ -37,12 +43,21 @@ void URaceTimerWidget::UpdateTimer(float CurrentTime, float CurrentGoalTime, FSl
 	
 }
 
+/**
+ * @brief Update lap counter
+ * @param CurrentNumLaps 
+ * @param MaxNumLaps 
+ */
 void URaceTimerWidget::UpdateLapCounter(int32 CurrentNumLaps, int32 MaxNumLaps)
 {
 	FString LapString{FString::Printf(TEXT("%01d/%01d"), CurrentNumLaps, MaxNumLaps)};
 	if (LapCounter) LapCounter->SetText(FText::FromString(LapString));
 }
 
+/**
+ * @brief Update SpeedOMeter
+ * @param InSpeed speed in centimetre per second.
+ */
 void URaceTimerWidget::SetSpeedOMeter(float InSpeed)
 {
 	FString SpeedString{FString::Printf(TEXT("%03.0f KM/H"), 0.01*InSpeed*3.6)};
