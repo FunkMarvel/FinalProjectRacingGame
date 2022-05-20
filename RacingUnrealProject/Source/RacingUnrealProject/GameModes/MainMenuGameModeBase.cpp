@@ -30,6 +30,10 @@ void AMainMenuGameModeBase::BeginPlay()
 	}
 }
 
+/**
+ * @brief Attempts to save settings to file.
+ * @return true if save succeeded, false if save failed.
+ */
 bool AMainMenuGameModeBase::SaveSettings()
 {
 	if (USavedSettings* SavedSettings = Cast<USavedSettings>(UGameplayStatics::CreateSaveGameObject(USavedSettings::StaticClass())))
@@ -42,6 +46,10 @@ bool AMainMenuGameModeBase::SaveSettings()
 	return false;
 }
 
+/**
+ * @brief Attempts to load settings from file.
+ * @return true if load succeeded, false if load failed.
+ */
 bool AMainMenuGameModeBase::LoadSettings()
 {
 	if (USavedSettings* SavedSettings =
