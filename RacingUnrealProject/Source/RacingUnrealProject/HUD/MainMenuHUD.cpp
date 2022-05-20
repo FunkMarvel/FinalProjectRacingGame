@@ -31,6 +31,7 @@ void AMainMenuHUD::BeginPlay()
 	
 	GameModeBase = Cast<AMainMenuGameModeBase>(GetWorld()->GetAuthGameMode());
 
+	// setting up all widgets:
 	if (MainMenuClass)
 	{
 		MainMenuHUDWidget = CreateWidget<UMainMenuHUDWidget>(GetWorld(), MainMenuClass);
@@ -71,6 +72,9 @@ void AMainMenuHUD::BeginPlay()
 	}
 }
 
+/**
+ * @brief opens level select menu.
+ */
 void AMainMenuHUD::OnPressPlay()
 {
 	if (MainMenuHUDWidget && LevelSelectMenuWidget)
@@ -80,6 +84,9 @@ void AMainMenuHUD::OnPressPlay()
 	}
 }
 
+/**
+ * @brief opens settings menu.
+ */
 void AMainMenuHUD::OnPressSettings()
 {
 	CurrentNumLaps = GameInstance->NumberOfLaps;
@@ -90,11 +97,17 @@ void AMainMenuHUD::OnPressSettings()
 	}
 }
 
+/**
+ * @brief quits game.
+ */
 void AMainMenuHUD::OnPressExit()
 {
 	UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
 }
 
+/**
+ * @brief starts time attack mode.
+ */
 void AMainMenuHUD::OnPressTimeAttack()
 {
 	if (GameInstance->LevelNames.Num() >= 2)
@@ -103,6 +116,9 @@ void AMainMenuHUD::OnPressTimeAttack()
 	}
 }
 
+/**
+ * @brief starts score attack mode.
+ */
 void AMainMenuHUD::OnPressScoreAttack()
 {
 	if (GameInstance->LevelNames.Num() >= 3)
@@ -111,6 +127,9 @@ void AMainMenuHUD::OnPressScoreAttack()
 	}
 }
 
+/**
+ * @brief returns to main  from level select.
+ */
 void AMainMenuHUD::OnPressBack()
 {
 	if (MainMenuHUDWidget && LevelSelectMenuWidget)
@@ -120,24 +139,36 @@ void AMainMenuHUD::OnPressBack()
 	}
 }
 
+/**
+ * @brief increases number of laps.
+ */
 void AMainMenuHUD::OnPressPlus()
 {
 	if (CurrentNumLaps < 5) CurrentNumLaps++;
 	SettingsMenuWidget->UpdateText(CurrentNumLaps);
 }
 
+/**
+ * @brief decreases number of laps.
+ */
 void AMainMenuHUD::OnPressMinus()
 {
 	if (CurrentNumLaps > 3) CurrentNumLaps--;
 	SettingsMenuWidget->UpdateText(CurrentNumLaps);
 }
 
+/**
+ * @brief saves settings to instance and file.
+ */
 void AMainMenuHUD::OnPressSave()
 {
 	GameInstance->NumberOfLaps = CurrentNumLaps;
 	if (GameModeBase->SaveSettings())  DL_NORMAL("Settings Saved Succesfully");
 }
 
+/**
+ * @brief returns to main menu from settings menu.
+ */
 void AMainMenuHUD::OnPressReturnToMenu()
 {
 	CurrentNumLaps = GameInstance->NumberOfLaps;
