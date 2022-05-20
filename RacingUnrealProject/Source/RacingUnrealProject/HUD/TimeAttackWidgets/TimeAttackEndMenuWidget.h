@@ -7,7 +7,7 @@
 #include "TimeAttackEndMenuWidget.generated.h"
 
 /**
- * 
+ * @brief end menu
  */
 UCLASS()
 class RACINGUNREALPROJECT_API UTimeAttackEndMenuWidget : public UUserWidget
