@@ -166,7 +166,6 @@ void ACarPawn::ApplyGravity()
 			}
 			SphereComp->AddForce(GravityForceVector+HoverForce, FName(), true);
 		}
-		SphereComp->AddForce(GravityForceVector+HoverForce, FName(), true);
 	}
 }
 
