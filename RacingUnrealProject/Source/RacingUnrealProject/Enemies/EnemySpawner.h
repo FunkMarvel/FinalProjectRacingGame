@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "EnemySpawner.generated.h"
 
+/// @brief Spawner for handling drones and spiky balls.
 UCLASS()
 class RACINGUNREALPROJECT_API AEnemySpawner : public AActor
 {
@@ -42,26 +43,13 @@ public:
 	int32 NumberOfSpawnedEnemies{0};
 	int32 NumberOfDestroyedEnemies{0};
 
-	// UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Spawning")
-	// 	float SpawnForwardOffset{10000.f};
-	//
-	// UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Spawning")
-	// 	float SpawnHeight{0.5f*SpawnForwardOffset};
-
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Spawning")
 		float SpawnSpacing{1000.f};
-
 	
 	UFUNCTION()
 	void OnTriggerOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION()
-	void OnTriggerOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
-		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-	UFUNCTION()
-	void OnExitOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
 	UFUNCTION()
 	void OnExitOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
