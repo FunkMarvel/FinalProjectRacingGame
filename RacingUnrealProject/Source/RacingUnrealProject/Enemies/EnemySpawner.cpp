@@ -8,10 +8,12 @@
 #include "../DebugLog.h"
 #include "Components/ArrowComponent.h"
 
-// Sets default values
+/**
+ * @brief Spawner for handling drones and spiky balls.
+ */
 AEnemySpawner::AEnemySpawner()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+ 	// no need to tick:
 	PrimaryActorTick.bCanEverTick = false;
 	TriggerVolume = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerVolume"));
 	SetRootComponent(TriggerVolume);
@@ -31,8 +33,11 @@ AEnemySpawner::AEnemySpawner()
 	
 }
 
+/**
+ * @brief Spawns enemies around spawn-point when player enters trigger volume.
+ */
 void AEnemySpawner::OnTriggerOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                                          UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (EnemyClassToSpawn && OtherActor->IsA<APawn>() && NumberOfSpawnedEnemies < NumberOfEnemiesToSpawn)
 	{
@@ -42,10 +47,13 @@ void AEnemySpawner::OnTriggerOverlapBegin(UPrimitiveComponent* OverlappedCompone
 		FVector SpawnLocation{SpawnPoint->GetComponentLocation()};
 		for (int32 i{}; i < NumberOfEnemiesToSpawn; i++)
 		{
+			// spawns enemies in alternating pattern around spawn location.
 			EnemyActors[i] = GetWorld()->SpawnActor<ABaseEnemyActor>(
 				EnemyClassToSpawn, SpawnLocation + Alternator*((i+2-NumberOfEnemiesToSpawn%2)/2)*SidewaysOffset,
 				SpawnOrientation
 				);
+
+			// sets up and starts enemy behavior:
 			if (GravitySpline) EnemyActors[i]->GravitySplineActive = GravitySpline;
 			EnemyActors[i]->EnemyDeath.AddDynamic(this, &AEnemySpawner::OnEnemyDeath);
 			EnemyActors[i]->SetEnemyArrayIndex(i);
@@ -59,22 +67,15 @@ void AEnemySpawner::OnTriggerOverlapBegin(UPrimitiveComponent* OverlappedCompone
 		FString::FromInt(NumberOfEnemiesToSpawn));
 }
 
-void AEnemySpawner::OnTriggerOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	
-}
-
-void AEnemySpawner::OnExitOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-}
-
+/**
+ * @brief Destroys enemies when player leaves exit volume.
+ */
 void AEnemySpawner::OnExitOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+                                     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	if (OtherActor->IsA<APawn>() && NumberOfSpawnedEnemies > 0)
 	{
+		// all enemies not yet destroyed are destroyed:
 		for (ABaseEnemyActor* Enemy : EnemyActors)
 		{
 			DL_NORMAL(TEXT("Destroyed"));
@@ -90,9 +91,7 @@ void AEnemySpawner::BeginPlay()
 {
 	Super::BeginPlay();
 	TriggerVolume->OnComponentBeginOverlap.AddDynamic(this, &AEnemySpawner::OnTriggerOverlapBegin);
-	TriggerVolume->OnComponentEndOverlap.AddDynamic(this, &AEnemySpawner::OnTriggerOverlapEnd);
-
-	ExitVolume->OnComponentBeginOverlap.AddDynamic(this, &AEnemySpawner::OnExitOverlapBegin);
+	
 	ExitVolume->OnComponentEndOverlap.AddDynamic(this, &AEnemySpawner::OnExitOverlapEnd);
 
 	EnemyActors.Init(nullptr, NumberOfEnemiesToSpawn);
