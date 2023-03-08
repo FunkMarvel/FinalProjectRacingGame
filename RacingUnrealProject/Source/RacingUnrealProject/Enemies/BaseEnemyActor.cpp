@@ -88,7 +88,8 @@ AGravitySplineActor* ABaseEnemyActor::GetClosestGravitySpline()
 	int32 MinIndex{};
 	for (int32 i{}; i < GravitySplines.Num(); i++)
 	{
-		float TempDistance{(GravitySplines[i]->GetActorLocation() - GetActorLocation()).Size()};
+		float TempDistance{};
+		TempDistance = static_cast<float>(FVector::Distance(GravitySplines[i]->GetActorLocation(), GetActorLocation()));
 		if (i == 0)
 		{
 			MinDistance = TempDistance;

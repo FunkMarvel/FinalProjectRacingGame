@@ -623,7 +623,7 @@ void UPhysicsGrapplingComponent::HandleRayTraceLogic()
 		return;
 	}
 
-	UGrappleSphereComponent* GrappleSphereComponent = KnockOffHitResult.Actor->FindComponentByClass<UGrappleSphereComponent>(); // better? Better
+	UGrappleSphereComponent* GrappleSphereComponent = KnockOffHitResult.GetActor()->FindComponentByClass<UGrappleSphereComponent>(); // better? Better
 
 	if (GrappleSphereComponent->IsEnabled())
 	{
